@@ -1,0 +1,4 @@
+# Object-Oriented Programming Lab(C++)
+## PYQ
+
+This is a sample pyq file for Object-Oriented Programming Lab(C++).

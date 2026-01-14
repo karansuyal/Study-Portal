@@ -1,0 +1,4 @@
+# Introduction To AI Laboratory
+## NOTES
+
+This is a sample notes file for Introduction To AI Laboratory.

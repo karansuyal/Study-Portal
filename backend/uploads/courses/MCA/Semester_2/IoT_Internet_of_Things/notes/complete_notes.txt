@@ -1,0 +1,4 @@
+# IoT (Internet of Things)
+## NOTES
+
+This is a sample notes file for IoT (Internet of Things).

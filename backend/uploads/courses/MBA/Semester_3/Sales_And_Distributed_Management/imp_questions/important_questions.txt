@@ -1,0 +1,4 @@
+# Sales And Distributed Management
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Sales And Distributed Management.

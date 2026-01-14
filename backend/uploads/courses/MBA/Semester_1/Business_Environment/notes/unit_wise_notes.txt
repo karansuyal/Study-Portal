@@ -1,0 +1,4 @@
+# Business Environment
+## NOTES
+
+This is a sample notes file for Business Environment.

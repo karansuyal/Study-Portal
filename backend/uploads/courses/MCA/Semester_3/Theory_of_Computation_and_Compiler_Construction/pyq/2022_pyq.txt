@@ -1,0 +1,4 @@
+# Theory of Computation and Compiler Construction
+## PYQ
+
+This is a sample pyq file for Theory of Computation and Compiler Construction.

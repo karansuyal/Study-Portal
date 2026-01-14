@@ -1,0 +1,4 @@
+# Discrete Structures and Combinatorics
+## SYLLABUS
+
+This is a sample syllabus file for Discrete Structures and Combinatorics.

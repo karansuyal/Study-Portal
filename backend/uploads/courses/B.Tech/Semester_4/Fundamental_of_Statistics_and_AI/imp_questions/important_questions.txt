@@ -1,0 +1,4 @@
+# Fundamental of Statistics and AI
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Fundamental of Statistics and AI.

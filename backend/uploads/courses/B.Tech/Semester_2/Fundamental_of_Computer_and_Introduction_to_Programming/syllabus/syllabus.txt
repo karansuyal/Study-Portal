@@ -1,0 +1,4 @@
+# Fundamental of Computer & Introduction to Programming
+## SYLLABUS
+
+This is a sample syllabus file for Fundamental of Computer & Introduction to Programming.

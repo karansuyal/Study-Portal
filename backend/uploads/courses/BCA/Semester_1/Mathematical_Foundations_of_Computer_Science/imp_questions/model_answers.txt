@@ -1,0 +1,4 @@
+# Mathematical Foundations of Computer Science
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Mathematical Foundations of Computer Science.

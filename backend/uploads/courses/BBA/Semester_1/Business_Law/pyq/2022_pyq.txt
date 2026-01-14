@@ -1,0 +1,4 @@
+# Business Law
+## PYQ
+
+This is a sample pyq file for Business Law.

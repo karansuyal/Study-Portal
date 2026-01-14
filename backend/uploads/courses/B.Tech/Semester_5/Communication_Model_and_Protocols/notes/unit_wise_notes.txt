@@ -1,0 +1,4 @@
+# Communication Model and Protocols
+## NOTES
+
+This is a sample notes file for Communication Model and Protocols.

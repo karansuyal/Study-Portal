@@ -1,0 +1,4 @@
+# Logic Design & Computer Organization Lab
+## SYLLABUS
+
+This is a sample syllabus file for Logic Design & Computer Organization Lab.

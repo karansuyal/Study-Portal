@@ -1,0 +1,4 @@
+# Soft Computing
+## NOTES
+
+This is a sample notes file for Soft Computing.

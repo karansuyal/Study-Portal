@@ -1,0 +1,4 @@
+# Data Driven Decision Making
+## NOTES
+
+This is a sample notes file for Data Driven Decision Making.

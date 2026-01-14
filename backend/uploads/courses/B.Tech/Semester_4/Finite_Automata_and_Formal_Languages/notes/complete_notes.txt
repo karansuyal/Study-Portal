@@ -1,0 +1,4 @@
+# Finite Automata and Formal Languages
+## NOTES
+
+This is a sample notes file for Finite Automata and Formal Languages.

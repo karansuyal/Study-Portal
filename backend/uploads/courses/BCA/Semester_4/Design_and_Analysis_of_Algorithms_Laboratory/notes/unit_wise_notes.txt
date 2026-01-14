@@ -1,0 +1,4 @@
+# Design and Analysis of Algorithms Laboratory
+## NOTES
+
+This is a sample notes file for Design and Analysis of Algorithms Laboratory.

@@ -1,0 +1,4 @@
+# Fundamental of Statistics and AI
+## SYLLABUS
+
+This is a sample syllabus file for Fundamental of Statistics and AI.

@@ -1,0 +1,4 @@
+# Mathematical Foundations of Computer Science
+## SYLLABUS
+
+This is a sample syllabus file for Mathematical Foundations of Computer Science.

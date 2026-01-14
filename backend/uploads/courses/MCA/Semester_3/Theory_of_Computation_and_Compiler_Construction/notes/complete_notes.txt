@@ -1,0 +1,4 @@
+# Theory of Computation and Compiler Construction
+## NOTES
+
+This is a sample notes file for Theory of Computation and Compiler Construction.

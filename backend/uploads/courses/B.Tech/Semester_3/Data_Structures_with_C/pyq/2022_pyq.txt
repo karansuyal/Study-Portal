@@ -1,0 +1,4 @@
+# Data Structures with C
+## PYQ
+
+This is a sample pyq file for Data Structures with C.

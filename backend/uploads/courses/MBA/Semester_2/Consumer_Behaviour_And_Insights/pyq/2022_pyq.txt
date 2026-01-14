@@ -1,0 +1,4 @@
+# Consumer Behaviour And Insights
+## PYQ
+
+This is a sample pyq file for Consumer Behaviour And Insights.

@@ -1,0 +1,4 @@
+# Computer Organization and Architecture
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Computer Organization and Architecture.

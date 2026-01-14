@@ -1,0 +1,4 @@
+# Discrete Mathematics
+## SYLLABUS
+
+This is a sample syllabus file for Discrete Mathematics.

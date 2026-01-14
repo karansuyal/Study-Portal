@@ -1,0 +1,4 @@
+# Digital Marketing
+## PYQ
+
+This is a sample pyq file for Digital Marketing.

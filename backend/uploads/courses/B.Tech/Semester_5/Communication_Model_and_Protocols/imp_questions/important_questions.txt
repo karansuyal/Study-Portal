@@ -1,0 +1,4 @@
+# Communication Model and Protocols
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Communication Model and Protocols.

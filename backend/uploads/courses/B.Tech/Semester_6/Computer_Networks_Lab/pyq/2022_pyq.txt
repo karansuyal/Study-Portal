@@ -1,0 +1,4 @@
+# Computer Networks Lab
+## PYQ
+
+This is a sample pyq file for Computer Networks Lab.

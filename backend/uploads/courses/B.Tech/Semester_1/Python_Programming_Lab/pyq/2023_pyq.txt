@@ -1,0 +1,4 @@
+# Python Programming Lab
+## PYQ
+
+This is a sample pyq file for Python Programming Lab.

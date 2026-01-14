@@ -1,0 +1,4 @@
+# GST (Goods and Services Tax)
+## SYLLABUS
+
+This is a sample syllabus file for GST (Goods and Services Tax).

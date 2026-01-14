@@ -1,0 +1,4 @@
+# Wellness And Stress Management
+## PYQ
+
+This is a sample pyq file for Wellness And Stress Management.

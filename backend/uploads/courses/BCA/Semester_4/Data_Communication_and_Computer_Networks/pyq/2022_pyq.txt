@@ -1,0 +1,4 @@
+# Data Communication and Computer Networks
+## PYQ
+
+This is a sample pyq file for Data Communication and Computer Networks.

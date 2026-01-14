@@ -1,0 +1,4 @@
+# Elective-III
+## PYQ
+
+This is a sample pyq file for Elective-III.

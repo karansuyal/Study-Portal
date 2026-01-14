@@ -1,0 +1,4 @@
+# Legal Aspects Of Business
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Legal Aspects Of Business.

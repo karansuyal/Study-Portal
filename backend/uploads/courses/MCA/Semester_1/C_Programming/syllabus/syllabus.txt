@@ -1,0 +1,4 @@
+# C Programming
+## SYLLABUS
+
+This is a sample syllabus file for C Programming.

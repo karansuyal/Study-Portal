@@ -1,0 +1,4 @@
+# Introduction to Database Management Systems
+## NOTES
+
+This is a sample notes file for Introduction to Database Management Systems.

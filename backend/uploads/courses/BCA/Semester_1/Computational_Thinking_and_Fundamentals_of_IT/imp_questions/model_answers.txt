@@ -1,0 +1,4 @@
+# Computational Thinking & Fundamentals of IT
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Computational Thinking & Fundamentals of IT.

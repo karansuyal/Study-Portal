@@ -1,0 +1,4 @@
+# Data Communication and Computer Networks
+## SYLLABUS
+
+This is a sample syllabus file for Data Communication and Computer Networks.

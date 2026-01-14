@@ -1,0 +1,4 @@
+# Data Visualization For Manager
+## NOTES
+
+This is a sample notes file for Data Visualization For Manager.

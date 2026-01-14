@@ -1,0 +1,4 @@
+# Data Mining
+## NOTES
+
+This is a sample notes file for Data Mining.

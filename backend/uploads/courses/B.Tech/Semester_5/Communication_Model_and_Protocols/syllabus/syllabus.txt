@@ -1,0 +1,4 @@
+# Communication Model and Protocols
+## SYLLABUS
+
+This is a sample syllabus file for Communication Model and Protocols.

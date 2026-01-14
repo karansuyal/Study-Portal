@@ -1,0 +1,4 @@
+# Communication Model and Protocols
+## PYQ
+
+This is a sample pyq file for Communication Model and Protocols.

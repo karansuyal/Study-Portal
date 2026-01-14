@@ -1,0 +1,4 @@
+# Object Oriented Programming with C++
+## PYQ
+
+This is a sample pyq file for Object Oriented Programming with C++.

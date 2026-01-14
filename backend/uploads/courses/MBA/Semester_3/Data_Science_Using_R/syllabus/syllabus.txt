@@ -1,0 +1,4 @@
+# Data Science Using R
+## SYLLABUS
+
+This is a sample syllabus file for Data Science Using R.

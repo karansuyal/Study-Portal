@@ -1,0 +1,4 @@
+# Fundamentals Of Machine Learning
+## NOTES
+
+This is a sample notes file for Fundamentals Of Machine Learning.

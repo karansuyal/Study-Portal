@@ -1,0 +1,4 @@
+# Introduction to Data Structures
+## PYQ
+
+This is a sample pyq file for Introduction to Data Structures.

@@ -1,0 +1,4 @@
+# Basic Electrical Engineering Lab
+## NOTES
+
+This is a sample notes file for Basic Electrical Engineering Lab.

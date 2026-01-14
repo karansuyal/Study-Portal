@@ -1,0 +1,4 @@
+# DAA Lab
+## NOTES
+
+This is a sample notes file for DAA Lab.

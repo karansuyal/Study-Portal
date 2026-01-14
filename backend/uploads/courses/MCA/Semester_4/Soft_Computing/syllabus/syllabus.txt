@@ -1,0 +1,4 @@
+# Soft Computing
+## SYLLABUS
+
+This is a sample syllabus file for Soft Computing.

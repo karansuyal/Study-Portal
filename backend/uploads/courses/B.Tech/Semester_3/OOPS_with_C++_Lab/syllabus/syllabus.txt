@@ -1,0 +1,4 @@
+# OOPS with C++ Lab
+## SYLLABUS
+
+This is a sample syllabus file for OOPS with C++ Lab.

@@ -1,0 +1,4 @@
+# Computer Graphics
+## NOTES
+
+This is a sample notes file for Computer Graphics.

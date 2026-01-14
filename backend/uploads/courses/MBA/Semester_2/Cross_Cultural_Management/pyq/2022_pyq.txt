@@ -1,0 +1,4 @@
+# Cross Cultural Management
+## PYQ
+
+This is a sample pyq file for Cross Cultural Management.

@@ -1,0 +1,4 @@
+# Network Security And Cyber Laws
+## PYQ
+
+This is a sample pyq file for Network Security And Cyber Laws.

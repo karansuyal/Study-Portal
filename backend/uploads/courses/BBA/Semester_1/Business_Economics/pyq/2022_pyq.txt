@@ -1,0 +1,4 @@
+# Business Economics
+## PYQ
+
+This is a sample pyq file for Business Economics.

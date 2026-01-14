@@ -1,0 +1,4 @@
+# Web Application Development Laboratory
+## NOTES
+
+This is a sample notes file for Web Application Development Laboratory.

@@ -1,0 +1,4 @@
+# Object Oriented Programming with C++
+## NOTES
+
+This is a sample notes file for Object Oriented Programming with C++.

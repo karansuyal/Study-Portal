@@ -1,0 +1,4 @@
+# Object Oriented Analysis And Design Laboratory
+## PYQ
+
+This is a sample pyq file for Object Oriented Analysis And Design Laboratory.

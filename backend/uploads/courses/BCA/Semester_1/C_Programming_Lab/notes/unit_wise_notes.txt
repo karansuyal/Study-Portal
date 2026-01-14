@@ -1,0 +1,4 @@
+# C Programming Lab
+## NOTES
+
+This is a sample notes file for C Programming Lab.

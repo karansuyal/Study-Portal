@@ -1,0 +1,4 @@
+# Direct Tax Law
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Direct Tax Law.

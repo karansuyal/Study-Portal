@@ -1,0 +1,4 @@
+# Legal Aspects Of Business
+## PYQ
+
+This is a sample pyq file for Legal Aspects Of Business.

@@ -1,0 +1,4 @@
+# Web Development Lab
+## SYLLABUS
+
+This is a sample syllabus file for Web Development Lab.

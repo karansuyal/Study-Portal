@@ -1,0 +1,4 @@
+# Introduction To AI Laboratory
+## SYLLABUS
+
+This is a sample syllabus file for Introduction To AI Laboratory.

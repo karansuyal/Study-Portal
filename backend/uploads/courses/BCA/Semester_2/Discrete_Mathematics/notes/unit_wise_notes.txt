@@ -1,0 +1,4 @@
+# Discrete Mathematics
+## NOTES
+
+This is a sample notes file for Discrete Mathematics.

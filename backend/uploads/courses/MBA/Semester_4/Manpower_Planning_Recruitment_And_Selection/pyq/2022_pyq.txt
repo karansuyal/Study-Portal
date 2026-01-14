@@ -1,0 +1,4 @@
+# Manpower Planning Recruitment And Selection
+## PYQ
+
+This is a sample pyq file for Manpower Planning Recruitment And Selection.

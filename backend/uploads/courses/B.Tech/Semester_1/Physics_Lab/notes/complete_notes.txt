@@ -1,0 +1,4 @@
+# Physics Lab
+## NOTES
+
+This is a sample notes file for Physics Lab.

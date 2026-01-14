@@ -1,0 +1,4 @@
+# Computational Thinking & Fundamentals of IT
+## NOTES
+
+This is a sample notes file for Computational Thinking & Fundamentals of IT.

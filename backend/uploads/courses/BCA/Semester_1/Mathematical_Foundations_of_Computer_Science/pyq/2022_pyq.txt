@@ -1,0 +1,4 @@
+# Mathematical Foundations of Computer Science
+## PYQ
+
+This is a sample pyq file for Mathematical Foundations of Computer Science.

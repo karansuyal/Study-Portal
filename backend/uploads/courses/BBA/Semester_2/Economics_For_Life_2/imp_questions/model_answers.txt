@@ -1,0 +1,4 @@
+# Economics For Life 2
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Economics For Life 2.

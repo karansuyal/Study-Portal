@@ -1,0 +1,4 @@
+# GST (Goods and Services Tax)
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for GST (Goods and Services Tax).

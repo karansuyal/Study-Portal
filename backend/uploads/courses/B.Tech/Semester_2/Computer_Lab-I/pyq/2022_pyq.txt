@@ -1,0 +1,4 @@
+# Computer Lab-I
+## PYQ
+
+This is a sample pyq file for Computer Lab-I.

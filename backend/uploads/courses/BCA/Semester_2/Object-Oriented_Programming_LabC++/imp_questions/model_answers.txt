@@ -1,0 +1,4 @@
+# Object-Oriented Programming Lab(C++)
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Object-Oriented Programming Lab(C++).

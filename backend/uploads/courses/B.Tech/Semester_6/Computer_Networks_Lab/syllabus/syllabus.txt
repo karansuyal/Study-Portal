@@ -1,0 +1,4 @@
+# Computer Networks Lab
+## SYLLABUS
+
+This is a sample syllabus file for Computer Networks Lab.

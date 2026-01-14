@@ -1,0 +1,4 @@
+# DBMS Lab
+## SYLLABUS
+
+This is a sample syllabus file for DBMS Lab.

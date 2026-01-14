@@ -1,0 +1,374 @@
+{
+  "B.Tech": {
+    "1": [
+      {
+        "name": "Design Thinking",
+        "folder_name": "Design_Thinking",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Python Programming",
+        "folder_name": "Introduction_to_Python_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electrical Engineering",
+        "folder_name": "Basic_Electrical_Engineering",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Professional Communication",
+        "folder_name": "Professional_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mathematics for AI-I",
+        "folder_name": "Mathematics_for_AI-I",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Physics",
+        "folder_name": "Engineering_Physics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Python Programming Lab",
+        "folder_name": "Python_Programming_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electrical Engineering Lab",
+        "folder_name": "Basic_Electrical_Engineering_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Professional Communication",
+        "folder_name": "Professional_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Chemistry",
+        "folder_name": "Engineering_Chemistry",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Mathematics-II",
+        "folder_name": "Engineering_Mathematics-II",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electronics Engineering",
+        "folder_name": "Basic_Electronics_Engineering",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Environmental Science",
+        "folder_name": "Environmental_Science",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Fundamental of Computer & Introduction to Programming",
+        "folder_name": "Fundamental_of_Computer_and_Introduction_to_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "BCA": {
+    "1": [
+      {
+        "name": "Computational Thinking & Fundamentals of IT",
+        "folder_name": "Computational_Thinking_and_Fundamentals_of_IT",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "C Programming",
+        "folder_name": "C_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mathematical Foundations of Computer Science",
+        "folder_name": "Mathematical_Foundations_of_Computer_Science",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Professional Communication",
+        "folder_name": "Professional_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "BBA": {
+    "1": [
+      {
+        "name": "Business Communication",
+        "folder_name": "Business_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Economics",
+        "folder_name": "Business_Economics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Law",
+        "folder_name": "Business_Law",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Application In Management",
+        "folder_name": "Computer_Application_In_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Economics For Life",
+        "folder_name": "Economics_For_Life",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Accounting",
+        "folder_name": "Financial_Accounting",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Principles Of Management",
+        "folder_name": "Principles_Of_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "MBA": {
+    "1": [
+      {
+        "name": "Accounting For Managers",
+        "folder_name": "Accounting_For_Managers",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Communication",
+        "folder_name": "Business_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Environment",
+        "folder_name": "Business_Environment",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Statistics And Analytics For Decision Making",
+        "folder_name": "Business_Statistics_And_Analytics_For_Decision_Making",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "MCA": {
+    "1": [
+      {
+        "name": "C Programming",
+        "folder_name": "C_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Cloud Computing",
+        "folder_name": "Cloud_Computing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Organization and Architecture",
+        "folder_name": "Computer_Organization_and_Architecture",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Network",
+        "folder_name": "Computer_Network",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  }
+}

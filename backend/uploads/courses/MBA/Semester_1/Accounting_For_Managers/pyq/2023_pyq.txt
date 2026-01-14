@@ -1,0 +1,4 @@
+# Accounting For Managers
+## PYQ
+
+This is a sample pyq file for Accounting For Managers.

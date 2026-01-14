@@ -1,0 +1,4 @@
+# Fundamental of Statistics and AI
+## NOTES
+
+This is a sample notes file for Fundamental of Statistics and AI.

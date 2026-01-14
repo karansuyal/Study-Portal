@@ -1,0 +1,4 @@
+# GST (Goods and Services Tax)
+## PYQ
+
+This is a sample pyq file for GST (Goods and Services Tax).

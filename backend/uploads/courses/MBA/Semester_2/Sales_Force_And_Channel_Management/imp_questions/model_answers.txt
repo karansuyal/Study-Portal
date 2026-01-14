@@ -1,0 +1,4 @@
+# Sales Force And Channel Management
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Sales Force And Channel Management.

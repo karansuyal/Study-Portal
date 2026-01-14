@@ -1,0 +1,4 @@
+# Business Statistics
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Business Statistics.

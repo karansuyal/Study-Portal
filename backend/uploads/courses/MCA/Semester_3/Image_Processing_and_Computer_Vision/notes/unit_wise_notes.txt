@@ -1,0 +1,4 @@
+# Image Processing and Computer Vision
+## NOTES
+
+This is a sample notes file for Image Processing and Computer Vision.

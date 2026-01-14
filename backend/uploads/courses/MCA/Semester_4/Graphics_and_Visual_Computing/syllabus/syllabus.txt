@@ -1,0 +1,4 @@
+# Graphics and Visual Computing
+## SYLLABUS
+
+This is a sample syllabus file for Graphics and Visual Computing.

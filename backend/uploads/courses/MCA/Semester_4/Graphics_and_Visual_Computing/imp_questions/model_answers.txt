@@ -1,0 +1,4 @@
+# Graphics and Visual Computing
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Graphics and Visual Computing.

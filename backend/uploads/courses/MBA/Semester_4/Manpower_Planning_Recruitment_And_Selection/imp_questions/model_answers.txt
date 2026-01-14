@@ -1,0 +1,4 @@
+# Manpower Planning Recruitment And Selection
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Manpower Planning Recruitment And Selection.

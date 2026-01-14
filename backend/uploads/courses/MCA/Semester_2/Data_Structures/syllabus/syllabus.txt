@@ -1,0 +1,4 @@
+# Data Structures
+## SYLLABUS
+
+This is a sample syllabus file for Data Structures.

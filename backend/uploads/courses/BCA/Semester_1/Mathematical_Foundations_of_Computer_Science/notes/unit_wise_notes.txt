@@ -1,0 +1,4 @@
+# Mathematical Foundations of Computer Science
+## NOTES
+
+This is a sample notes file for Mathematical Foundations of Computer Science.

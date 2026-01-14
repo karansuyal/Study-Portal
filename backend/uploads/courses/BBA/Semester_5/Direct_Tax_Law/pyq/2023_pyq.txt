@@ -1,0 +1,4 @@
+# Direct Tax Law
+## PYQ
+
+This is a sample pyq file for Direct Tax Law.

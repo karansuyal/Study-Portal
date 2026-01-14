@@ -1,0 +1,4 @@
+# Image Processing and Computer Vision
+## SYLLABUS
+
+This is a sample syllabus file for Image Processing and Computer Vision.

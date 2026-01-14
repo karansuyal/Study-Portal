@@ -1,0 +1,4 @@
+# Basic Electrical Engineering Lab
+## PYQ
+
+This is a sample pyq file for Basic Electrical Engineering Lab.

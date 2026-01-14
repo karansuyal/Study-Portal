@@ -1,0 +1,4 @@
+# Security Analysis And Portfolio Management
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Security Analysis And Portfolio Management.

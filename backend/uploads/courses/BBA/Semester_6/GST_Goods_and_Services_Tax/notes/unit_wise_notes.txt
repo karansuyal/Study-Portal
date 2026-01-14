@@ -1,0 +1,4 @@
+# GST (Goods and Services Tax)
+## NOTES
+
+This is a sample notes file for GST (Goods and Services Tax).

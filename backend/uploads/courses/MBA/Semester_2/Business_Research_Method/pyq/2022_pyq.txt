@@ -1,0 +1,4 @@
+# Business Research Method
+## PYQ
+
+This is a sample pyq file for Business Research Method.

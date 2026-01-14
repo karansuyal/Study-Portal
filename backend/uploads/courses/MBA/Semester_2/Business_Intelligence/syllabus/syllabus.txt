@@ -1,0 +1,4 @@
+# Business Intelligence
+## SYLLABUS
+
+This is a sample syllabus file for Business Intelligence.

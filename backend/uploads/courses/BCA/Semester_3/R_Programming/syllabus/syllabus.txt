@@ -1,0 +1,4 @@
+# R Programming
+## SYLLABUS
+
+This is a sample syllabus file for R Programming.

@@ -1,0 +1,4 @@
+# Training And Development
+## NOTES
+
+This is a sample notes file for Training And Development.

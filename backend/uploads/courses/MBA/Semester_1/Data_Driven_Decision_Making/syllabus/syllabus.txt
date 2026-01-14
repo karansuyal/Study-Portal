@@ -1,0 +1,4 @@
+# Data Driven Decision Making
+## SYLLABUS
+
+This is a sample syllabus file for Data Driven Decision Making.

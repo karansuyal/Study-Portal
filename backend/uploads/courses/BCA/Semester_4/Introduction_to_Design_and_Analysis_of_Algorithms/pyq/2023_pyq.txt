@@ -1,0 +1,4 @@
+# Introduction to Design and Analysis of Algorithms
+## PYQ
+
+This is a sample pyq file for Introduction to Design and Analysis of Algorithms.

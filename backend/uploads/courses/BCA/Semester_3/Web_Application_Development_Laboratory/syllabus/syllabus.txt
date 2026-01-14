@@ -1,0 +1,4 @@
+# Web Application Development Laboratory
+## SYLLABUS
+
+This is a sample syllabus file for Web Application Development Laboratory.

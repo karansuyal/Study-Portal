@@ -1,0 +1,4 @@
+# Network Security And Cyber Laws
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Network Security And Cyber Laws.

@@ -1,0 +1,2668 @@
+{
+  "B.Tech": {
+    "1": [
+      {
+        "name": "Design Thinking",
+        "folder_name": "Design_Thinking",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Python Programming",
+        "folder_name": "Introduction_to_Python_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electrical Engineering",
+        "folder_name": "Basic_Electrical_Engineering",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Professional Communication",
+        "folder_name": "Professional_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mathematics for AI-I",
+        "folder_name": "Mathematics_for_AI-I",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Physics",
+        "folder_name": "Engineering_Physics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Python Programming Lab",
+        "folder_name": "Python_Programming_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electrical Engineering Lab",
+        "folder_name": "Basic_Electrical_Engineering_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Workshop and Manufacturing Practices",
+        "folder_name": "Workshop_and_Manufacturing_Practices",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Physics Lab",
+        "folder_name": "Physics_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Professional Communication",
+        "folder_name": "Professional_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Chemistry",
+        "folder_name": "Engineering_Chemistry",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Mathematics-II",
+        "folder_name": "Engineering_Mathematics-II",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electronics Engineering",
+        "folder_name": "Basic_Electronics_Engineering",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Environmental Science",
+        "folder_name": "Environmental_Science",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Fundamental of Computer & Introduction to Programming",
+        "folder_name": "Fundamental_of_Computer_and_Introduction_to_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Basic Electronics Engineering Lab",
+        "folder_name": "Basic_Electronics_Engineering_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Chemistry Lab",
+        "folder_name": "Chemistry_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Engineering Graphics and Design Lab",
+        "folder_name": "Engineering_Graphics_and_Design_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Lab-I",
+        "folder_name": "Computer_Lab-I",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "3": [
+      {
+        "name": "Discrete Structures and Combinatorics",
+        "folder_name": "Discrete_Structures_and_Combinatorics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Structures with C",
+        "folder_name": "Data_Structures_with_C",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Logic Design & Computer Organization",
+        "folder_name": "Logic_Design_and_Computer_Organization",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Object Oriented Programming with C++",
+        "folder_name": "Object_Oriented_Programming_with_C++",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Cryptography",
+        "folder_name": "Introduction_to_Cryptography",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Structures Lab",
+        "folder_name": "Data_Structures_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "OOPS with C++ Lab",
+        "folder_name": "OOPS_with_C++_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Logic Design & Computer Organization Lab",
+        "folder_name": "Logic_Design_and_Computer_Organization_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills Lab",
+        "folder_name": "Career_Skills_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "4": [
+      {
+        "name": "Finite Automata and Formal Languages",
+        "folder_name": "Finite_Automata_and_Formal_Languages",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Microprocessors",
+        "folder_name": "Microprocessors",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Fundamental of Statistics and AI",
+        "folder_name": "Fundamental_of_Statistics_and_AI",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Programming in Java",
+        "folder_name": "Programming_in_Java",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Design and Analysis of Algorithms",
+        "folder_name": "Design_and_Analysis_of_Algorithms",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Microprocessors Lab",
+        "folder_name": "Microprocessors_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Java Programming Lab",
+        "folder_name": "Java_Programming_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "DAA Lab",
+        "folder_name": "DAA_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills Lab",
+        "folder_name": "Career_Skills_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "5": [
+      {
+        "name": "Operating Systems",
+        "folder_name": "Operating_Systems",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Database Management Systems",
+        "folder_name": "Database_Management_Systems",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Machine Learning",
+        "folder_name": "Machine_Learning",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Communication Model and Protocols",
+        "folder_name": "Communication_Model_and_Protocols",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer-Based Numerical & Statistical Techniques",
+        "folder_name": "Computer-Based_Numerical_and_Statistical_Techniques",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "CBNST Lab",
+        "folder_name": "CBNST_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "DBMS Lab",
+        "folder_name": "DBMS_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Operating Systems Lab",
+        "folder_name": "Operating_Systems_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "6": [
+      {
+        "name": "Compiler Design",
+        "folder_name": "Compiler_Design",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Networks-I",
+        "folder_name": "Computer_Networks-I",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Software Engineering",
+        "folder_name": "Software_Engineering",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Network & System Security",
+        "folder_name": "Network_and_System_Security",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Full Stack Web Development",
+        "folder_name": "Full_Stack_Web_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Compiler Design Lab",
+        "folder_name": "Compiler_Design_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Networks Lab",
+        "folder_name": "Computer_Networks_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Web Development Lab",
+        "folder_name": "Web_Development_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Employability Skill Enhancement Lab",
+        "folder_name": "Employability_Skill_Enhancement_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "7": [
+      {
+        "name": "Big Data Analytics",
+        "folder_name": "Big_Data_Analytics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Cyber Security",
+        "folder_name": "Cyber_Security",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mobile Application Development",
+        "folder_name": "Mobile_Application_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Project Management",
+        "folder_name": "Project_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Elective-II",
+        "folder_name": "Elective-II",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mobile App Development Lab",
+        "folder_name": "Mobile_App_Development_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Cyber Security Lab",
+        "folder_name": "Cyber_Security_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Project Work-I",
+        "folder_name": "Project_Work-I",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "8": [
+      {
+        "name": "Major Project",
+        "folder_name": "Major_Project",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Seminar",
+        "folder_name": "Seminar",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Industrial Training",
+        "folder_name": "Industrial_Training",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Elective-III",
+        "folder_name": "Elective-III",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "BCA": {
+    "1": [
+      {
+        "name": "Computational Thinking & Fundamentals of IT",
+        "folder_name": "Computational_Thinking_and_Fundamentals_of_IT",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "C Programming",
+        "folder_name": "C_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mathematical Foundations of Computer Science",
+        "folder_name": "Mathematical_Foundations_of_Computer_Science",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Professional Communication",
+        "folder_name": "Professional_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "C Programming Lab",
+        "folder_name": "C_Programming_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Digital Productivity Tools for Modern Workplaces(Lab)",
+        "folder_name": "Digital_Productivity_Tools_for_Modern_WorkplacesLab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Introduction to Data Structures",
+        "folder_name": "Introduction_to_Data_Structures",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Object-Oriented Programming(C++)",
+        "folder_name": "Introduction_to_Object-Oriented_ProgrammingC++",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Operating Systems",
+        "folder_name": "Introduction_to_Operating_Systems",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Discrete Mathematics",
+        "folder_name": "Discrete_Mathematics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Structures Lab",
+        "folder_name": "Data_Structures_Lab",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Object-Oriented Programming Lab(C++)",
+        "folder_name": "Object-Oriented_Programming_LabC++",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "3": [
+      {
+        "name": "Web Application Development",
+        "folder_name": "Web_Application_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Database Management Systems",
+        "folder_name": "Introduction_to_Database_Management_Systems",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Digital Logic Design",
+        "folder_name": "Digital_Logic_Design",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Python Programming",
+        "folder_name": "Python_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "R Programming",
+        "folder_name": "R_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills-I",
+        "folder_name": "Career_Skills-I",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Database Management Systems Laboratory",
+        "folder_name": "Database_Management_Systems_Laboratory",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Web Application Development Laboratory",
+        "folder_name": "Web_Application_Development_Laboratory",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "4": [
+      {
+        "name": "Introduction to Design and Analysis of Algorithms",
+        "folder_name": "Introduction_to_Design_and_Analysis_of_Algorithms",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction to Software Engineering",
+        "folder_name": "Introduction_to_Software_Engineering",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Organization",
+        "folder_name": "Computer_Organization",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Communication and Computer Networks",
+        "folder_name": "Data_Communication_and_Computer_Networks",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Big Data Analytics",
+        "folder_name": "Big_Data_Analytics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills- 2",
+        "folder_name": "Career_Skills-_2",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Design and Analysis of Algorithms Laboratory",
+        "folder_name": "Design_and_Analysis_of_Algorithms_Laboratory",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Communications and Computer Networks Laboratory",
+        "folder_name": "Data_Communications_and_Computer_Networks_Laboratory",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "5": [
+      {
+        "name": "Mobile Application Development",
+        "folder_name": "Mobile_Application_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Cloud Computing",
+        "folder_name": "Cloud_Computing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Java Programming",
+        "folder_name": "Java_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Microcontroller",
+        "folder_name": "Microcontroller",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction To AI",
+        "folder_name": "Introduction_To_AI",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Object Oriented Analysis And Design",
+        "folder_name": "Object_Oriented_Analysis_And_Design",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Criptography",
+        "folder_name": "Criptography",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Object Oriented Analysis And Design Laboratory",
+        "folder_name": "Object_Oriented_Analysis_And_Design_Laboratory",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Introduction To AI Laboratory",
+        "folder_name": "Introduction_To_AI_Laboratory",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "6": [
+      {
+        "name": "Computer Graphics",
+        "folder_name": "Computer_Graphics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Network Security And Cyber Laws",
+        "folder_name": "Network_Security_And_Cyber_Laws",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Fundamentals Of Machine Learning",
+        "folder_name": "Fundamentals_Of_Machine_Learning",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Major Project",
+        "folder_name": "Major_Project",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "BBA": {
+    "1": [
+      {
+        "name": "Business Communication",
+        "folder_name": "Business_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Economics",
+        "folder_name": "Business_Economics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Law",
+        "folder_name": "Business_Law",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Application In Management",
+        "folder_name": "Computer_Application_In_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Economics For Life",
+        "folder_name": "Economics_For_Life",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Accounting",
+        "folder_name": "Financial_Accounting",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Principles Of Management",
+        "folder_name": "Principles_Of_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Business Communication 2",
+        "folder_name": "Business_Communication_2",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Economics For Life 2",
+        "folder_name": "Economics_For_Life_2",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Environmental Science",
+        "folder_name": "Environmental_Science",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Management",
+        "folder_name": "Financial_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Human Resource Management",
+        "folder_name": "Human_Resource_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Organizational Behaviour",
+        "folder_name": "Organizational_Behaviour",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Principles Of Marketing",
+        "folder_name": "Principles_Of_Marketing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "3": [
+      {
+        "name": "Accounting For Managers",
+        "folder_name": "Accounting_For_Managers",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Environment",
+        "folder_name": "Business_Environment",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Statistics",
+        "folder_name": "Business_Statistics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Entrepreneurship",
+        "folder_name": "Entrepreneurship",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Macro Economics",
+        "folder_name": "Macro_Economics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "4": [
+      {
+        "name": "Business Research",
+        "folder_name": "Business_Research",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Digital Marketing",
+        "folder_name": "Digital_Marketing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "International Business",
+        "folder_name": "International_Business",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Logistics And Supply Chain Management",
+        "folder_name": "Logistics_And_Supply_Chain_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Production Management",
+        "folder_name": "Production_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Wellness And Stress Management",
+        "folder_name": "Wellness_And_Stress_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "5": [
+      {
+        "name": "Advertising",
+        "folder_name": "Advertising",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Strategy",
+        "folder_name": "Business_Strategy",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Direct Tax Law",
+        "folder_name": "Direct_Tax_Law",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "E Commerce",
+        "folder_name": "E_Commerce",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Indian Economy",
+        "folder_name": "Indian_Economy",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Industrial Relations",
+        "folder_name": "Industrial_Relations",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Performance Management System",
+        "folder_name": "Performance_Management_System",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Sales Management",
+        "folder_name": "Sales_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Working Capital Management",
+        "folder_name": "Working_Capital_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "6": [
+      {
+        "name": "Business Ethics And Values",
+        "folder_name": "Business_Ethics_And_Values",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Consumer Behaviour",
+        "folder_name": "Consumer_Behaviour",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Institutions And Services",
+        "folder_name": "Financial_Institutions_And_Services",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "GST (Goods and Services Tax)",
+        "folder_name": "GST_Goods_and_Services_Tax",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Money Banking And Finance",
+        "folder_name": "Money_Banking_And_Finance",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Rural Marketing",
+        "folder_name": "Rural_Marketing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Training And Development",
+        "folder_name": "Training_And_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Wages And Salary Administration",
+        "folder_name": "Wages_And_Salary_Administration",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Major Project",
+        "folder_name": "Major_Project",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "MBA": {
+    "1": [
+      {
+        "name": "Accounting For Managers",
+        "folder_name": "Accounting_For_Managers",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Communication",
+        "folder_name": "Business_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Environment",
+        "folder_name": "Business_Environment",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Statistics And Analytics For Decision Making",
+        "folder_name": "Business_Statistics_And_Analytics_For_Decision_Making",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Driven Decision Making",
+        "folder_name": "Data_Driven_Decision_Making",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Reporting Statement And Analysis",
+        "folder_name": "Financial_Reporting_Statement_And_Analysis",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Human Resource Management",
+        "folder_name": "Human_Resource_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Legal Aspects Of Business",
+        "folder_name": "Legal_Aspects_Of_Business",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Managerial Economics",
+        "folder_name": "Managerial_Economics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Marketing Management",
+        "folder_name": "Marketing_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Organizational Design And Behaviour",
+        "folder_name": "Organizational_Design_And_Behaviour",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Business Intelligence",
+        "folder_name": "Business_Intelligence",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Business Research Method",
+        "folder_name": "Business_Research_Method",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Compensation And Reward Management",
+        "folder_name": "Compensation_And_Reward_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Consumer Behaviour And Insights",
+        "folder_name": "Consumer_Behaviour_And_Insights",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Corporate Finance",
+        "folder_name": "Corporate_Finance",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Corporate Tax Planning",
+        "folder_name": "Corporate_Tax_Planning",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Cross Cultural Management",
+        "folder_name": "Cross_Cultural_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Mining",
+        "folder_name": "Data_Mining",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Science Using R",
+        "folder_name": "Data_Science_Using_R",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Entrepreneurship",
+        "folder_name": "Entrepreneurship",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Institutions And Markets",
+        "folder_name": "Financial_Institutions_And_Markets",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Management",
+        "folder_name": "Financial_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Human Resource Management",
+        "folder_name": "Human_Resource_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Indian Ethos And Business Ethics",
+        "folder_name": "Indian_Ethos_And_Business_Ethics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Industrial Relation And Labour Laws",
+        "folder_name": "Industrial_Relation_And_Labour_Laws",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Integrated Market Communications",
+        "folder_name": "Integrated_Market_Communications",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Logistics And Supply Chain Management",
+        "folder_name": "Logistics_And_Supply_Chain_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Marketing Management",
+        "folder_name": "Marketing_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Operations Research",
+        "folder_name": "Operations_Research",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Organizational Behaviour",
+        "folder_name": "Organizational_Behaviour",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Quantitative Techniques",
+        "folder_name": "Quantitative_Techniques",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Research Methodology",
+        "folder_name": "Research_Methodology",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Sales Force And Channel Management",
+        "folder_name": "Sales_Force_And_Channel_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Security Analysis And Portfolio Management",
+        "folder_name": "Security_Analysis_And_Portfolio_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Warehousing And Inventory Management",
+        "folder_name": "Warehousing_And_Inventory_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "3": [
+      {
+        "name": "Compensation And Benefits Management",
+        "folder_name": "Compensation_And_Benefits_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Consumer Behaviour",
+        "folder_name": "Consumer_Behaviour",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Corporate Strategy",
+        "folder_name": "Corporate_Strategy",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Mining",
+        "folder_name": "Data_Mining",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Science Using R",
+        "folder_name": "Data_Science_Using_R",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Employee Relations",
+        "folder_name": "Employee_Relations",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Integrated Marketing Communication",
+        "folder_name": "Integrated_Marketing_Communication",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Investment Analysis And Portfolio Management",
+        "folder_name": "Investment_Analysis_And_Portfolio_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Logistics And Supply Chain Management",
+        "folder_name": "Logistics_And_Supply_Chain_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Managing Banks And Financial Institutions",
+        "folder_name": "Managing_Banks_And_Financial_Institutions",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Performance Management System",
+        "folder_name": "Performance_Management_System",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Sales And Distributed Management",
+        "folder_name": "Sales_And_Distributed_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Warehousing And Inventory Management",
+        "folder_name": "Warehousing_And_Inventory_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Working Capital Management",
+        "folder_name": "Working_Capital_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "4": [
+      {
+        "name": "Corporate Taxation",
+        "folder_name": "Corporate_Taxation",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Science With Python",
+        "folder_name": "Data_Science_With_Python",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Visualization For Manager",
+        "folder_name": "Data_Visualization_For_Manager",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Digital Marketing",
+        "folder_name": "Digital_Marketing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Export And Trade Documentation",
+        "folder_name": "Export_And_Trade_Documentation",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Financial Derivatives",
+        "folder_name": "Financial_Derivatives",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "International Finance",
+        "folder_name": "International_Finance",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "International Marketing",
+        "folder_name": "International_Marketing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "IT Application",
+        "folder_name": "IT_Application",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Manpower Planning Recruitment And Selection",
+        "folder_name": "Manpower_Planning_Recruitment_And_Selection",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Organizational Change And Development",
+        "folder_name": "Organizational_Change_And_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Project Management",
+        "folder_name": "Project_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Retail Management",
+        "folder_name": "Retail_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Strategic HRM",
+        "folder_name": "Strategic_HRM",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Summer Internship",
+        "folder_name": "Summer_Internship",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Major Project",
+        "folder_name": "Major_Project",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  },
+  "MCA": {
+    "1": [
+      {
+        "name": "C Programming",
+        "folder_name": "C_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Cloud Computing",
+        "folder_name": "Cloud_Computing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Organization and Architecture",
+        "folder_name": "Computer_Organization_and_Architecture",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Computer Network",
+        "folder_name": "Computer_Network",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Discrete Structures and Combinatorics",
+        "folder_name": "Discrete_Structures_and_Combinatorics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Full Stack Development",
+        "folder_name": "Full_Stack_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Operating Systems",
+        "folder_name": "Operating_Systems",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Probability and Statistics",
+        "folder_name": "Probability_and_Statistics",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Python Programming",
+        "folder_name": "Python_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "2": [
+      {
+        "name": "Career Skills",
+        "folder_name": "Career_Skills",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Database Management Systems",
+        "folder_name": "Database_Management_Systems",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Structures",
+        "folder_name": "Data_Structures",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "IoT (Internet of Things)",
+        "folder_name": "IoT_Internet_of_Things",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Java Programming",
+        "folder_name": "Java_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Machine Learning",
+        "folder_name": "Machine_Learning",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Software Project Management",
+        "folder_name": "Software_Project_Management",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "3": [
+      {
+        "name": "AI and ML (Artificial Intelligence and Machine Learning)",
+        "folder_name": "AI_and_ML_Artificial_Intelligence_and_Machine_Learning",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Big Data and Visualization",
+        "folder_name": "Big_Data_and_Visualization",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Design and Analysis of Algorithms",
+        "folder_name": "Design_and_Analysis_of_Algorithms",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Image Processing and Computer Vision",
+        "folder_name": "Image_Processing_and_Computer_Vision",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Machine Learning Using Python",
+        "folder_name": "Machine_Learning_Using_Python",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Mobile Application Development",
+        "folder_name": "Mobile_Application_Development",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Optimization Techniques",
+        "folder_name": "Optimization_Techniques",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Theory of Computation and Compiler Construction",
+        "folder_name": "Theory_of_Computation_and_Compiler_Construction",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ],
+    "4": [
+      {
+        "name": "Advanced Software Testing",
+        "folder_name": "Advanced_Software_Testing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Data Mining and Warehousing",
+        "folder_name": "Data_Mining_and_Warehousing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Deep Learning",
+        "folder_name": "Deep_Learning",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Enterprise Architecture Using C Sharp",
+        "folder_name": "Enterprise_Architecture_Using_C_Sharp",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Graphics and Visual Computing",
+        "folder_name": "Graphics_and_Visual_Computing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Network Security and Cryptography",
+        "folder_name": "Network_Security_and_Cryptography",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "R Programming",
+        "folder_name": "R_Programming",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      },
+      {
+        "name": "Soft Computing",
+        "folder_name": "Soft_Computing",
+        "materials": [
+          "notes",
+          "pyq",
+          "syllabus",
+          "imp_questions"
+        ]
+      }
+    ]
+  }
+}

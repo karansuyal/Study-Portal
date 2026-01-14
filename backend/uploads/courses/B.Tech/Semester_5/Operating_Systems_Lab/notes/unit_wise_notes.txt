@@ -1,0 +1,4 @@
+# Operating Systems Lab
+## NOTES
+
+This is a sample notes file for Operating Systems Lab.

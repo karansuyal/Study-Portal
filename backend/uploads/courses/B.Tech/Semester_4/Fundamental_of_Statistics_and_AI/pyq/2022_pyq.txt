@@ -1,0 +1,4 @@
+# Fundamental of Statistics and AI
+## PYQ
+
+This is a sample pyq file for Fundamental of Statistics and AI.

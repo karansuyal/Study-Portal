@@ -1,0 +1,4 @@
+# Object Oriented Analysis And Design Laboratory
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Object Oriented Analysis And Design Laboratory.

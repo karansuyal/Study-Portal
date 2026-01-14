@@ -1,0 +1,4 @@
+# Image Processing and Computer Vision
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Image Processing and Computer Vision.

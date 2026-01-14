@@ -1,0 +1,4 @@
+# Probability and Statistics
+## PYQ
+
+This is a sample pyq file for Probability and Statistics.

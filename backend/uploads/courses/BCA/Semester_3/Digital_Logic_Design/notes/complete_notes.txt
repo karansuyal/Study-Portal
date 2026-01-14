@@ -1,0 +1,4 @@
+# Digital Logic Design
+## NOTES
+
+This is a sample notes file for Digital Logic Design.

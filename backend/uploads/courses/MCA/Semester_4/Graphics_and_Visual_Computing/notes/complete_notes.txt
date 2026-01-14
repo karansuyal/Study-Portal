@@ -1,0 +1,4 @@
+# Graphics and Visual Computing
+## NOTES
+
+This is a sample notes file for Graphics and Visual Computing.

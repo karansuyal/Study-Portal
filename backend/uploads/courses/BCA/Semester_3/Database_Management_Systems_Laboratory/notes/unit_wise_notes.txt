@@ -1,0 +1,4 @@
+# Database Management Systems Laboratory
+## NOTES
+
+This is a sample notes file for Database Management Systems Laboratory.

@@ -1,0 +1,4 @@
+# Compiler Design Lab
+## IMP_QUESTIONS
+
+This is a sample imp_questions file for Compiler Design Lab.

@@ -1,0 +1,4 @@
+# Theory of Computation and Compiler Construction
+## SYLLABUS
+
+This is a sample syllabus file for Theory of Computation and Compiler Construction.

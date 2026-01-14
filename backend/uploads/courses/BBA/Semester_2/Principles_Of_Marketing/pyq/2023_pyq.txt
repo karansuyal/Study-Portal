@@ -1,0 +1,4 @@
+# Principles Of Marketing
+## PYQ
+
+This is a sample pyq file for Principles Of Marketing.

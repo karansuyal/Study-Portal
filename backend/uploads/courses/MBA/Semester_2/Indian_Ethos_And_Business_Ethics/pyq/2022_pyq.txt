@@ -1,0 +1,4 @@
+# Indian Ethos And Business Ethics
+## PYQ
+
+This is a sample pyq file for Indian Ethos And Business Ethics.

@@ -1,0 +1,4 @@
+# Business Intelligence
+## PYQ
+
+This is a sample pyq file for Business Intelligence.

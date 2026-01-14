@@ -1,0 +1,4 @@
+# Chemistry Lab
+## PYQ
+
+This is a sample pyq file for Chemistry Lab.

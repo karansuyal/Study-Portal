@@ -1,0 +1,4 @@
+# Rural Marketing
+## PYQ
+
+This is a sample pyq file for Rural Marketing.

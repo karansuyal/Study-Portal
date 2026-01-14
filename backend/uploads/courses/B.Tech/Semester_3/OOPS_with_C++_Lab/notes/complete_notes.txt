@@ -1,0 +1,4 @@
+# OOPS with C++ Lab
+## NOTES
+
+This is a sample notes file for OOPS with C++ Lab.

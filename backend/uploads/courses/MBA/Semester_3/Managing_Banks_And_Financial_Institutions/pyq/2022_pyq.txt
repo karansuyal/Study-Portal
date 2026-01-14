@@ -1,0 +1,4 @@
+# Managing Banks And Financial Institutions
+## PYQ
+
+This is a sample pyq file for Managing Banks And Financial Institutions.

@@ -1,0 +1,4 @@
+# Discrete Structures and Combinatorics
+## PYQ
+
+This is a sample pyq file for Discrete Structures and Combinatorics.

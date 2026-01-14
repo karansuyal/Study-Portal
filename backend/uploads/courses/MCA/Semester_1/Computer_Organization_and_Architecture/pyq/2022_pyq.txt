@@ -1,0 +1,4 @@
+# Computer Organization and Architecture
+## PYQ
+
+This is a sample pyq file for Computer Organization and Architecture.

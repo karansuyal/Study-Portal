@@ -1,0 +1,4 @@
+# Full Stack Web Development
+## SYLLABUS
+
+This is a sample syllabus file for Full Stack Web Development.
