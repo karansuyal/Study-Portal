@@ -97,6 +97,14 @@ class User(db.Model):
     otp_expiry = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
+# ✅ POSTGRESQL CONNECTION WITH RENDER FIX
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'postgresql://postgres:postgres@localhost:5432/notesdb'
+
     # Relationships
     notes = db.relationship('Note', backref='uploader', lazy=True)
     
@@ -125,6 +133,8 @@ class User(db.Model):
             self.otp_expiry = None
             return True
         return False
+    
+    
     
     # ✅ ADD THIS METHOD - ye missing tha!
     def to_dict(self):
