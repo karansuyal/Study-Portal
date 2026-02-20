@@ -1,4 +1,0 @@
-# Investment Analysis And Portfolio Management
-## PYQ
-
-This is a sample pyq file for Investment Analysis And Portfolio Management.

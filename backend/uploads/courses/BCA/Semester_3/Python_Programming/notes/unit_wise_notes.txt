@@ -1,4 +1,0 @@
-# Python Programming
-## NOTES
-
-This is a sample notes file for Python Programming.

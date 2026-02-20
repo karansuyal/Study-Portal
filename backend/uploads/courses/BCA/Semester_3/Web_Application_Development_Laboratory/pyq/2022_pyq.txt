@@ -1,4 +1,0 @@
-# Web Application Development Laboratory
-## PYQ
-
-This is a sample pyq file for Web Application Development Laboratory.

@@ -1,4 +1,0 @@
-# AI and ML (Artificial Intelligence and Machine Learning)
-## NOTES
-
-This is a sample notes file for AI and ML (Artificial Intelligence and Machine Learning).

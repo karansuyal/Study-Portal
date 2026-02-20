@@ -1,4 +1,0 @@
-# Data Mining and Warehousing
-## NOTES
-
-This is a sample notes file for Data Mining and Warehousing.

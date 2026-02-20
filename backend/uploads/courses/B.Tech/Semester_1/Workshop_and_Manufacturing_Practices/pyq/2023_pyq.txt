@@ -1,4 +1,0 @@
-# Workshop and Manufacturing Practices
-## PYQ
-
-This is a sample pyq file for Workshop and Manufacturing Practices.

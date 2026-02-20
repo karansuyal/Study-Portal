@@ -1,4 +1,0 @@
-# Warehousing And Inventory Management
-## SYLLABUS
-
-This is a sample syllabus file for Warehousing And Inventory Management.

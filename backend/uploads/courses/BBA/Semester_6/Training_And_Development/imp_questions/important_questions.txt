@@ -1,4 +1,0 @@
-# Training And Development
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Training And Development.

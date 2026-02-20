@@ -1,4 +1,0 @@
-# Business Statistics
-## PYQ
-
-This is a sample pyq file for Business Statistics.

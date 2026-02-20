@@ -1,4 +1,0 @@
-# Data Visualization For Manager
-## SYLLABUS
-
-This is a sample syllabus file for Data Visualization For Manager.

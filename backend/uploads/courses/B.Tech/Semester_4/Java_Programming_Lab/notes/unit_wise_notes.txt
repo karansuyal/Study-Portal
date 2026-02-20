@@ -1,4 +1,0 @@
-# Java Programming Lab
-## NOTES
-
-This is a sample notes file for Java Programming Lab.

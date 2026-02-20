@@ -1,4 +1,0 @@
-# Machine Learning Using Python
-## NOTES
-
-This is a sample notes file for Machine Learning Using Python.

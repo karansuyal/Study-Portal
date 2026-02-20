@@ -1,4 +1,0 @@
-# Marketing Management
-## PYQ
-
-This is a sample pyq file for Marketing Management.

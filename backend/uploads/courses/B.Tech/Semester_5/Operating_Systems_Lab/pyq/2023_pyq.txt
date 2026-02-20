@@ -1,4 +1,0 @@
-# Operating Systems Lab
-## PYQ
-
-This is a sample pyq file for Operating Systems Lab.

@@ -1,4 +1,0 @@
-# Design and Analysis of Algorithms Laboratory
-## PYQ
-
-This is a sample pyq file for Design and Analysis of Algorithms Laboratory.

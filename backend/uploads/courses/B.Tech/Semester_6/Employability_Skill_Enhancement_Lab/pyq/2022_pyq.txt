@@ -1,4 +1,0 @@
-# Employability Skill Enhancement Lab
-## PYQ
-
-This is a sample pyq file for Employability Skill Enhancement Lab.

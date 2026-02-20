@@ -1,4 +1,0 @@
-# Compensation And Benefits Management
-## PYQ
-
-This is a sample pyq file for Compensation And Benefits Management.

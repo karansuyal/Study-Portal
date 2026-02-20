@@ -1,4 +1,0 @@
-# Data Structures
-## NOTES
-
-This is a sample notes file for Data Structures.

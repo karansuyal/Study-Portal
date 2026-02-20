@@ -1,4 +1,0 @@
-# Machine Learning
-## SYLLABUS
-
-This is a sample syllabus file for Machine Learning.

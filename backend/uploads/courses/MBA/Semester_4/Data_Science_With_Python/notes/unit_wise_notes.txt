@@ -1,4 +1,0 @@
-# Data Science With Python
-## NOTES
-
-This is a sample notes file for Data Science With Python.

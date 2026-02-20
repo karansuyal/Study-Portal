@@ -1,4 +1,0 @@
-# Financial Accounting
-## PYQ
-
-This is a sample pyq file for Financial Accounting.

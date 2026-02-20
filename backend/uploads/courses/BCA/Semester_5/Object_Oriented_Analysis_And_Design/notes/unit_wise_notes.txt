@@ -1,4 +1,0 @@
-# Object Oriented Analysis And Design
-## NOTES
-
-This is a sample notes file for Object Oriented Analysis And Design.

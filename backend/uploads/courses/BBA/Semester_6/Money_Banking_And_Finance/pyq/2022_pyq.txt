@@ -1,4 +1,0 @@
-# Money Banking And Finance
-## PYQ
-
-This is a sample pyq file for Money Banking And Finance.

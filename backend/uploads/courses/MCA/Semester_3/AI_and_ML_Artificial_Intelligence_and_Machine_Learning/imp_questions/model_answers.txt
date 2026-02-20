@@ -1,4 +1,0 @@
-# AI and ML (Artificial Intelligence and Machine Learning)
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for AI and ML (Artificial Intelligence and Machine Learning).

@@ -1,4 +1,0 @@
-# Optimization Techniques
-## NOTES
-
-This is a sample notes file for Optimization Techniques.

@@ -1,4 +1,0 @@
-# Computer Organization and Architecture
-## NOTES
-
-This is a sample notes file for Computer Organization and Architecture.

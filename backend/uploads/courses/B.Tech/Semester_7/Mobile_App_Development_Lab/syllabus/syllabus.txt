@@ -1,4 +1,0 @@
-# Mobile App Development Lab
-## SYLLABUS
-
-This is a sample syllabus file for Mobile App Development Lab.

@@ -1,4 +1,0 @@
-# Engineering Graphics and Design Lab
-## PYQ
-
-This is a sample pyq file for Engineering Graphics and Design Lab.

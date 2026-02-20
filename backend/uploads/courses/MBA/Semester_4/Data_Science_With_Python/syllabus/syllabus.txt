@@ -1,4 +1,0 @@
-# Data Science With Python
-## SYLLABUS
-
-This is a sample syllabus file for Data Science With Python.

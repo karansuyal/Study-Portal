@@ -1,4 +1,0 @@
-# Financial Derivatives
-## PYQ
-
-This is a sample pyq file for Financial Derivatives.

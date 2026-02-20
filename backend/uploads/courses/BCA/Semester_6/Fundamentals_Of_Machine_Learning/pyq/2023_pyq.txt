@@ -1,4 +1,0 @@
-# Fundamentals Of Machine Learning
-## PYQ
-
-This is a sample pyq file for Fundamentals Of Machine Learning.

@@ -1,4 +1,0 @@
-# Data Science Using R
-## NOTES
-
-This is a sample notes file for Data Science Using R.

@@ -1,4 +1,0 @@
-# Basic Electronics Engineering Lab
-## PYQ
-
-This is a sample pyq file for Basic Electronics Engineering Lab.

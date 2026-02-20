@@ -1,4 +1,0 @@
-# Logic Design & Computer Organization Lab
-## PYQ
-
-This is a sample pyq file for Logic Design & Computer Organization Lab.

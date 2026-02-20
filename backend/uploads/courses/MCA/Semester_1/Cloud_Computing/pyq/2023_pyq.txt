@@ -1,4 +1,0 @@
-# Cloud Computing
-## PYQ
-
-This is a sample pyq file for Cloud Computing.

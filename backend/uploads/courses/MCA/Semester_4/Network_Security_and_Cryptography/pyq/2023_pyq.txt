@@ -1,4 +1,0 @@
-# Network Security and Cryptography
-## PYQ
-
-This is a sample pyq file for Network Security and Cryptography.

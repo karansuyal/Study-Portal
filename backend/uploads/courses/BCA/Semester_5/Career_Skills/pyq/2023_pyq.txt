@@ -1,4 +1,0 @@
-# Career Skills
-## PYQ
-
-This is a sample pyq file for Career Skills.

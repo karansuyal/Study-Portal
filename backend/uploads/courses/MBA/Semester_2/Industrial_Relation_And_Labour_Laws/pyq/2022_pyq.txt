@@ -1,4 +1,0 @@
-# Industrial Relation And Labour Laws
-## PYQ
-
-This is a sample pyq file for Industrial Relation And Labour Laws.

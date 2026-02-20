@@ -1,4 +1,0 @@
-# Finite Automata and Formal Languages
-## PYQ
-
-This is a sample pyq file for Finite Automata and Formal Languages.

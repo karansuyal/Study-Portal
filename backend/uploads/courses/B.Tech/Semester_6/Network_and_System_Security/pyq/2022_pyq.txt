@@ -1,4 +1,0 @@
-# Network & System Security
-## PYQ
-
-This is a sample pyq file for Network & System Security.

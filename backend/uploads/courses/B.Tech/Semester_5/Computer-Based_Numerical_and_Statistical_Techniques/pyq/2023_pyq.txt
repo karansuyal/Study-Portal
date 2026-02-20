@@ -1,4 +1,0 @@
-# Computer-Based Numerical & Statistical Techniques
-## PYQ
-
-This is a sample pyq file for Computer-Based Numerical & Statistical Techniques.

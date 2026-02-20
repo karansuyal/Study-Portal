@@ -1,4 +1,0 @@
-# C Programming Lab
-## PYQ
-
-This is a sample pyq file for C Programming Lab.

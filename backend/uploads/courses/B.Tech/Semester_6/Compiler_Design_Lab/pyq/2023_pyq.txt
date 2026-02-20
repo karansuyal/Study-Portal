@@ -1,4 +1,0 @@
-# Compiler Design Lab
-## PYQ
-
-This is a sample pyq file for Compiler Design Lab.

@@ -1,4 +1,0 @@
-# Web Development Lab
-## NOTES
-
-This is a sample notes file for Web Development Lab.

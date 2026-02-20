@@ -1,4 +1,0 @@
-# Computer-Based Numerical & Statistical Techniques
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Computer-Based Numerical & Statistical Techniques.

@@ -1,4 +1,0 @@
-# Fundamental of Computer & Introduction to Programming
-## PYQ
-
-This is a sample pyq file for Fundamental of Computer & Introduction to Programming.

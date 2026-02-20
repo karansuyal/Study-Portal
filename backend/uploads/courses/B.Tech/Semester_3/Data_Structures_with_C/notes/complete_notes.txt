@@ -1,4 +1,0 @@
-# Data Structures with C
-## NOTES
-
-This is a sample notes file for Data Structures with C.

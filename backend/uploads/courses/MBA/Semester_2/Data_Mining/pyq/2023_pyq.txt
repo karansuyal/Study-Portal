@@ -1,4 +1,0 @@
-# Data Mining
-## PYQ
-
-This is a sample pyq file for Data Mining.

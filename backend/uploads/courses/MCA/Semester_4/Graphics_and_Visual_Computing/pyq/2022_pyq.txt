@@ -1,4 +1,0 @@
-# Graphics and Visual Computing
-## PYQ
-
-This is a sample pyq file for Graphics and Visual Computing.

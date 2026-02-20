@@ -1,4 +1,0 @@
-# Introduction to Operating Systems
-## NOTES
-
-This is a sample notes file for Introduction to Operating Systems.

@@ -1,4 +1,0 @@
-# Big Data Analytics
-## SYLLABUS
-
-This is a sample syllabus file for Big Data Analytics.

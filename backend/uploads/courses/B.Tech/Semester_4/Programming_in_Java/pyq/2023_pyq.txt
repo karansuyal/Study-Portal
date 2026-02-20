@@ -1,4 +1,0 @@
-# Programming in Java
-## PYQ
-
-This is a sample pyq file for Programming in Java.

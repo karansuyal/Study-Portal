@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Notes Hub - Admin Dashboard</title>
+    <title>Study Portal - Admin Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -70,6 +70,19 @@
             width: auto;
             padding: 8px 16px;
         }
+
+        .danger-btn {
+            background: #dc3545;
+        }
+        
+        .danger-btn:hover {
+            background: #c82333;
+        }
+
+        .warning-btn {
+            background: #ffc107;
+            color: #333;
+        }
         
         /* Dashboard */
         .dashboard {
@@ -95,6 +108,7 @@
             margin-bottom: 20px;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
         }
         
         .tab {
@@ -104,11 +118,21 @@
             cursor: pointer;
             border-bottom: 3px solid transparent;
             font-weight: bold;
+            min-width: 120px;
         }
         
         .tab.active {
             border-bottom: 3px solid #4CAF50;
             background: #f1f8e9;
+        }
+
+        .tab.danger-tab {
+            color: #dc3545;
+        }
+        
+        .tab.danger-tab.active {
+            border-bottom: 3px solid #dc3545;
+            background: #fff5f5;
         }
         
         .tab-content {
@@ -116,7 +140,7 @@
         }
         
         .tab-content.active {
-            display: block;
+            display: block !important;
         }
         
         /* Stats */
@@ -139,6 +163,10 @@
             font-size: 28px;
             font-weight: bold;
             color: #4CAF50;
+        }
+
+        .stat-number.danger {
+            color: #dc3545;
         }
         
         /* Upload Form */
@@ -165,6 +193,18 @@
         .form-group {
             margin-bottom: 15px;
         }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group label .required {
+            color: #dc3545;
+            margin-left: 2px;
+        }
         
         /* Notes Container */
         .notes-container {
@@ -179,6 +219,8 @@
             justify-content: space-between;
             margin-bottom: 20px;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .note-card {
@@ -186,12 +228,15 @@
             padding: 15px;
             margin: 15px 0;
             border-radius: 8px;
+            background: white;
         }
         
         .note-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .note-title {
@@ -227,6 +272,7 @@
             display: flex;
             gap: 10px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
         
         .action-btn {
@@ -235,6 +281,12 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
         }
         
         .approve-btn {
@@ -338,6 +390,170 @@
             width: 0%;
             transition: width 0.3s;
         }
+
+        /* Delete Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #dc3545;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .confirm-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Search and Filter */
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        /* User Management Styles */
+        #usersList {
+            min-height: 200px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .user-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .user-role-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .user-action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .user-action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -352,12 +568,6 @@
             <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
             
             <div id="loginMessage"></div>
-            
-            <p style="margin-top: 20px; color: #666; font-size: 14px; text-align: center;">
-                <strong>Default:</strong><br>
-                Email: admin@noteshub.com<br>
-                Password: admin123
-            </p>
         </div>
         
         <!-- Admin Dashboard -->
@@ -365,7 +575,7 @@
             <!-- Header -->
             <div class="header">
                 <div>
-                    <h1><i class="fas fa-tachometer-alt"></i> Notes Hub Admin Dashboard</h1>
+                    <h1><i class="fas fa-tachometer-alt"></i> Study Portal Admin Dashboard</h1>
                     <p id="welcomeMessage" style="color: #666;">Welcome</p>
                 </div>
                 <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -385,8 +595,11 @@
                 <div class="tab" onclick="switchTab('approved')">
                     <i class="fas fa-check-circle"></i> Approved Notes
                 </div>
-                <div class="tab" onclick="switchTab('manual')">
-                    <i class="fas fa-database"></i> Manual Entry
+                <div class="tab" onclick="switchTab('users')">
+                    <i class="fas fa-users"></i> Manage Users
+                </div>
+                <div class="tab danger-tab" onclick="switchTab('delete')">
+                    <i class="fas fa-trash-alt"></i> Delete Data
                 </div>
             </div>
             
@@ -394,7 +607,6 @@
             
             <!-- Stats Tab -->
             <div id="statsTab" class="tab-content active">
-                <!-- Stats -->
                 <div class="stats">
                     <div class="stat-card">
                         <div class="stat-number" id="totalNotes">0</div>
@@ -414,7 +626,6 @@
                     </div>
                 </div>
                 
-                <!-- Quick Actions -->
                 <div class="upload-card">
                     <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
                     <div class="form-row">
@@ -436,11 +647,11 @@
                     <form id="uploadForm">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Title *</label>
+                                <label>Title <span class="required">*</span></label>
                                 <input type="text" id="uploadTitle" placeholder="e.g., DBMS Notes Unit 1" required>
                             </div>
                             <div class="form-group">
-                                <label>Course *</label>
+                                <label>Course <span class="required">*</span></label>
                                 <select id="uploadCourse" required>
                                     <option value="">Select Course</option>
                                     <option value="BTECH">BTECH</option>
@@ -454,27 +665,36 @@
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Material Type *</label>
+                                <label>Material Type <span class="required">*</span></label>
                                 <select id="uploadType" required>
                                     <option value="">Select Type</option>
-                                    <option value="notes">Notes</option>
-                                    <option value="pyq">PYQ (Previous Year Questions)</option>
-                                    <option value="imp_questions">Important Questions</option>
-                                    <option value="syllabus">Syllabus</option>
-                                    <option value="books">Books/Reference</option>
+                                    <option value="notes">📄 Notes</option>
+                                    <option value="pyq">📝 PYQ (Previous Year Questions)</option>
+                                    <option value="imp_questions">❓ Important Questions</option>
+                                    <option value="syllabus">📋 Syllabus</option>
+                                    <option value="lab">🔬 Lab Manual</option>
+                                    <option value="assignment">📝 Assignment</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Subject</label>
-                                <input type="text" id="uploadSubject" placeholder="e.g., Database Management">
+                                <label>Subject Name <span class="required">*</span></label>
+                                <input type="text" id="uploadSubject" placeholder="e.g., Database Management" required>
                             </div>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Semester/Year</label>
+                                <label>Year</label>
+                                <select id="uploadYear">
+                                    <option value="1">Year 1</option>
+                                    <option value="2">Year 2</option>
+                                    <option value="3">Year 3</option>
+                                    <option value="4">Year 4</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Semester</label>
                                 <select id="uploadSemester">
-                                    <option value="">Select Semester</option>
                                     <option value="1">Semester 1</option>
                                     <option value="2">Semester 2</option>
                                     <option value="3">Semester 3</option>
@@ -485,10 +705,6 @@
                                     <option value="8">Semester 8</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Tags (comma separated)</label>
-                                <input type="text" id="uploadTags" placeholder="e.g., dbms, sql, database">
-                            </div>
                         </div>
                         
                         <div class="form-group">
@@ -497,7 +713,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label>Upload File *</label>
+                            <label>Upload File <span class="required">*</span></label>
                             <div class="file-input-container">
                                 <input type="file" id="uploadFile" class="file-input" required accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png">
                                 <label for="uploadFile" class="file-label" id="fileLabel">
@@ -509,7 +725,6 @@
                             <div id="fileName" style="margin-top: 5px; color: #666; font-size: 14px;"></div>
                         </div>
                         
-                        <!-- Progress Bar -->
                         <div class="progress-container">
                             <div class="progress-bar" id="progressBar">
                                 <div class="progress-fill" id="progressFill"></div>
@@ -586,61 +801,214 @@
                 </div>
             </div>
             
-            <!-- Manual Entry Tab -->
-            <div id="manualTab" class="tab-content">
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content">
                 <div class="upload-card">
-                    <h2><i class="fas fa-keyboard"></i> Manual Database Entry</h2>
+                    <h2><i class="fas fa-users-cog"></i> User Management</h2>
                     <p style="color: #666; margin-bottom: 20px;">
-                        Add notes directly to database (for external files already uploaded)
+                        View, edit and manage all registered users
                     </p>
                     
-                    <form id="manualForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Title *</label>
-                                <input type="text" id="manualTitle" placeholder="Note title" required>
-                            </div>
-                            <div class="form-group">
-                                <label>File Name/URL *</label>
-                                <input type="text" id="manualFile" placeholder="e.g., dbms_notes.pdf" required>
-                            </div>
+                    <div class="stats" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalUsersCount">0</div>
+                            <div>Total Users</div>
                         </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="adminUsersCount">0</div>
+                            <div>Admins</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="studentUsersCount">0</div>
+                            <div>Students</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="userSearch" class="search-box" placeholder="Search by name, email, branch..." style="width: 100%;">
+                        <button onclick="searchUsers()" style="width: auto; padding: 10px 20px; margin-top: 10px; background: #2196F3;">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    
+                    <div id="usersList" style="margin-top: 20px;"></div>
+                    <div id="usersMessage"></div>
+                </div>
+            </div>
+            
+            <!-- Delete Data Tab -->
+            <div id="deleteTab" class="tab-content">
+                <div class="upload-card">
+                    <h2 style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> Data Management</h2>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        ⚠️ Selectively delete data by semester/year. These actions are permanent.
+                    </p>
+                    
+                    <div class="stats" style="margin-bottom: 30px;">
+                        <div class="stat-card">
+                            <div class="stat-number" id="deleteTotalNotes">0</div>
+                            <div>Total Notes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="deletePendingNotes" style="color: orange;">0</div>
+                            <div>Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="deleteApprovedNotes" style="color: green;">0</div>
+                            <div>Approved</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3><i class="fas fa-search"></i> Search Notes to Delete</h3>
+                        <input type="text" id="deleteSearch" class="search-box" placeholder="Search by title, course, subject...">
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Course *</label>
-                                <select id="manualCourse" required>
-                                    <option value="">Select Course</option>
+                        <div class="filter-options">
+                            <select id="deleteCourseFilter" class="filter-select">
+                                <option value="">All Courses</option>
+                                <option value="BTECH">BTECH</option>
+                                <option value="BCA">BCA</option>
+                                <option value="BBA">BBA</option>
+                                <option value="MBA">MBA</option>
+                                <option value="MCA">MCA</option>
+                            </select>
+                            
+                            <select id="deleteYearFilter" class="filter-select">
+                                <option value="">All Years</option>
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                            
+                            <select id="deleteSemesterFilter" class="filter-select">
+                                <option value="">All Semesters</option>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
+                            
+                            <select id="deleteTypeFilter" class="filter-select">
+                                <option value="">All Types</option>
+                                <option value="pending">Pending Only</option>
+                                <option value="approved">Approved Only</option>
+                            </select>
+                            
+                            <button onclick="searchNotesToDelete()" style="width: auto; padding: 8px 20px; background: #2196F3;">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="deleteSearchResults" style="margin-bottom: 30px;"></div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div style="border: 1px solid #17a2b8; border-radius: 10px; padding: 20px;">
+                            <h3 style="color: #17a2b8; margin-bottom: 15px;">
+                                <i class="fas fa-calendar-alt"></i> Delete by Semester
+                            </h3>
+                            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <select id="deleteSemesterCourse" class="filter-select" style="flex: 1;">
                                     <option value="BTECH">BTECH</option>
                                     <option value="BCA">BCA</option>
                                     <option value="BBA">BBA</option>
                                     <option value="MBA">MBA</option>
                                     <option value="MCA">MCA</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Type *</label>
-                                <select id="manualType" required>
-                                    <option value="notes">Notes</option>
-                                    <option value="pyq">PYQ</option>
-                                    <option value="imp_questions">Important Questions</option>
-                                    <option value="syllabus">Syllabus</option>
+                                <select id="deleteSemesterYear" class="filter-select" style="flex: 1;">
+                                    <option value="1">Year 1</option>
+                                    <option value="2">Year 2</option>
+                                    <option value="3">Year 3</option>
+                                    <option value="4">Year 4</option>
+                                </select>
+                                <select id="deleteSemesterNum" class="filter-select" style="flex: 1;">
+                                    <option value="1">Sem 1</option>
+                                    <option value="2">Sem 2</option>
+                                    <option value="3">Sem 3</option>
+                                    <option value="4">Sem 4</option>
+                                    <option value="5">Sem 5</option>
+                                    <option value="6">Sem 6</option>
+                                    <option value="7">Sem 7</option>
+                                    <option value="8">Sem 8</option>
                                 </select>
                             </div>
+                            <button onclick="deleteBySemester()" class="warning-btn" style="background: #17a2b8; width: 100%;">
+                                <i class="fas fa-trash-alt"></i> Delete Selected Semester
+                            </button>
                         </div>
                         
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="manualDescription" rows="3"></textarea>
+                        <div style="border: 1px solid #6f42c1; border-radius: 10px; padding: 20px;">
+                            <h3 style="color: #6f42c1; margin-bottom: 15px;">
+                                <i class="fas fa-book"></i> Delete by Subject
+                            </h3>
+                            <input type="text" id="deleteSubjectName" class="search-box" placeholder="Enter subject name or code" style="margin-bottom: 15px;">
+                            <select id="deleteSubjectCourse" class="filter-select" style="margin-bottom: 15px; width: 100%;">
+                                <option value="BTECH">BTECH</option>
+                                <option value="BCA">BCA</option>
+                                <option value="BBA">BBA</option>
+                                <option value="MBA">MBA</option>
+                                <option value="MCA">MCA</option>
+                            </select>
+                            <button onclick="deleteBySubject()" class="warning-btn" style="background: #6f42c1; width: 100%;">
+                                <i class="fas fa-trash-alt"></i> Delete Subject Notes
+                            </button>
                         </div>
                         
-                        <button type="submit" id="manualButton">
-                            <i class="fas fa-database"></i> Add to Database
-                        </button>
-                    </form>
+                        <div style="border: 1px solid #fd7e14; border-radius: 10px; padding: 20px;">
+                            <h3 style="color: #fd7e14; margin-bottom: 15px;">
+                                <i class="fas fa-clock"></i> Delete by Date
+                            </h3>
+                            <div style="margin-bottom: 15px;">
+                                <label>From:</label>
+                                <input type="date" id="deleteDateFrom" class="search-box">
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label>To:</label>
+                                <input type="date" id="deleteDateTo" class="search-box">
+                            </div>
+                            <button onclick="deleteByDateRange()" class="warning-btn" style="background: #fd7e14; width: 100%;">
+                                <i class="fas fa-trash-alt"></i> Delete in Date Range
+                            </button>
+                        </div>
+                        
+                        <div style="border: 1px solid #28a745; border-radius: 10px; padding: 20px;">
+                            <h3 style="color: #28a745; margin-bottom: 15px;">
+                                <i class="fas fa-bolt"></i> Quick Delete
+                            </h3>
+                            <button onclick="showDeleteModal('pending')" class="warning-btn" style="background: #ffc107; width: 100%; margin-bottom: 10px;">
+                                <i class="fas fa-clock"></i> Delete All Pending
+                            </button>
+                            <button onclick="showDeleteModal('approved')" class="warning-btn" style="background: #28a745; width: 100%; margin-bottom: 10px;">
+                                <i class="fas fa-check-circle"></i> Delete All Approved
+                            </button>
+                            <button onclick="showDeleteModal('all')" class="danger-btn" style="width: 100%; margin-bottom: 10px;">
+                                <i class="fas fa-database"></i> Delete ALL Notes
+                            </button>
+                            <button onclick="showDeleteModal('old')" class="warning-btn" style="background: #6c757d; width: 100%;">
+                                <i class="fas fa-history"></i> Delete Older than 30 Days
+                            </button>
+                        </div>
+                    </div>
                     
-                    <div id="manualMessage"></div>
+                    <div id="deleteMessage"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader">Confirm Delete</div>
+            <div class="modal-body" id="modalBody">Are you sure you want to delete?</div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" onclick="hideDeleteModal()">Cancel</button>
+                <button class="modal-btn confirm-btn" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -648,19 +1016,16 @@
     <script>
         let token = '';
         let user = null;
+        let currentDeleteType = '';
+        let currentDeleteParams = {};
         
-        // Test connection on load
         window.onload = function() {
             console.log('Testing connection...');
             testConnection();
             
-            // Setup file upload display
             setupFileUpload();
-            
-            // Setup form submissions
             setupForms();
             
-            // Check if already logged in
             const savedToken = localStorage.getItem('admin_token');
             const savedUser = localStorage.getItem('admin_user');
             
@@ -673,7 +1038,6 @@
             }
         };
         
-        // Setup file upload display
         function setupFileUpload() {
             const fileInput = document.getElementById('uploadFile');
             const fileName = document.getElementById('fileName');
@@ -692,22 +1056,13 @@
             });
         }
         
-        // Setup form submissions
         function setupForms() {
-            // Upload form
             document.getElementById('uploadForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 uploadFile();
             });
-            
-            // Manual form
-            document.getElementById('manualForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                manualAdd();
-            });
         }
         
-        // Format bytes to readable size
         function formatBytes(bytes, decimals = 2) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -717,7 +1072,6 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
         
-        // Test backend connection
         async function testConnection() {
             try {
                 const response = await fetch('http://localhost:5000/api/health');
@@ -729,7 +1083,6 @@
             }
         }
         
-        // Login
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -759,7 +1112,6 @@
                     token = data.access_token;
                     user = data.user;
                     
-                    // Save to localStorage
                     localStorage.setItem('admin_token', token);
                     localStorage.setItem('admin_user', JSON.stringify(user));
                     
@@ -779,7 +1131,6 @@
             }
         }
         
-        // Show dashboard
         function showDashboard() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
@@ -790,7 +1141,6 @@
             }
         }
         
-        // Logout
         function logout() {
             token = '';
             user = null;
@@ -804,9 +1154,7 @@
             showLoginMessage('Logged out successfully', 'success');
         }
         
-        // Switch tabs
         function switchTab(tabName) {
-            // Update tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -814,19 +1162,20 @@
                 content.classList.remove('active');
             });
             
-            // Activate selected tab
             event.target.classList.add('active');
             document.getElementById(tabName + 'Tab').classList.add('active');
             
-            // Load data if needed
             if (tabName === 'approved') {
                 loadApprovedNotes();
             } else if (tabName === 'pending') {
                 loadPendingNotes();
+            } else if (tabName === 'delete') {
+                loadDeleteStats();
+            } else if (tabName === 'users') {  
+                loadUsers();
             }
         }
         
-        // Load stats
         async function loadStats() {
             try {
                 const response = await fetch('http://localhost:5000/api/admin/stats', {
@@ -843,7 +1192,6 @@
                     document.getElementById('approvedNotes').textContent = data.stats.approved_notes || 0;
                     document.getElementById('totalUsers').textContent = data.stats.total_users || 0;
                     
-                    // Update tab count
                     document.getElementById('pendingTabCount').textContent = data.stats.pending_notes || 0;
                 }
             } catch (error) {
@@ -851,7 +1199,26 @@
             }
         }
         
-        // Load pending notes
+        async function loadDeleteStats() {
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/stats', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('deleteTotalNotes').textContent = data.stats.total_notes || 0;
+                    document.getElementById('deletePendingNotes').textContent = data.stats.pending_notes || 0;
+                    document.getElementById('deleteApprovedNotes').textContent = data.stats.approved_notes || 0;
+                }
+            } catch (error) {
+                console.error('Stats error:', error);
+            }
+        }
+        
         async function loadPendingNotes() {
             const loadingEl = document.getElementById('loadingMessage');
             const notesListEl = document.getElementById('notesList');
@@ -881,7 +1248,6 @@
                         return;
                     }
                     
-                    // Display notes
                     notes.forEach(note => {
                         const noteCard = createNoteCard(note, 'pending');
                         notesListEl.appendChild(noteCard);
@@ -893,7 +1259,6 @@
             }
         }
         
-        // Load approved notes
         async function loadApprovedNotes() {
             const loadingEl = document.getElementById('approvedLoading');
             const notesListEl = document.getElementById('approvedList');
@@ -921,7 +1286,6 @@
                         return;
                     }
                     
-                    // Display notes
                     notes.forEach(note => {
                         const noteCard = createNoteCard(note, 'approved');
                         notesListEl.appendChild(noteCard);
@@ -933,7 +1297,6 @@
             }
         }
         
-        // Create note card
         function createNoteCard(note, status) {
             const noteCard = document.createElement('div');
             noteCard.className = 'note-card';
@@ -951,8 +1314,8 @@
                 
                 <div class="note-meta">
                     <div><strong>Course:</strong> ${note.course_name || note.course || 'Unknown'}</div>
-                    <div><strong>Type:</strong> ${note.type || 'Note'}</div>
-                    ${note.uploader_name ? `<div><strong>Uploaded by:</strong> ${note.uploader_name}</div>` : ''}
+                    <div><strong>Type:</strong> ${note.note_type || note.type || 'Note'}</div>
+                    ${note.user_name ? `<div><strong>Uploaded by:</strong> ${note.user_name}</div>` : ''}
                     <div><strong>Date:</strong> ${date}</div>
                     <div><strong>File:</strong> ${note.original_filename || note.file_name || 'No file'}</div>
                 </div>
@@ -988,7 +1351,682 @@
             return noteCard;
         }
         
-        // Upload file (Admin direct upload)
+        function showDeleteModal(type) {
+            currentDeleteType = type;
+            const modal = document.getElementById('deleteModal');
+            const header = document.getElementById('modalHeader');
+            const body = document.getElementById('modalBody');
+            
+            switch(type) {
+                case 'pending':
+                    header.textContent = 'Delete Pending Notes';
+                    body.textContent = 'Are you sure you want to delete all pending notes? This action cannot be undone.';
+                    break;
+                case 'approved':
+                    header.textContent = 'Delete Approved Notes';
+                    body.textContent = 'Are you sure you want to delete all approved notes? This action cannot be undone.';
+                    break;
+                case 'all':
+                    header.textContent = 'Delete All Notes';
+                    body.textContent = 'Are you sure you want to delete ALL notes (both pending and approved)? This action cannot be undone.';
+                    break;
+                case 'old':
+                    header.textContent = 'Delete Old Notes';
+                    body.textContent = 'Are you sure you want to delete all notes older than 30 days? This action cannot be undone.';
+                    break;
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+        
+        document.getElementById('confirmDeleteBtn').onclick = async function() {
+            hideDeleteModal();
+            
+            try {
+                let endpoint = '';
+                let message = '';
+                
+                switch(currentDeleteType) {
+                    case 'pending':
+                        endpoint = '/api/admin/delete/pending';
+                        message = 'Deleting pending notes...';
+                        break;
+                    case 'approved':
+                        endpoint = '/api/admin/delete/approved';
+                        message = 'Deleting approved notes...';
+                        break;
+                    case 'all':
+                        endpoint = '/api/admin/delete/all';
+                        message = 'Deleting all notes...';
+                        break;
+                    case 'old':
+                        endpoint = '/api/admin/delete/old';
+                        message = 'Deleting old notes...';
+                        break;
+                }
+                
+                showMessage(message, 'loading', 'deleteMessage');
+                
+                const response = await fetch(`http://localhost:5000${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`✅ ${data.message}`, 'success', 'deleteMessage');
+                    loadStats();
+                    loadDeleteStats();
+                    
+                    if (document.getElementById('pendingTab').classList.contains('active')) {
+                        loadPendingNotes();
+                    }
+                    if (document.getElementById('approvedTab').classList.contains('active')) {
+                        loadApprovedNotes();
+                    }
+                } else {
+                    showMessage('❌ Error: ' + data.error, 'error', 'deleteMessage');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error', 'deleteMessage');
+            }
+        };
+        
+        // ==================== USER MANAGEMENT FUNCTIONS ====================
+        
+        async function loadUsers() {
+            console.log('📢 loadUsers() called');
+            const usersListEl = document.getElementById('usersList');
+            usersListEl.innerHTML = '<div class="message loading"><i class="fas fa-spinner fa-spin"></i> Loading users...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/users', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayUsers(data.users);
+                    updateUserStats(data.users);
+                } else {
+                    usersListEl.innerHTML = '<div class="message error">Failed to load users</div>';
+                }
+            } catch (error) {
+                usersListEl.innerHTML = '<div class="message error">Error: ' + error.message + '</div>';
+            }
+        }
+        
+        function displayUsers(users) {
+            const usersListEl = document.getElementById('usersList');
+            
+            if (users.length === 0) {
+                usersListEl.innerHTML = '<div style="text-align: center; padding: 40px;">No users found</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            users.forEach(user => {
+                const date = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A';
+                const uploadCount = user.upload_count || 0;
+                const userInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                const roleColor = user.role === 'admin' ? '#4CAF50' : '#2196F3';
+                const roleText = user.role === 'admin' ? '👑 ADMIN' : '🎓 STUDENT';
+                
+                html += `
+                    <div class="user-card">
+                        <div style="position: absolute; top: 15px; right: 15px;">
+                            <span style="background: ${roleColor}; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+                                ${roleText}
+                            </span>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                            <div class="user-avatar">
+                                ${userInitial}
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 style="margin: 0; color: #333; font-size: 18px;">${user.name || 'Unknown'}</h3>
+                                <p style="margin: 5px 0 0; color: #666;">${user.email || 'No email'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="user-info-grid">
+                            <div><strong>Branch:</strong><br><span>${user.branch || 'N/A'}</span></div>
+                            <div><strong>Semester:</strong><br><span>${user.semester || 'N/A'}</span></div>
+                            <div><strong>Joined:</strong><br><span>${date}</span></div>
+                        </div>
+                        
+                        <div class="user-actions">
+                            <button onclick="viewUserUploads(${user.id})" class="user-action-btn view-btn">
+                                <i class="fas fa-eye"></i> Uploads (${uploadCount})
+                            </button>
+                            <button onclick="editUser(${user.id})" class="user-action-btn" style="background: #ffc107; color: #333;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteUser(${user.id}, '${user.name}')" class="user-action-btn reject-btn" style="background: #f44336;">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            usersListEl.innerHTML = html;
+            console.log('✅ Users displayed');
+        }
+        
+        function updateUserStats(users) {
+            const totalUsers = users.length;
+            const adminUsers = users.filter(u => u.role === 'admin').length;
+            const studentUsers = users.filter(u => u.role === 'student').length;
+            
+            document.getElementById('totalUsersCount').textContent = totalUsers;
+            document.getElementById('adminUsersCount').textContent = adminUsers;
+            document.getElementById('studentUsersCount').textContent = studentUsers;
+        }
+        
+        async function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/users', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const filteredUsers = data.users.filter(user => 
+                        user.name.toLowerCase().includes(searchTerm) ||
+                        user.email.toLowerCase().includes(searchTerm) ||
+                        (user.branch && user.branch.toLowerCase().includes(searchTerm))
+                    );
+                    displayUsers(filteredUsers);
+                }
+            } catch (error) {
+                showMessage('Search error: ' + error.message, 'error', 'usersMessage');
+            }
+        }
+        
+        function showEditUserModal(user) {
+            const modalContent = `
+                <div style="padding: 20px;">
+                    <h3 style="margin-bottom: 20px;">Edit User: ${user.name}</h3>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="editUserName" value="${user.name}" class="search-box">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editUserEmail" value="${user.email}" class="search-box" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <input type="text" id="editUserBranch" value="${user.branch || ''}" class="search-box">
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="number" id="editUserSemester" value="${user.semester || ''}" class="search-box">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="editUserRole" class="filter-select">
+                            <option value="student" ${user.role === 'student' ? 'selected' : ''}>Student</option>
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button onclick="saveUserChanges(${user.id})" class="action-btn approve-btn" style="flex: 1;">Save Changes</button>
+                        <button onclick="closeModal()" class="action-btn reject-btn" style="flex: 1;">Cancel</button>
+                    </div>
+                </div>
+            `;
+            
+            showCustomModal('Edit User', modalContent);
+        }
+        
+        async function saveUserChanges(userId) {
+            const name = document.getElementById('editUserName').value;
+            const branch = document.getElementById('editUserBranch').value;
+            const semester = document.getElementById('editUserSemester').value;
+            const role = document.getElementById('editUserRole').value;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        branch: branch,
+                        semester: semester,
+                        role: role
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('✅ User updated successfully', 'success', 'usersMessage');
+                    closeModal();
+                    loadUsers();
+                } else {
+                    showMessage('❌ Error: ' + data.error, 'error', 'usersMessage');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error', 'usersMessage');
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+        
+        function showCustomModal(title, content) {
+            const modal = document.getElementById('deleteModal');
+            document.getElementById('modalHeader').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            modal.style.display = 'block';
+        }
+        
+        async function viewUserUploads(userId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/users/${userId}/uploads`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showUserUploadsModal(data.uploads, data.user);
+                } else {
+                    showMessage('Failed to load user uploads', 'error', 'usersMessage');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error', 'usersMessage');
+            }
+        }
+        
+        function showUserUploadsModal(uploads, user) {
+            let modalContent = `
+                <div style="padding: 20px;">
+                    <h3 style="margin-bottom: 20px;">${user.name}'s Uploads</h3>
+            `;
+            
+            if (uploads.length === 0) {
+                modalContent += '<p>No uploads found</p>';
+            } else {
+                uploads.forEach(upload => {
+                    modalContent += `
+                        <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>${upload.title}</strong>
+                                <span style="background: ${upload.status === 'approved' ? '#4CAF50' : '#ffc107'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+                                    ${upload.status}
+                                </span>
+                            </div>
+                            <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                                <div><strong>Course:</strong> ${upload.course_name}</div>
+                                <div><strong>Type:</strong> ${upload.note_type}</div>
+                                <div><strong>Date:</strong> ${new Date(upload.uploaded_at).toLocaleDateString()}</div>
+                            </div>
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                ${upload.file_name ? `<button onclick="viewFile('${upload.file_name}')" class="action-btn view-btn" style="flex: 1;">View File</button>` : ''}
+                                <button onclick="deleteNote(${upload.id})" class="action-btn delete-btn" style="flex: 1;">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            modalContent += `
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button onclick="closeModal()" class="modal-btn cancel-btn">Close</button>
+                    </div>
+                </div>
+            `;
+            
+            showCustomModal('User Uploads', modalContent);
+        }
+        
+        async function deleteUser(userId, userName) {
+            if (!confirm(`Are you sure you want to delete user "${userName}"? All their uploads will also be deleted.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`✅ User ${userName} deleted successfully`, 'success', 'usersMessage');
+                    loadUsers();
+                } else {
+                    showMessage('❌ Error: ' + data.error, 'error', 'usersMessage');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error', 'usersMessage');
+            }
+        }
+        
+        async function editUser(userId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showEditUserModal(data.user);
+                } else {
+                    showMessage('Failed to load user data', 'error', 'usersMessage');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error', 'usersMessage');
+            }
+        }
+        
+        // ==================== NOTE FUNCTIONS ====================
+        
+        async function approveNote(noteId) {
+            if (!confirm('Approve this note?')) return;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: '{}'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const noteEl = document.getElementById('note-' + noteId);
+                    if (noteEl) noteEl.remove();
+                    
+                    loadStats();
+                    updatePendingCount();
+                    
+                    showMessage('✅ Note approved successfully!', 'success');
+                } else {
+                    showMessage('❌ Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function rejectNote(noteId) {
+            const reason = prompt('Enter rejection reason:', 'Content does not meet guidelines');
+            if (!reason) return;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason: reason })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const noteEl = document.getElementById('note-' + noteId);
+                    if (noteEl) noteEl.remove();
+                    
+                    loadStats();
+                    updatePendingCount();
+                    
+                    showMessage('✅ Note rejected!', 'success');
+                } else {
+                    showMessage('❌ Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function deleteNote(noteId) {
+            if (!confirm('Delete this note permanently?')) return;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const noteEl = document.getElementById('note-' + noteId);
+                    if (noteEl) noteEl.remove();
+                    
+                    loadStats();
+                    updatePendingCount();
+                    
+                    showMessage('✅ Note deleted!', 'success');
+                } else {
+                    showMessage('❌ Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        // ✅ FIXED VIEW FILE FUNCTION
+     // ✅ FIXED View File Function - with course folder detection
+function viewFile(filename) {
+    if (!filename) {
+        alert('❌ No file to view');
+        return;
+    }
+    
+    console.log('📂 Attempting to view file:', filename);
+    filename = filename.replace(/['"]/g, '').trim();
+    
+    // Get note ID from the button's parent element
+    const button = event.target;
+    const noteCard = button.closest('.note-card, .user-card');
+    let noteId = null;
+    
+    if (noteCard && noteCard.id) {
+        const match = noteCard.id.match(/note-(\d+)/);
+        if (match) {
+            noteId = match[1];
+        }
+    }
+    
+    if (noteId) {
+        // If we have note ID, get course name from backend
+        fetch(`http://localhost:5000/api/notes/${noteId}`, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.note) {
+                const courseName = data.note.course_name;
+                // Try with course folder first
+                const fileUrl = `http://localhost:5000/api/files/${courseName}/${filename}`;
+                console.log('🔗 Opening with course folder:', fileUrl);
+                
+                // Test if file exists
+                fetch(fileUrl, { method: 'HEAD' })
+                    .then(r => {
+                        if (r.ok) {
+                            window.open(fileUrl, '_blank');
+                        } else {
+                            // Fallback to direct file
+                            const directUrl = `http://localhost:5000/api/files/${filename}`;
+                            console.log('⚠️ Course folder failed, trying direct:', directUrl);
+                            window.open(directUrl, '_blank');
+                        }
+                    })
+                    .catch(() => {
+                        // Fallback
+                        const directUrl = `http://localhost:5000/api/files/${filename}`;
+                        window.open(directUrl, '_blank');
+                    });
+            } else {
+                // Fallback
+                const directUrl = `http://localhost:5000/api/files/${filename}`;
+                console.log('🔗 Opening direct (no course data):', directUrl);
+                window.open(directUrl, '_blank');
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching note:', err);
+            const directUrl = `http://localhost:5000/api/files/${filename}`;
+            window.open(directUrl, '_blank');
+        });
+    } else {
+        // No note ID, try common course folders
+        console.log('⚠️ No note ID found, trying common course folders...');
+        
+        const courses = ['BTECH', 'BCA', 'BBA', 'MBA', 'MCA'];
+        let opened = false;
+        
+        courses.forEach(course => {
+            if (!opened) {
+                const url = `http://localhost:5000/api/files/${course}/${filename}`;
+                fetch(url, { method: 'HEAD' })
+                    .then(r => {
+                        if (r.ok && !opened) {
+                            opened = true;
+                            window.open(url, '_blank');
+                        }
+                    })
+                    .catch(() => {});
+            }
+        });
+        
+        // If none work after 1 second, try direct
+        setTimeout(() => {
+            if (!opened) {
+                const directUrl = `http://localhost:5000/api/files/${filename}`;
+                console.log('🔗 Opening direct (fallback):', directUrl);
+                window.open(directUrl, '_blank');
+            }
+        }, 1000);
+    }
+}
+        // ==================== DELETE TAB FUNCTIONS ====================
+        
+        async function searchNotesToDelete() {
+            const searchTerm = document.getElementById('deleteSearch').value;
+            const course = document.getElementById('deleteCourseFilter').value;
+            const year = document.getElementById('deleteYearFilter').value;
+            const semester = document.getElementById('deleteSemesterFilter').value;
+            const type = document.getElementById('deleteTypeFilter').value;
+            
+            try {
+                let url = `http://localhost:5000/api/notes?`;
+                if (searchTerm) url += `search=${encodeURIComponent(searchTerm)}&`;
+                if (course) url += `course=${course}&`;
+                if (year) url += `year=${year}&`;
+                if (semester) url += `semester=${semester}&`;
+                if (type) url += `status=${type}&`;
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                const data = await response.json();
+                
+                const resultsDiv = document.getElementById('deleteSearchResults');
+                if (data.notes && data.notes.length > 0) {
+                    let html = '<h3>Search Results:</h3>';
+                    data.notes.forEach(note => {
+                        html += `
+                            <div style="border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 5px;">
+                                <strong>${note.title}</strong> - ${note.course_name} 
+                                <button onclick="deleteNote(${note.id})" style="float: right; background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px;">Delete</button>
+                            </div>
+                        `;
+                    });
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = '<p style="color: #666;">No notes found matching criteria.</p>';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+        
+        function deleteBySemester() {
+            const course = document.getElementById('deleteSemesterCourse').value;
+            const year = document.getElementById('deleteSemesterYear').value;
+            const semester = document.getElementById('deleteSemesterNum').value;
+            
+            if (confirm(`Delete all notes for ${course} Year ${year} Semester ${semester}?`)) {
+                showMessage(`Deleting notes for ${course} Year ${year} Sem ${semester}...`, 'loading', 'deleteMessage');
+            }
+        }
+        
+        function deleteBySubject() {
+            const subject = document.getElementById('deleteSubjectName').value;
+            const course = document.getElementById('deleteSubjectCourse').value;
+            
+            if (!subject) {
+                alert('Please enter subject name');
+                return;
+            }
+            
+            if (confirm(`Delete all notes for subject "${subject}" in ${course}?`)) {
+                showMessage(`Deleting notes for ${subject}...`, 'loading', 'deleteMessage');
+            }
+        }
+        
+        function deleteByDateRange() {
+            const fromDate = document.getElementById('deleteDateFrom').value;
+            const toDate = document.getElementById('deleteDateTo').value;
+            
+            if (!fromDate || !toDate) {
+                alert('Please select both dates');
+                return;
+            }
+            
+            if (confirm(`Delete notes from ${fromDate} to ${toDate}?`)) {
+                showMessage(`Deleting notes in date range...`, 'loading', 'deleteMessage');
+            }
+        }
+        
+        // ==================== UPLOAD FUNCTION ====================
+        
         async function uploadFile() {
             const formData = new FormData();
             const fileInput = document.getElementById('uploadFile');
@@ -998,34 +2036,28 @@
                 return;
             }
             
-            // Get form values
             const title = document.getElementById('uploadTitle').value;
             const course = document.getElementById('uploadCourse').value;
             const type = document.getElementById('uploadType').value;
             const subject = document.getElementById('uploadSubject').value;
+            const year = document.getElementById('uploadYear').value;
             const semester = document.getElementById('uploadSemester').value;
-            const tags = document.getElementById('uploadTags').value;
             const description = document.getElementById('uploadDescription').value;
             
-            // Validate
-            if (!title || !course || !type) {
+            if (!title || !course || !type || !subject) {
                 showMessage('Please fill all required fields', 'error', 'uploadMessage');
                 return;
             }
             
-            // Prepare form data
             formData.append('file', fileInput.files[0]);
             formData.append('title', title);
             formData.append('course', course);
             formData.append('type', type);
             formData.append('subject', subject);
+            formData.append('year', year);
             formData.append('semester', semester);
-            formData.append('tags', tags);
             formData.append('description', description);
-            formData.append('is_admin_upload', 'true');
-            formData.append('auto_approve', 'true');
             
-            // Show progress
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
@@ -1040,7 +2072,6 @@
             try {
                 const xhr = new XMLHttpRequest();
                 
-                // Progress tracking
                 xhr.upload.addEventListener('progress', function(e) {
                     if (e.lengthComputable) {
                         const percentComplete = (e.loaded / e.total) * 100;
@@ -1062,7 +2093,6 @@
                                 
                                 showMessage('✅ File uploaded and approved successfully!', 'success', 'uploadMessage');
                                 
-                                // Reset form
                                 document.getElementById('uploadForm').reset();
                                 document.getElementById('fileName').textContent = '';
                                 document.getElementById('fileLabel').innerHTML = `
@@ -1071,10 +2101,8 @@
                                     <div style="font-size: 12px; color: #666;">PDF, DOC, PPT, Images (Max 10MB)</div>
                                 `;
                                 
-                                // Update stats
                                 loadStats();
                                 
-                                // Switch to approved tab and refresh
                                 setTimeout(() => {
                                     switchTab('approved');
                                     loadApprovedNotes();
@@ -1107,183 +2135,8 @@
             }
         }
         
-        // Manual add to database
-        async function manualAdd() {
-            const title = document.getElementById('manualTitle').value;
-            const file = document.getElementById('manualFile').value;
-            const course = document.getElementById('manualCourse').value;
-            const type = document.getElementById('manualType').value;
-            const description = document.getElementById('manualDescription').value;
-            
-            if (!title || !file || !course) {
-                showMessage('Please fill all required fields', 'error', 'manualMessage');
-                return;
-            }
-            
-            const button = document.getElementById('manualButton');
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-            
-            try {
-                const response = await fetch('http://localhost:5000/api/admin/add-note', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        file_name: file,
-                        course: course,
-                        type: type,
-                        description: description,
-                        status: 'approved',
-                        is_admin_upload: true
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showMessage('✅ Note added to database successfully!', 'success', 'manualMessage');
-                    
-                    // Reset form
-                    document.getElementById('manualForm').reset();
-                    
-                    // Update stats
-                    loadStats();
-                    
-                } else {
-                    showMessage('❌ Failed: ' + data.error, 'error', 'manualMessage');
-                }
-            } catch (error) {
-                showMessage('❌ Error: ' + error.message, 'error', 'manualMessage');
-            } finally {
-                button.disabled = false;
-                button.innerHTML = '<i class="fas fa-database"></i> Add to Database';
-            }
-        }
+        // ==================== MESSAGE FUNCTIONS ====================
         
-        // Approve note
-        async function approveNote(noteId) {
-            if (!confirm('Approve this note?')) return;
-            
-            try {
-                const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: '{}'
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Remove from pending list
-                    const noteEl = document.getElementById('note-' + noteId);
-                    if (noteEl) noteEl.remove();
-                    
-                    // Update counts
-                    loadStats();
-                    updatePendingCount();
-                    
-                    showMessage('✅ Note approved successfully!', 'success');
-                } else {
-                    showMessage('❌ Error: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showMessage('❌ Error: ' + error.message, 'error');
-            }
-        }
-        
-        // Reject note
-        async function rejectNote(noteId) {
-            const reason = prompt('Enter rejection reason:', 'Content does not meet guidelines');
-            if (!reason) return;
-            
-            try {
-                const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: reason })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Remove from list
-                    const noteEl = document.getElementById('note-' + noteId);
-                    if (noteEl) noteEl.remove();
-                    
-                    // Update counts
-                    loadStats();
-                    updatePendingCount();
-                    
-                    showMessage('✅ Note rejected!', 'success');
-                } else {
-                    showMessage('❌ Error: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showMessage('❌ Error: ' + error.message, 'error');
-            }
-        }
-        
-        // Delete note
-        async function deleteNote(noteId) {
-            if (!confirm('Delete this note permanently?')) return;
-            
-            try {
-                const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Remove from list
-                    const noteEl = document.getElementById('note-' + noteId);
-                    if (noteEl) noteEl.remove();
-                    
-                    // Update counts
-                    loadStats();
-                    updatePendingCount();
-                    
-                    showMessage('✅ Note deleted!', 'success');
-                } else {
-                    showMessage('❌ Error: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showMessage('❌ Error: ' + error.message, 'error');
-            }
-        }
-        
-        // View file
-        function viewFile(filename) {
-            window.open('http://localhost:5000/api/files/' + filename, '_blank');
-        }
-        
-        // Update pending count
-        function updatePendingCount() {
-            const notes = document.querySelectorAll('#notesList .note-card');
-            const count = notes.length;
-            
-            document.getElementById('pendingCount').textContent = count;
-            document.getElementById('pendingTabCount').textContent = count;
-            
-            if (count === 0) {
-                document.getElementById('emptyState').style.display = 'block';
-            }
-        }
-        
-        // Show message
         function showMessage(text, type, containerId = 'messageContainer') {
             const container = document.getElementById(containerId);
             const messageEl = document.createElement('div');
@@ -1298,7 +2151,6 @@
             }, 3000);
         }
         
-        // Show login message
         function showLoginMessage(text, type) {
             const el = document.getElementById('loginMessage');
             el.textContent = text;

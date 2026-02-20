@@ -1,4 +1,0 @@
-# AI and ML (Artificial Intelligence and Machine Learning)
-## PYQ
-
-This is a sample pyq file for AI and ML (Artificial Intelligence and Machine Learning).

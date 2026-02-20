@@ -1,4 +1,0 @@
-# Computer Lab-I
-## SYLLABUS
-
-This is a sample syllabus file for Computer Lab-I.

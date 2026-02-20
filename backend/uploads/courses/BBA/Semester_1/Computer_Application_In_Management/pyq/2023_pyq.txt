@@ -1,4 +1,0 @@
-# Computer Application In Management
-## PYQ
-
-This is a sample pyq file for Computer Application In Management.

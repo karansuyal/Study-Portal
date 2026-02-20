@@ -1,4 +1,0 @@
-# Full Stack Web Development
-## NOTES
-
-This is a sample notes file for Full Stack Web Development.

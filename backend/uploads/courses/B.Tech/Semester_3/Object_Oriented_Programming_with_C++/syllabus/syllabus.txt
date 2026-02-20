@@ -1,4 +1,0 @@
-# Object Oriented Programming with C++
-## SYLLABUS
-
-This is a sample syllabus file for Object Oriented Programming with C++.

@@ -1,4 +1,0 @@
-# Programming in Java
-## NOTES
-
-This is a sample notes file for Programming in Java.

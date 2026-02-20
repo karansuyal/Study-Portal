@@ -1,4 +1,0 @@
-# Warehousing And Inventory Management
-## PYQ
-
-This is a sample pyq file for Warehousing And Inventory Management.

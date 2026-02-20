@@ -1,4 +1,0 @@
-# Basic Electronics Engineering Lab
-## SYLLABUS
-
-This is a sample syllabus file for Basic Electronics Engineering Lab.

@@ -1,4 +1,0 @@
-# Object-Oriented Programming Lab(C++)
-## SYLLABUS
-
-This is a sample syllabus file for Object-Oriented Programming Lab(C++).

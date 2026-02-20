@@ -1,4 +1,0 @@
-# Design and Analysis of Algorithms
-## NOTES
-
-This is a sample notes file for Design and Analysis of Algorithms.

@@ -1,4 +1,0 @@
-# Introduction to Data Structures
-## NOTES
-
-This is a sample notes file for Introduction to Data Structures.

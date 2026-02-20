@@ -1,4 +1,0 @@
-# Integrated Marketing Communication
-## PYQ
-
-This is a sample pyq file for Integrated Marketing Communication.

@@ -1,4 +1,0 @@
-# Logic Design & Computer Organization
-## NOTES
-
-This is a sample notes file for Logic Design & Computer Organization.

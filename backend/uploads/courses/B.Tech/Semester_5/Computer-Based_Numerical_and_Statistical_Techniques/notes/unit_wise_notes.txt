@@ -1,4 +1,0 @@
-# Computer-Based Numerical & Statistical Techniques
-## NOTES
-
-This is a sample notes file for Computer-Based Numerical & Statistical Techniques.

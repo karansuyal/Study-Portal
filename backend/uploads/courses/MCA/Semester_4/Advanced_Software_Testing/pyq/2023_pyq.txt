@@ -1,4 +1,0 @@
-# Advanced Software Testing
-## PYQ
-
-This is a sample pyq file for Advanced Software Testing.

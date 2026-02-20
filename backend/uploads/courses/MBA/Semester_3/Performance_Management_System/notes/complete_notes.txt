@@ -1,4 +1,0 @@
-# Performance Management System
-## NOTES
-
-This is a sample notes file for Performance Management System.

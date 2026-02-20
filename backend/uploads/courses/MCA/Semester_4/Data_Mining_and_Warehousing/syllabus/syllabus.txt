@@ -1,4 +1,0 @@
-# Data Mining and Warehousing
-## SYLLABUS
-
-This is a sample syllabus file for Data Mining and Warehousing.

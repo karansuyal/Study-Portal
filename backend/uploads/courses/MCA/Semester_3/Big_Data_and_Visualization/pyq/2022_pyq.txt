@@ -1,4 +1,0 @@
-# Big Data and Visualization
-## PYQ
-
-This is a sample pyq file for Big Data and Visualization.

@@ -1,4 +1,0 @@
-# Computer-Based Numerical & Statistical Techniques
-## SYLLABUS
-
-This is a sample syllabus file for Computer-Based Numerical & Statistical Techniques.

@@ -1,4 +1,0 @@
-# Integrated Market Communications
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Integrated Market Communications.

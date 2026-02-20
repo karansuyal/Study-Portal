@@ -1,4 +1,0 @@
-# AI and ML (Artificial Intelligence and Machine Learning)
-## SYLLABUS
-
-This is a sample syllabus file for AI and ML (Artificial Intelligence and Machine Learning).

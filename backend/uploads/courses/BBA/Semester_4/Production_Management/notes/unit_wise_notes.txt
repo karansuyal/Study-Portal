@@ -1,4 +1,0 @@
-# Production Management
-## NOTES
-
-This is a sample notes file for Production Management.

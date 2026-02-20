@@ -1,4 +1,0 @@
-# Data Driven Decision Making
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Data Driven Decision Making.

@@ -1,4 +1,0 @@
-# Mobile Application Development
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Mobile Application Development.

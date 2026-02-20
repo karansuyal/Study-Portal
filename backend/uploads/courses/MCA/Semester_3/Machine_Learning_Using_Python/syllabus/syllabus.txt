@@ -1,4 +1,0 @@
-# Machine Learning Using Python
-## SYLLABUS
-
-This is a sample syllabus file for Machine Learning Using Python.

@@ -1,4 +1,0 @@
-# Basic Electrical Engineering
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Basic Electrical Engineering.

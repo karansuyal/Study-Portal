@@ -1,4 +1,0 @@
-# Introduction to Object-Oriented Programming(C++)
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Introduction to Object-Oriented Programming(C++).

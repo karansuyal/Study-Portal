@@ -1,4 +1,0 @@
-# Operating Systems
-## SYLLABUS
-
-This is a sample syllabus file for Operating Systems.

@@ -1,4 +1,0 @@
-# Operations Research
-## SYLLABUS
-
-This is a sample syllabus file for Operations Research.

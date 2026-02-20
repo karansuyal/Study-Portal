@@ -1,4 +1,0 @@
-# Enterprise Architecture Using C Sharp
-## NOTES
-
-This is a sample notes file for Enterprise Architecture Using C Sharp.

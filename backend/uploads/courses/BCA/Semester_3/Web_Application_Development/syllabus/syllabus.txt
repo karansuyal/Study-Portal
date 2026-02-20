@@ -1,4 +1,0 @@
-# Web Application Development
-## SYLLABUS
-
-This is a sample syllabus file for Web Application Development.

@@ -1,4 +1,0 @@
-# Deep Learning
-## NOTES
-
-This is a sample notes file for Deep Learning.

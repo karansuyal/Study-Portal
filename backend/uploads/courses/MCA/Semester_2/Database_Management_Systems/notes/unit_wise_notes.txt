@@ -1,4 +1,0 @@
-# Database Management Systems
-## NOTES
-
-This is a sample notes file for Database Management Systems.

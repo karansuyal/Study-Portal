@@ -1,4 +1,0 @@
-# Business Research Method
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Business Research Method.

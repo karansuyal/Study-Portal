@@ -1,4 +1,0 @@
-# Financial Institutions And Markets
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Financial Institutions And Markets.

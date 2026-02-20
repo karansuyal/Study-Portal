@@ -1,4 +1,0 @@
-# Basic Electronics Engineering Lab
-## NOTES
-
-This is a sample notes file for Basic Electronics Engineering Lab.

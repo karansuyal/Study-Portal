@@ -1,4 +1,0 @@
-# Financial Reporting Statement And Analysis
-## PYQ
-
-This is a sample pyq file for Financial Reporting Statement And Analysis.

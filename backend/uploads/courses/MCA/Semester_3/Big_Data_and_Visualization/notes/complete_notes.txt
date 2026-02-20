@@ -1,4 +1,0 @@
-# Big Data and Visualization
-## NOTES
-
-This is a sample notes file for Big Data and Visualization.

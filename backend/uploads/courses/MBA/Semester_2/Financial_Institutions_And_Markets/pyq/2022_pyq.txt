@@ -1,4 +1,0 @@
-# Financial Institutions And Markets
-## PYQ
-
-This is a sample pyq file for Financial Institutions And Markets.

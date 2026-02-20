@@ -1,4 +1,0 @@
-# Discrete Mathematics
-## PYQ
-
-This is a sample pyq file for Discrete Mathematics.

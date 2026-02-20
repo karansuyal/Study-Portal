@@ -1,4 +1,0 @@
-# Database Management Systems
-## SYLLABUS
-
-This is a sample syllabus file for Database Management Systems.

@@ -1,4 +1,0 @@
-# Corporate Strategy
-## PYQ
-
-This is a sample pyq file for Corporate Strategy.

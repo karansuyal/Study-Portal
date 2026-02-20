@@ -1,4 +1,0 @@
-# Major Project
-## PYQ
-
-This is a sample pyq file for Major Project.

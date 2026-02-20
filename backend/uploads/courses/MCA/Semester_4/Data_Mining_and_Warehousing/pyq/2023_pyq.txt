@@ -1,4 +1,0 @@
-# Data Mining and Warehousing
-## PYQ
-
-This is a sample pyq file for Data Mining and Warehousing.

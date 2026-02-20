@@ -1,4 +1,0 @@
-# Sales And Distributed Management
-## PYQ
-
-This is a sample pyq file for Sales And Distributed Management.

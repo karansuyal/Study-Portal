@@ -1,4 +1,0 @@
-# Introduction to Software Engineering
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Introduction to Software Engineering.

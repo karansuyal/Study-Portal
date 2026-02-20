@@ -1,4 +1,0 @@
-# Performance Management System
-## SYLLABUS
-
-This is a sample syllabus file for Performance Management System.

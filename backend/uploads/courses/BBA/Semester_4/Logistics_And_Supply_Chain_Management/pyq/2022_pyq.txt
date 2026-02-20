@@ -1,4 +1,0 @@
-# Logistics And Supply Chain Management
-## PYQ
-
-This is a sample pyq file for Logistics And Supply Chain Management.

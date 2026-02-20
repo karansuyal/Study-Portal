@@ -1,4 +1,0 @@
-# Data Communications and Computer Networks Laboratory
-## SYLLABUS
-
-This is a sample syllabus file for Data Communications and Computer Networks Laboratory.

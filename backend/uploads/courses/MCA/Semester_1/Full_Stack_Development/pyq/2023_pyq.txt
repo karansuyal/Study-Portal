@@ -1,4 +1,0 @@
-# Full Stack Development
-## PYQ
-
-This is a sample pyq file for Full Stack Development.

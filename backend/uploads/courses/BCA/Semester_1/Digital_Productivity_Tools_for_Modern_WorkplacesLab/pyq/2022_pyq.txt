@@ -1,4 +1,0 @@
-# Digital Productivity Tools for Modern Workplaces(Lab)
-## PYQ
-
-This is a sample pyq file for Digital Productivity Tools for Modern Workplaces(Lab).

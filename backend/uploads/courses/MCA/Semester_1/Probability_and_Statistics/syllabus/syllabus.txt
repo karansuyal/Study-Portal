@@ -1,4 +1,0 @@
-# Probability and Statistics
-## SYLLABUS
-
-This is a sample syllabus file for Probability and Statistics.

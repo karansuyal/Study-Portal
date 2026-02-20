@@ -1,4 +1,0 @@
-# Mathematics for AI-I
-## PYQ
-
-This is a sample pyq file for Mathematics for AI-I.

@@ -1,4 +1,0 @@
-# Organizational Change And Development
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Organizational Change And Development.

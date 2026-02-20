@@ -1,4 +1,0 @@
-# Big Data Analytics
-## NOTES
-
-This is a sample notes file for Big Data Analytics.

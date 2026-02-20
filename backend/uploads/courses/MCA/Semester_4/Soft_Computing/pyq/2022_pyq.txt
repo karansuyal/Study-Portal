@@ -1,4 +1,0 @@
-# Soft Computing
-## PYQ
-
-This is a sample pyq file for Soft Computing.

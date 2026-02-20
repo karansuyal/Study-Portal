@@ -1,4 +1,0 @@
-# Data Communication and Computer Networks
-## NOTES
-
-This is a sample notes file for Data Communication and Computer Networks.

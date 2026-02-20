@@ -1,4 +1,0 @@
-# Advanced Software Testing
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Advanced Software Testing.

@@ -1,4 +1,0 @@
-# Compensation And Reward Management
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Compensation And Reward Management.

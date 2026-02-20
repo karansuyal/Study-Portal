@@ -1,4 +1,0 @@
-# Computer Graphics
-## PYQ
-
-This is a sample pyq file for Computer Graphics.

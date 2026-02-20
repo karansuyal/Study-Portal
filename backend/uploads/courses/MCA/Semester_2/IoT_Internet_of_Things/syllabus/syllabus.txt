@@ -1,4 +1,0 @@
-# IoT (Internet of Things)
-## SYLLABUS
-
-This is a sample syllabus file for IoT (Internet of Things).

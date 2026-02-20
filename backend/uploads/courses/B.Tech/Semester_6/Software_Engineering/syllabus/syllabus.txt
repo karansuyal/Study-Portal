@@ -1,4 +1,0 @@
-# Software Engineering
-## SYLLABUS
-
-This is a sample syllabus file for Software Engineering.

@@ -1,4 +1,0 @@
-# Machine Learning Using Python
-## PYQ
-
-This is a sample pyq file for Machine Learning Using Python.

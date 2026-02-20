@@ -1,4 +1,0 @@
-# Consumer Behaviour
-## PYQ
-
-This is a sample pyq file for Consumer Behaviour.

@@ -1,4 +1,0 @@
-# Managing Banks And Financial Institutions
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Managing Banks And Financial Institutions.

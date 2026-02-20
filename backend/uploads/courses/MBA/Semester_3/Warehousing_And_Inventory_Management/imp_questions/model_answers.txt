@@ -1,4 +1,0 @@
-# Warehousing And Inventory Management
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Warehousing And Inventory Management.

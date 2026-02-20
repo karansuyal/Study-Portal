@@ -1,4 +1,0 @@
-# Introduction to Design and Analysis of Algorithms
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Introduction to Design and Analysis of Algorithms.

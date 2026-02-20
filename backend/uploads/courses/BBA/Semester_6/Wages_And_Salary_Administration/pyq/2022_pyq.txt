@@ -1,4 +1,0 @@
-# Wages And Salary Administration
-## PYQ
-
-This is a sample pyq file for Wages And Salary Administration.

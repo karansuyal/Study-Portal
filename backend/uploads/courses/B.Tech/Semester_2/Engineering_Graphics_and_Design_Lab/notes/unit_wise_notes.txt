@@ -1,4 +1,0 @@
-# Engineering Graphics and Design Lab
-## NOTES
-
-This is a sample notes file for Engineering Graphics and Design Lab.

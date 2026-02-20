@@ -1,4 +1,0 @@
-# Design and Analysis of Algorithms
-## SYLLABUS
-
-This is a sample syllabus file for Design and Analysis of Algorithms.

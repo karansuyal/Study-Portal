@@ -1,4 +1,0 @@
-# Computer Organization
-## NOTES
-
-This is a sample notes file for Computer Organization.

@@ -1,4 +1,0 @@
-# Introduction to Software Engineering
-## NOTES
-
-This is a sample notes file for Introduction to Software Engineering.

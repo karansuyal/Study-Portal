@@ -1,4 +1,0 @@
-# Discrete Structures and Combinatorics
-## NOTES
-
-This is a sample notes file for Discrete Structures and Combinatorics.

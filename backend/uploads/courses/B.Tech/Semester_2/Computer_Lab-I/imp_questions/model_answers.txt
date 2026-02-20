@@ -1,4 +1,0 @@
-# Computer Lab-I
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Computer Lab-I.

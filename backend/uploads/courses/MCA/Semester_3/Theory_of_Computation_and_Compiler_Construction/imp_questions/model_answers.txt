@@ -1,4 +1,0 @@
-# Theory of Computation and Compiler Construction
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Theory of Computation and Compiler Construction.

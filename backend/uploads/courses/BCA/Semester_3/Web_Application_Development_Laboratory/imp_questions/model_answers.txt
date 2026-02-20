@@ -1,4 +1,0 @@
-# Web Application Development Laboratory
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Web Application Development Laboratory.

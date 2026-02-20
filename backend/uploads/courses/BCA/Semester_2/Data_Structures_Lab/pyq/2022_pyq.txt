@@ -1,4 +1,0 @@
-# Data Structures Lab
-## PYQ
-
-This is a sample pyq file for Data Structures Lab.

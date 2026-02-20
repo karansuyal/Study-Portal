@@ -1,4 +1,0 @@
-# Computational Thinking & Fundamentals of IT
-## PYQ
-
-This is a sample pyq file for Computational Thinking & Fundamentals of IT.

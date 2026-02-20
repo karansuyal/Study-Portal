@@ -1,4 +1,0 @@
-# Warehousing And Inventory Management
-## NOTES
-
-This is a sample notes file for Warehousing And Inventory Management.

@@ -1,4 +1,0 @@
-# Finite Automata and Formal Languages
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Finite Automata and Formal Languages.

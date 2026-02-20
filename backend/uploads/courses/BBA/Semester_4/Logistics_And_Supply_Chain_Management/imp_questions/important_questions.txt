@@ -1,4 +1,0 @@
-# Logistics And Supply Chain Management
-## IMP_QUESTIONS
-
-This is a sample imp_questions file for Logistics And Supply Chain Management.

@@ -1,4 +1,0 @@
-# Business Intelligence
-## NOTES
-
-This is a sample notes file for Business Intelligence.

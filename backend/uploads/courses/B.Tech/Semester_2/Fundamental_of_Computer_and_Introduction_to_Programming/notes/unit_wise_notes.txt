@@ -1,4 +1,0 @@
-# Fundamental of Computer & Introduction to Programming
-## NOTES
-
-This is a sample notes file for Fundamental of Computer & Introduction to Programming.

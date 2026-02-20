@@ -1,4 +1,0 @@
-# Compiler Design Lab
-## NOTES
-
-This is a sample notes file for Compiler Design Lab.

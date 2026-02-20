@@ -1,4 +1,0 @@
-# Database Management Systems
-## PYQ
-
-This is a sample pyq file for Database Management Systems.

@@ -1,4 +1,0 @@
-# Sales Force And Channel Management
-## PYQ
-
-This is a sample pyq file for Sales Force And Channel Management.

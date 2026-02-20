@@ -1,4 +1,0 @@
-# Finite Automata and Formal Languages
-## SYLLABUS
-
-This is a sample syllabus file for Finite Automata and Formal Languages.

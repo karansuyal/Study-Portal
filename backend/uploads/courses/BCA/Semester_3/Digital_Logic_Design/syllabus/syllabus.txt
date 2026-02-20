@@ -1,4 +1,0 @@
-# Digital Logic Design
-## SYLLABUS
-
-This is a sample syllabus file for Digital Logic Design.
