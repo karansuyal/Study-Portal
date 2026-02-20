@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+// ✅ FIXED: Use Render backend URL
+const API_URL = 'https://study-portal-ill8.onrender.com/api';
+
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +15,7 @@ const Notes = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/notes');
+      const response = await fetch(`${API_URL}/notes`);
       const data = await response.json();
       setNotes(data.notes || []);
     } catch (error) {
@@ -29,7 +32,8 @@ const Notes = () => {
 
   const handleDownload = async (noteId, filename) => {
     try {
-      window.open(`http://localhost:5000/api/notes/${noteId}/download`, '_blank');
+      // ✅ FIXED: Use Render URL for download
+      window.open(`${API_URL}/notes/${noteId}/download`, '_blank');
       
       // Update download count in UI
       setNotes(prev => prev.map(note => 
@@ -150,7 +154,7 @@ const Notes = () => {
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
               border: '1px solid #e5e7eb',
               transition: 'transform 0.3s',
-              '&:hover': {
+              ':hover': {
                 transform: 'translateY(-5px)',
                 boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
               }
@@ -216,7 +220,7 @@ const Notes = () => {
                   justifyContent: 'center',
                   gap: '0.5rem',
                   transition: 'all 0.3s',
-                  '&:hover': {
+                  ':hover': {
                     transform: 'scale(1.02)'
                   }
                 }}
@@ -245,7 +249,7 @@ const Notes = () => {
           🔄 Refresh List
         </button>
         <p style={{ marginTop: '1rem', color: '#6b7280', fontSize: '0.9rem' }}>
-          Total Materials: {notes.length} | Backend: http://localhost:5000
+          Total Materials: {notes.length} | Backend: Render
         </p>
       </div>
     </div>
