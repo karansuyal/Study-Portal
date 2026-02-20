@@ -8,7 +8,7 @@ import {
   FaFileArchive, FaSync, FaCloudUploadAlt
 } from 'react-icons/fa';
 import { coursesData, getSubjects } from '../data/coursesData';
-import api from '../services/api';
+import api, { API_URL } from '../services/api';  // ✅ API_URL import kiya
 import './MaterialsPage.css';
 
 const MaterialsPage = () => {
@@ -26,81 +26,80 @@ const MaterialsPage = () => {
   const [error, setError] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
-  // ✅ RATING COMPONENT
-const Rating = ({ materialId, currentRating, onRate, userRating: initialUserRating }) => {
-  const [rating, setRating] = useState(currentRating || 0);
-  const [hover, setHover] = useState(0);
-  const [userRating, setUserRating] = useState(initialUserRating || null);
-  
-  // Fetch user's existing rating on load
-  useEffect(() => {
-    const fetchUserRating = async () => {
+  // ✅ RATING COMPONENT - FIXED URL
+  const Rating = ({ materialId, currentRating, onRate, userRating: initialUserRating }) => {
+    const [rating, setRating] = useState(currentRating || 0);
+    const [hover, setHover] = useState(0);
+    const [userRating, setUserRating] = useState(initialUserRating || null);
+    
+    useEffect(() => {
+      const fetchUserRating = async () => {
+        try {
+          const token = localStorage.getItem('study_portal_token');
+          const response = await fetch(`${API_URL}/notes/${materialId}/user-rating`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUserRating(data.rating);
+          }
+        } catch (error) {
+          console.error('Error fetching user rating:', error);
+        }
+      };
+      fetchUserRating();
+    }, [materialId]);
+    
+    const handleRating = async (value) => {
       try {
         const token = localStorage.getItem('study_portal_token');
-        const response = await fetch(`http://localhost:5000/api/notes/${materialId}/user-rating`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_URL}/notes/${materialId}/rate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ rating: value })
         });
+        
         if (response.ok) {
           const data = await response.json();
-          setUserRating(data.rating);
+          setUserRating(value);
+          setRating(data.new_rating);
+          if (onRate) onRate(data.new_rating);
         }
       } catch (error) {
-        console.error('Error fetching user rating:', error);
+        console.error('Rating error:', error);
       }
     };
-    fetchUserRating();
-  }, [materialId]);
-  
-  const handleRating = async (value) => {
-    try {
-      const token = localStorage.getItem('study_portal_token');
-      const response = await fetch(`http://localhost:5000/api/notes/${materialId}/rate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ rating: value })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUserRating(value);
-        setRating(data.new_rating);
-        if (onRate) onRate(data.new_rating);
-      }
-    } catch (error) {
-      console.error('Rating error:', error);
-    }
+    
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => handleRating(star)}
+            onMouseEnter={() => setHover(star)}
+            onMouseLeave={() => setHover(0)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '20px',
+              color: (hover || userRating || rating) >= star ? '#ffc107' : '#e4e5e9',
+              opacity: userRating === star ? 1 : 0.8,
+              transform: userRating === star ? 'scale(1.2)' : 'scale(1)'
+            }}
+          >
+            ★
+          </button>
+        ))}
+        <span style={{ fontSize: '14px', color: '#6c757d', marginLeft: '5px' }}>
+          ({rating?.toFixed(1) || '0'}) • {userRating ? `Your rating: ${userRating}★` : 'Rate now'}
+        </span>
+      </div>
+    );
   };
-  
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          onClick={() => handleRating(star)}
-          onMouseEnter={() => setHover(star)}
-          onMouseLeave={() => setHover(0)}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '20px',
-            color: (hover || userRating || rating) >= star ? '#ffc107' : '#e4e5e9',
-            opacity: userRating === star ? 1 : 0.8,
-            transform: userRating === star ? 'scale(1.2)' : 'scale(1)'
-          }}
-        >
-          ★
-        </button>
-      ))}
-      <span style={{ fontSize: '14px', color: '#6c757d', marginLeft: '5px' }}>
-        ({rating?.toFixed(1) || '0'}) • {userRating ? `Your rating: ${userRating}★` : 'Rate now'}
-      </span>
-    </div>
-  );
-};
 
   // Material types
   const materialTypes = [
@@ -112,6 +111,113 @@ const Rating = ({ materialId, currentRating, onRate, userRating: initialUserRati
     { id: 'lab', name: 'Lab Manuals', icon: <FaBookOpen />, color: '#EF4444' },
     { id: 'assignment', name: 'Assignments', icon: <FaFilePdf />, color: '#EC4899' }
   ];
+
+  // ✅ DOWNLOAD FUNCTION - FIXED URL
+  const handleDownload = async (material) => {
+    setDownloading(prev => ({ ...prev, [material.id]: true }));
+    
+    try {
+      const token = localStorage.getItem('study_portal_token');
+      
+      if (!token) {
+        showNotification('Error', 'Please login again', 'error');
+        return;
+      }
+      
+      console.log('📥 Downloading material:', material.id);
+      
+      const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = material.original_filename || `${material.title}.${material.fileType || 'pdf'}`;
+      
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (match && match[1]) {
+          filename = match[1].replace(/['"]/g, '');
+        }
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      showNotification('✅ Download Complete!', material.title, 'success');
+      
+      setMaterials(prev =>
+        prev.map(m =>
+          m.id === material.id
+            ? { ...m, downloads: m.downloads + 1 }
+            : m
+        )
+      );
+      
+    } catch (error) {
+      console.error('❌ Download error:', error);
+      showNotification('Download Failed', error.message, 'error');
+    } finally {
+      setDownloading(prev => ({ ...prev, [material.id]: false }));
+    }
+  };
+
+  // ✅ VIEWS INCREMENT - FIXED URL
+  useEffect(() => {
+    const incrementViews = async () => {
+      console.log('📢 incrementViews called with materials:', materials);
+      
+      if (materials.length === 0) {
+        console.log('⚠️ No materials to increment views');
+        return;
+      }
+      
+      for (const material of materials) {
+        console.log(`📢 Calling views API for material ${material.id}`);
+        
+        try {
+          const token = localStorage.getItem('study_portal_token');
+          console.log(`📢 Token exists:`, !!token);
+          
+          const response = await fetch(`${API_URL}/notes/${material.id}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          console.log(`📢 Response status for ${material.id}:`, response.status);
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log(`📢 Response data for ${material.id}:`, data);
+            console.log(`📢 Views count now:`, data.note.views);
+          } else {
+            console.log(`❌ Error response:`, await response.text());
+          }
+        } catch (err) {
+          console.error(`❌ Fetch error for ${material.id}:`, err);
+        }
+      }
+    };
+    
+    incrementViews();
+  }, [materials]);
 
   // ✅ PREVIEW FUNCTION
   const handlePreview = (material) => {
@@ -186,70 +292,6 @@ const Rating = ({ materialId, currentRating, onRate, userRating: initialUserRati
     };
   };
 
-  // ✅ DOWNLOAD FUNCTION
-  const handleDownload = async (material) => {
-    setDownloading(prev => ({ ...prev, [material.id]: true }));
-    
-    try {
-      const token = localStorage.getItem('study_portal_token');
-      
-      if (!token) {
-        showNotification('Error', 'Please login again', 'error');
-        return;
-      }
-      
-      console.log('📥 Downloading material:', material.id);
-      
-      const response = await fetch(`http://localhost:5000/api/notes/${material.id}/download`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Download failed: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = material.original_filename || `${material.title}.${material.fileType || 'pdf'}`;
-      
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (match && match[1]) {
-          filename = match[1].replace(/['"]/g, '');
-        }
-      }
-      
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      showNotification('✅ Download Complete!', material.title, 'success');
-      
-      setMaterials(prev =>
-        prev.map(m =>
-          m.id === material.id
-            ? { ...m, downloads: m.downloads + 1 }
-            : m
-        )
-      );
-      
-    } catch (error) {
-      console.error('❌ Download error:', error);
-      showNotification('Download Failed', error.message, 'error');
-    } finally {
-      setDownloading(prev => ({ ...prev, [material.id]: false }));
-    }
-  };
-
   // ✅ NOTIFICATION HELPER
   const showNotification = (title, message, type = 'success') => {
     const notification = document.createElement('div');
@@ -290,76 +332,74 @@ const Rating = ({ materialId, currentRating, onRate, userRating: initialUserRati
   };
 
   // ✅ FETCH MATERIALS FUNCTION
-// ✅ FETCH MATERIALS FUNCTION - with views fix
-const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
-  if (showRefreshIndicator) setRefreshing(true);
-  
-  try {
-    setError(null);
+  const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
+    if (showRefreshIndicator) setRefreshing(true);
     
-    console.log('📥 Fetching materials for subject:', subjectId);
-    
-    let response;
     try {
-      response = await api.getMaterials({
-        subject_id: subjectId,
-        status: 'approved'
-      });
-    } catch (apiError) {
-      console.error('API Error:', apiError);
-      setError('Failed to connect to server. Please try again.');
+      setError(null);
+      
+      console.log('📥 Fetching materials for subject:', subjectId);
+      
+      let response;
+      try {
+        response = await api.getMaterials({
+          subject_id: subjectId,
+          status: 'approved'
+        });
+      } catch (apiError) {
+        console.error('API Error:', apiError);
+        setError('Failed to connect to server. Please try again.');
+        setMaterials([]);
+        setLoading(false);
+        setRefreshing(false);
+        return;
+      }
+      
+      console.log('API Response:', response);
+      
+      let transformedMaterials = [];
+      
+      if (response && response.notes && response.notes.length > 0) {
+        transformedMaterials = response.notes.map((note) => ({
+          id: note.id,
+          title: note.title || 'Untitled',
+          type: note.note_type || note.type || 'notes',
+          description: note.description || 'No description available',
+          fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
+          pages: note.pages || 0,
+          uploadDate: note.uploaded_at ? new Date(note.uploaded_at).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          }) : 'N/A',
+          downloads: note.downloads || 0,
+          views: note.views || 0,
+          rating: note.rating || 0,
+          rating_count: note.rating_count || 0,
+          fileUrl: note.file_url || '#',
+          fileType: note.file_type || 'pdf',
+          user: note.user_name || note.uploader_name || 'Unknown',
+          isNew: note.uploaded_at ? new Date(note.uploaded_at) > new Date(Date.now() - 7*24*60*60*1000) : false
+        }));
+      }
+      
+      setMaterials(transformedMaterials);
+      
+      if (transformedMaterials.length === 0) {
+        setError('No approved materials found for this subject.');
+      }
+      
+      setLastRefreshed(new Date());
+      
+    } catch (error) {
+      console.error('Error fetching materials:', error);
+      setError('Failed to load materials. Please try again.');
       setMaterials([]);
+    } finally {
       setLoading(false);
       setRefreshing(false);
-      return;
     }
-    
-    console.log('API Response:', response);
-    
-    let transformedMaterials = [];
-    
-    if (response && response.notes && response.notes.length > 0) {
-      transformedMaterials = response.notes.map((note) => ({
-        id: note.id,
-        title: note.title || 'Untitled',
-        type: note.note_type || note.type || 'notes',
-        description: note.description || 'No description available',
-        fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
-        pages: note.pages || 0,
-        uploadDate: note.uploaded_at ? new Date(note.uploaded_at).toLocaleDateString('en-IN', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric'
-        }) : 'N/A',
-        downloads: note.downloads || 0,
-        // ✅ Ensure views is properly handled
-        views: note.views || 0,
-        rating: note.rating || 0,
-        rating_count: note.rating_count || 0,
-        fileUrl: note.file_url || '#',
-        fileType: note.file_type || 'pdf',
-        user: note.user_name || note.uploader_name || 'Unknown',
-        isNew: note.uploaded_at ? new Date(note.uploaded_at) > new Date(Date.now() - 7*24*60*60*1000) : false
-      }));
-    }
-    
-    setMaterials(transformedMaterials);
-    
-    if (transformedMaterials.length === 0) {
-      setError('No approved materials found for this subject.');
-    }
-    
-    setLastRefreshed(new Date());
-    
-  } catch (error) {
-    console.error('Error fetching materials:', error);
-    setError('Failed to load materials. Please try again.');
-    setMaterials([]);
-  } finally {
-    setLoading(false);
-    setRefreshing(false);
-  }
-};
+  };
 
   // ✅ FORMAT BYTES
   const formatBytes = (bytes) => {
@@ -417,50 +457,6 @@ const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
   const handleRefresh = () => {
     fetchMaterialsFromBackend(true);
   };
-
- // Session storage mein track karo ki already view count ho chuka hai
-// ✅ DEBUG VERSION - Console mein sab dikhega
-useEffect(() => {
-  const incrementViews = async () => {
-    console.log('📢 incrementViews called with materials:', materials);
-    
-    if (materials.length === 0) {
-      console.log('⚠️ No materials to increment views');
-      return;
-    }
-    
-    for (const material of materials) {
-      console.log(`📢 Calling views API for material ${material.id}`);
-      
-      try {
-        const token = localStorage.getItem('study_portal_token');
-        console.log(`📢 Token exists:`, !!token);
-        
-        const response = await fetch(`http://localhost:5000/api/notes/${material.id}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        console.log(`📢 Response status for ${material.id}:`, response.status);
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log(`📢 Response data for ${material.id}:`, data);
-          console.log(`📢 Views count now:`, data.note.views);
-        } else {
-          console.log(`❌ Error response:`, await response.text());
-        }
-      } catch (err) {
-        console.error(`❌ Fetch error for ${material.id}:`, err);
-      }
-    }
-  };
-  
-  incrementViews();
-}, [materials]);  // ✅ Sirf materials change par call
 
   // ✅ FILTER MATERIALS
   const filteredMaterials = materials.filter(material => {
@@ -1082,7 +1078,6 @@ useEffect(() => {
                           <span>{material.rating}/5</span>
                         </div>
                         
-                        {/* ✅ RATING COMPONENT - ADDED HERE */}
                         <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'center', marginTop: '5px' }}>
                           <Rating 
                             materialId={material.id} 
