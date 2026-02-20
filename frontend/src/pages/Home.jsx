@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import CourseCard from '../components/CourseCard';
 import config, { getAllCourses } from '../config/config';
-import { getRecentMaterials } from '../services/api';
-import './Home.css';  
 import { 
+  getRecentMaterials, 
   getFeaturedCourses, 
   getStats, 
   checkHealth,
-  addSampleCourses 
+  addSampleCourses,
+  API_URL  // ✅ Import API_URL from api.js
 } from '../services/api';
+import './Home.css';  
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
@@ -48,19 +49,18 @@ const Home = () => {
     fetchLatestMaterials();
   }, []);
 
-  // ✅ FIXED: Fetch materials with proper type mapping
+  // ✅ FIXED: Fetch materials from Render backend
   const fetchLatestMaterials = async () => {
     try {
       setMaterialsLoading(true);
       setMaterialsError('');
       
-      const response = await fetch('http://localhost:5000/api/materials');
+      const response = await fetch(`${API_URL}/materials`);
       const data = await response.json();
       
       console.log('Materials API Response:', data);
       
       if (data.success) {
-        // Transform materials with proper type and stats
         const transformedMaterials = data.materials.map(m => ({
           id: m.id,
           title: m.title,
@@ -68,9 +68,10 @@ const Home = () => {
           course_name: m.course || m.course_name || 'Unknown',
           user_name: m.user_name || 'Unknown',
           uploaded_at: m.uploaded_at,
-          views: m.views || Math.floor(Math.random() * 50) + 5, // Fallback if 0
-          downloads: m.downloads || Math.floor(Math.random() * 20) + 1, // Fallback if 0
-          material_type: m.material_type || m.note_type
+          views: m.views || Math.floor(Math.random() * 50) + 5,
+          downloads: m.downloads || Math.floor(Math.random() * 20) + 1,
+          material_type: m.material_type || m.note_type,
+          file_name: m.file_name
         }));
         
         setLatestMaterials(transformedMaterials.slice(0, 6));
@@ -86,6 +87,7 @@ const Home = () => {
     }
   };
 
+  // ✅ FIXED: Download from Render backend
   const handleMaterialClick = async (material) => {
     try {
       const token = localStorage.getItem('study_portal_token');
@@ -104,13 +106,12 @@ const Home = () => {
         downloadBtn.disabled = true;
       }
       
-      const downloadUrl = `http://localhost:5000/api/notes/${material.id}/download`;
+      const downloadUrl = `${API_URL}/notes/${material.id}/download`;
       
       const response = await fetch(downloadUrl, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
         }
       });
       
@@ -145,7 +146,6 @@ const Home = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      // Update download count in UI
       setLatestMaterials(prev =>
         prev.map(m =>
           m.id === material.id
@@ -320,7 +320,6 @@ const Home = () => {
     { title: 'Free Forever', desc: 'All resources free', icon: '🆓' },
   ];
 
-  // ✅ FIXED: Material type color mapping
   const getMaterialTypeColor = (type) => {
     const typeMap = {
       'notes': { background: '#dbeafe', color: '#1d4ed8', label: '📄 NOTES' },
@@ -336,7 +335,6 @@ const Home = () => {
     return typeMap[normalizedType] || { background: '#f1f5f9', color: '#475569', label: '📄 NOTES' };
   };
 
-  // ✅ FIXED: Format date properly
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -353,7 +351,6 @@ const Home = () => {
 
   return (
     <div className="home-page">
-      {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">Welcome to {config.APP_NAME}</h1>
@@ -390,7 +387,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
       <section className="stats-section">
         <div className="stats-grid">
           {stats.map((stat, index) => (
@@ -403,7 +399,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Courses */}
       <section className="courses-section">
         <h2 className="section-title">Select Your Course</h2>
         
@@ -452,111 +447,104 @@ const Home = () => {
         )}
       </section>
 
-{/* ✅ FIXED: Latest Materials Section - Badge date ke niche */}
-<section className="materials-section">
-  <h2 className="section-title">📚 Latest Study Materials</h2>
-  
-  {materialsLoading ? (
-    <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>Loading latest materials...</p>
-    </div>
-  ) : materialsError ? (
-    <div className="error-container">
-      <div className="error-icon">❌</div>
-      <h3 className="error-message">Failed to load materials</h3>
-      <p>{materialsError}</p>
-    </div>
-  ) : latestMaterials.length === 0 ? (
-    <div className="empty-materials">
-      <div className="empty-icon">📭</div>
-      <h3>No materials found</h3>
-      <p>Upload some materials to see them here</p>
-    </div>
-  ) : (
-    <>
-      <div className="materials-grid">
-        {latestMaterials.map((material) => {
-          const typeStyle = getMaterialTypeColor(material.type);
-          
-          return (
-            <div key={material.id} className="material-card">
-              {/* ✅ Title with icon */}
-              <h4 className="material-title">
-                {typeStyle.label.split(' ')[0]} {material.title}
-              </h4>
-              
-              {/* ✅ Details Column - Course, Person, Date, aur BADGE date ke niche */}
-              <div className="material-details">
-                <div className="detail-item">
-                  <span className="detail-icon">📚</span>
-                  <span className="detail-text">{material.course_name}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">👤</span>
-                  <span className="detail-text">{material.user_name}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">📅</span>
-                  <span className="detail-text">{formatDate(material.uploaded_at)}</span>
-                </div>
+      <section className="materials-section">
+        <h2 className="section-title">📚 Latest Study Materials</h2>
+        
+        {materialsLoading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading latest materials...</p>
+          </div>
+        ) : materialsError ? (
+          <div className="error-container">
+            <div className="error-icon">❌</div>
+            <h3 className="error-message">Failed to load materials</h3>
+            <p>{materialsError}</p>
+          </div>
+        ) : latestMaterials.length === 0 ? (
+          <div className="empty-materials">
+            <div className="empty-icon">📭</div>
+            <h3>No materials found</h3>
+            <p>Upload some materials to see them here</p>
+          </div>
+        ) : (
+          <>
+            <div className="materials-grid">
+              {latestMaterials.map((material) => {
+                const typeStyle = getMaterialTypeColor(material.type);
                 
-                {/* ✅ BADGE - Date ke niche same column mein */}
-                <div className="detail-item badge-detail-item">
-                  <span className="detail-icon">{typeStyle.label.split(' ')[0]}</span>
-                  <span 
-                    className="detail-badge"
-                    style={{
-                      background: typeStyle.background,
-                      color: typeStyle.color
-                    }}
-                  >
-                    {typeStyle.label.split(' ')[1] || typeStyle.label}
-                  </span>
-                </div>
-              </div>
-              
-              {/* ✅ Stats - Views aur Downloads ek line mein */}
-              <div className="material-stats">
-                <div className="stat-item">
-                  <span className="stat-icon">👁️</span>
-                  <span className="stat-number">{material.views}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">⬇️</span>
-                  <span className="stat-number">{material.downloads}</span>
-                </div>
-              </div>
-              
-              {/* ✅ Download Button */}
+                return (
+                  <div key={material.id} className="material-card">
+                    <h4 className="material-title">
+                      {typeStyle.label.split(' ')[0]} {material.title}
+                    </h4>
+                    
+                    <div className="material-details">
+                      <div className="detail-item">
+                        <span className="detail-icon">📚</span>
+                        <span className="detail-text">{material.course_name}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-icon">👤</span>
+                        <span className="detail-text">{material.user_name}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-icon">📅</span>
+                        <span className="detail-text">{formatDate(material.uploaded_at)}</span>
+                      </div>
+                      
+                      <div className="detail-item badge-detail-item">
+                        <span className="detail-icon">{typeStyle.label.split(' ')[0]}</span>
+                        <span 
+                          className="detail-badge"
+                          style={{
+                            background: typeStyle.background,
+                            color: typeStyle.color
+                          }}
+                        >
+                          {typeStyle.label.split(' ')[1] || typeStyle.label}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="material-stats">
+                      <div className="stat-item">
+                        <span className="stat-icon">👁️</span>
+                        <span className="stat-number">{material.views}</span>
+                      </div>
+                      <div className="stat-item">
+                        <span className="stat-icon">⬇️</span>
+                        <span className="stat-number">{material.downloads}</span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      id={`download-${material.id}`}
+                      className="download-btn-home"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMaterialClick(material);
+                      }}
+                    >
+                      ⬇️ Download
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div className="view-all">
               <button 
-                id={`download-${material.id}`}
-                className="download-btn-home"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleMaterialClick(material);
-                }}
+                className="view-all-btn"
+                onClick={() => navigate('/all-materials')}
               >
-                ⬇️ Download
+                View All Materials →
               </button>
             </div>
-          );
-        })}
-      </div>
-      
-      <div className="view-all">
-        <button 
-          className="view-all-btn"
-          onClick={() => navigate('/all-materials')}
-        >
-          View All Materials →
-        </button>
-      </div>
-    </>
-  )}
-</section>
+          </>
+        )}
+      </section>
 
-      {/* Features Section */}
       <section className="features-section">
         <h2 className="section-title">Why Choose {config.APP_NAME}?</h2>
         <div className="features-grid">
