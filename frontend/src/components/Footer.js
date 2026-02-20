@@ -5,171 +5,9 @@ import {
   FaEnvelope, FaPhone, FaMapMarkerAlt,
   FaArrowRight, FaGraduationCap, FaBook, FaHistory, FaGlobe, FaUsers
 } from 'react-icons/fa';
+import './Footer.css'; // ✅ CSS import
 
 const Footer = () => {
-  const styles = {
-    footer: {
-      background: '#0B1120',
-      color: '#E5E7EB',
-      padding: '4rem 2rem 1.5rem',
-      marginTop: '4rem',
-      borderTop: '1px solid #1F2937'
-    },
-    container: {
-      maxWidth: '1200px',
-      margin: '0 auto',
-      display: 'grid',
-      gridTemplateColumns: '2fr 1fr 1.5fr',
-      gap: '3rem'
-    },
-    // Column 1 - About
-    aboutSection: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1.2rem'
-    },
-    logo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      fontSize: '1.3rem',
-      fontWeight: '600',
-      color: 'white',
-      marginBottom: '0.5rem'
-    },
-    description: {
-      color: '#9CA3AF',
-      lineHeight: '1.6',
-      fontSize: '0.9rem',
-      maxWidth: '300px'
-    },
-    statsGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: '1rem',
-      marginTop: '1rem'
-    },
-    statItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.8rem'
-    },
-    statIcon: {
-      width: '36px',
-      height: '36px',
-      background: '#1F2937',
-      borderRadius: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#3B82F6',
-      fontSize: '1rem'
-    },
-    statContent: {
-      display: 'flex',
-      flexDirection: 'column'
-    },
-    statNumber: {
-      color: 'white',
-      fontWeight: '600',
-      fontSize: '1rem'
-    },
-    statLabel: {
-      color: '#9CA3AF',
-      fontSize: '0.8rem'
-    },
-    // Column 2 - Quick Links
-    linksSection: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1rem'
-    },
-    sectionTitle: {
-      color: 'white',
-      fontSize: '1rem',
-      fontWeight: '600',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
-      marginBottom: '0.5rem'
-    },
-    link: {
-      color: '#9CA3AF',
-      textDecoration: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      fontSize: '0.9rem',
-      padding: '0.3rem 0',
-      transition: 'color 0.2s',
-      '&:hover': {
-        color: '#3B82F6'
-      }
-    },
-    linkIcon: {
-      fontSize: '0.7rem',
-      color: '#4B5563'
-    },
-    // Column 3 - Contact
-    contactSection: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1.2rem'
-    },
-    contactItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '1rem',
-      color: '#9CA3AF',
-      fontSize: '0.9rem'
-    },
-    contactIcon: {
-      width: '36px',
-      height: '36px',
-      background: '#1F2937',
-      borderRadius: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#3B82F6',
-      fontSize: '1rem'
-    },
-    socialLinks: {
-      display: 'flex',
-      gap: '0.8rem',
-      marginTop: '1rem'
-    },
-    socialIcon: {
-      width: '36px',
-      height: '36px',
-      background: '#1F2937',
-      borderRadius: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#9CA3AF',
-      fontSize: '1rem',
-      transition: 'all 0.2s',
-      cursor: 'pointer',
-      '&:hover': {
-        background: '#3B82F6',
-        color: 'white'
-      }
-    },
-    // Bottom Bar
-    bottom: {
-      maxWidth: '1200px',
-      margin: '0 auto',
-      paddingTop: '2rem',
-      marginTop: '2rem',
-      borderTop: '1px solid #1F2937',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      color: '#6B7280',
-      fontSize: '0.85rem'
-    }
-  };
-
   const stats = [
     { icon: <FaBook />, number: '1000+', label: 'Notes' },
     { icon: <FaHistory />, number: '500+', label: 'PYQs' },
@@ -185,24 +23,24 @@ const Footer = () => {
   ];
 
   return (
-    <footer style={styles.footer}>
-      <div style={styles.container}>
+    <footer className="footer">
+      <div className="footer-container">
         {/* Column 1 - About with Stats */}
-        <div style={styles.aboutSection}>
-          <div style={styles.logo}>
-            <FaGraduationCap style={{ color: '#3B82F6' }} />
+        <div className="about-section">
+          <div className="footer-logo">
+            <FaGraduationCap />
             <span>Study Portal</span>
           </div>
-          <p style={styles.description}>
+          <p className="footer-description">
             Your one-stop destination for quality study materials, notes, and resources for all courses.
           </p>
-          <div style={styles.statsGrid}>
+          <div className="stats-grid">
             {stats.map((stat, index) => (
-              <div key={index} style={styles.statItem}>
-                <div style={styles.statIcon}>{stat.icon}</div>
-                <div style={styles.statContent}>
-                  <span style={styles.statNumber}>{stat.number}</span>
-                  <span style={styles.statLabel}>{stat.label}</span>
+              <div key={index} className="stat-item">
+                <div className="stat-icon">{stat.icon}</div>
+                <div className="stat-content">
+                  <span className="stat-number">{stat.number}</span>
+                  <span className="stat-label">{stat.label}</span>
                 </div>
               </div>
             ))}
@@ -210,47 +48,47 @@ const Footer = () => {
         </div>
 
         {/* Column 2 - Quick Links */}
-        <div style={styles.linksSection}>
-          <h3 style={styles.sectionTitle}>Quick Links</h3>
+        <div className="links-section">
+          <h3 className="section-title">Quick Links</h3>
           {quickLinks.map((link, index) => (
-            <Link key={index} to={link.path} style={styles.link}>
-              <FaArrowRight style={styles.linkIcon} />
+            <Link key={index} to={link.path} className="footer-link">
+              <FaArrowRight className="link-icon" />
               {link.name}
             </Link>
           ))}
         </div>
 
         {/* Column 3 - Contact */}
-        <div style={styles.contactSection}>
-          <h3 style={styles.sectionTitle}>Get in Touch</h3>
+        <div className="contact-section">
+          <h3 className="section-title">Get in Touch</h3>
           
-          <div style={styles.contactItem}>
-            <div style={styles.contactIcon}><FaEnvelope /></div>
+          <div className="contact-item">
+            <div className="contact-icon"><FaEnvelope /></div>
             <span>studyportal02@gmail.com</span>
           </div>
 
-          <div style={styles.contactItem}>
-            <div style={styles.contactIcon}><FaPhone /></div>
+          <div className="contact-item">
+            <div className="contact-icon"><FaPhone /></div>
             <span>7017320554</span>
           </div>
 
-          <div style={styles.contactItem}>
-            <div style={styles.contactIcon}><FaMapMarkerAlt /></div>
+          <div className="contact-item">
+            <div className="contact-icon"><FaMapMarkerAlt /></div>
             <span>GEHU Uttarakhand, India</span>
           </div>
 
-          <div style={styles.socialLinks}>
-            <a href="#" style={styles.socialIcon}><FaFacebookF /></a>
-            <a href="#" style={styles.socialIcon}><FaTwitter /></a>
-            <a href="#" style={styles.socialIcon}><FaInstagram /></a>
-            <a href="#" style={styles.socialIcon}><FaLinkedinIn /></a>
-            <a href="#" style={styles.socialIcon}><FaYoutube /></a>
+          <div className="social-links">
+            <a href="#" className="social-icon"><FaFacebookF /></a>
+            <a href="#" className="social-icon"><FaTwitter /></a>
+            <a href="#" className="social-icon"><FaInstagram /></a>
+            <a href="#" className="social-icon"><FaLinkedinIn /></a>
+            <a href="#" className="social-icon"><FaYoutube /></a>
           </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div style={styles.bottom}>
+      <div className="footer-bottom">
         <span>© 2026 Study Portal. All rights reserved.</span>
         <span>Made with ❤️ for education</span>
       </div>
