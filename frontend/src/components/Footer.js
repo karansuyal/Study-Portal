@@ -101,9 +101,6 @@ const Footer = () => {
       fontSize: '0.9rem',
       padding: '0.3rem 0',
       transition: 'color 0.2s',
-      '&:hover': {
-        color: '#3B82F6'
-      }
     },
     linkIcon: {
       fontSize: '0.7rem',
@@ -120,7 +117,8 @@ const Footer = () => {
       alignItems: 'center',
       gap: '1rem',
       color: '#9CA3AF',
-      fontSize: '0.9rem'
+      fontSize: '0.9rem',
+      wordBreak: 'break-word'
     },
     contactIcon: {
       width: '36px',
@@ -131,12 +129,14 @@ const Footer = () => {
       alignItems: 'center',
       justifyContent: 'center',
       color: '#3B82F6',
-      fontSize: '1rem'
+      fontSize: '1rem',
+      flexShrink: 0
     },
     socialLinks: {
       display: 'flex',
       gap: '0.8rem',
-      marginTop: '1rem'
+      marginTop: '1rem',
+      flexWrap: 'wrap'
     },
     socialIcon: {
       width: '36px',
@@ -150,10 +150,7 @@ const Footer = () => {
       fontSize: '1rem',
       transition: 'all 0.2s',
       cursor: 'pointer',
-      '&:hover': {
-        background: '#3B82F6',
-        color: 'white'
-      }
+      textDecoration: 'none'
     },
     // Bottom Bar
     bottom: {
@@ -254,6 +251,38 @@ const Footer = () => {
         <span>© 2026 Study Portal. All rights reserved.</span>
         <span>Made with ❤️ for education</span>
       </div>
+
+      {/* ✅ Mobile Media Queries via Style Tag */}
+      <style>
+        {`
+          @media (max-width: 768px) {
+            footer > div:first-child {
+              grid-template-columns: 1fr !important;
+              gap: 2rem !important;
+            }
+            
+            .contact-item span {
+              word-break: break-word;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            footer {
+              padding: 2rem 1rem 1rem !important;
+            }
+            
+            footer > div:last-child {
+              flex-direction: column !important;
+              text-align: center !important;
+              gap: 0.5rem !important;
+            }
+            
+            .social-links {
+              justify-content: center !important;
+            }
+          }
+        `}
+      </style>
     </footer>
   );
 };
