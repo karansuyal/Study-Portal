@@ -1565,6 +1565,15 @@ def delete_uploads():
 
 # ==================== FILE SERVING ====================
 
+
+@app.route('/api/init-db', methods=['GET'])
+def init_db_route():
+    try:
+        init_database()
+        return jsonify({'success': True, 'message': 'Database initialized!'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 @app.route('/api/files/<path:filepath>', methods=['GET'])
 def get_file(filepath):
     try:
