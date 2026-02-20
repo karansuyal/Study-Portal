@@ -11,7 +11,7 @@ const Footer = () => {
     footer: {
       background: '#0B1120',
       color: '#E5E7EB',
-      padding: '4rem 2rem 1.5rem',
+      padding: '4rem 1.5rem 1.5rem', // Responsive padding
       marginTop: '4rem',
       borderTop: '1px solid #1F2937'
     },
@@ -19,8 +19,12 @@ const Footer = () => {
       maxWidth: '1200px',
       margin: '0 auto',
       display: 'grid',
-      gridTemplateColumns: '2fr 1fr 1.5fr',
-      gap: '3rem'
+      gridTemplateColumns: 'repeat(3, 1fr)', // Desktop: 3 columns
+      gap: '2rem',
+      '@media (maxWidth: 768px)': {
+        gridTemplateColumns: '1fr', // Mobile: 1 column
+        gap: '2.5rem'
+      }
     },
     // Column 1 - About
     aboutSection: {
@@ -40,8 +44,11 @@ const Footer = () => {
     description: {
       color: '#9CA3AF',
       lineHeight: '1.6',
-      fontSize: '0.9rem',
-      maxWidth: '300px'
+      fontSize: '0.95rem',
+      maxWidth: '350px', // Thoda chhota kiya
+      '@media (maxWidth: 768px)': {
+        maxWidth: '100%'
+      }
     },
     statsGrid: {
       display: 'grid',
@@ -55,8 +62,8 @@ const Footer = () => {
       gap: '0.8rem'
     },
     statIcon: {
-      width: '36px',
-      height: '36px',
+      width: '40px',
+      height: '40px',
       background: '#1F2937',
       borderRadius: '8px',
       display: 'flex',
@@ -86,11 +93,14 @@ const Footer = () => {
     },
     sectionTitle: {
       color: 'white',
-      fontSize: '1rem',
+      fontSize: '1.1rem',
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
-      marginBottom: '0.5rem'
+      marginBottom: '0.5rem',
+      '@media (maxWidth: 768px)': {
+        fontSize: '1.2rem'
+      }
     },
     link: {
       color: '#9CA3AF',
@@ -98,10 +108,10 @@ const Footer = () => {
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem',
-      fontSize: '0.9rem',
-      padding: '0.3rem 0',
+      fontSize: '0.95rem',
+      padding: '0.4rem 0',
       transition: 'color 0.2s',
-      '&:hover': {
+      ':hover': {
         color: '#3B82F6'
       }
     },
@@ -120,27 +130,30 @@ const Footer = () => {
       alignItems: 'center',
       gap: '1rem',
       color: '#9CA3AF',
-      fontSize: '0.9rem'
+      fontSize: '0.95rem',
+      wordBreak: 'break-word' // Email waghera break ho jaye
     },
     contactIcon: {
-      width: '36px',
-      height: '36px',
+      width: '40px',
+      height: '40px',
       background: '#1F2937',
       borderRadius: '8px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       color: '#3B82F6',
-      fontSize: '1rem'
+      fontSize: '1rem',
+      flexShrink: 0 // Icon shrink na ho
     },
     socialLinks: {
       display: 'flex',
       gap: '0.8rem',
-      marginTop: '1rem'
+      marginTop: '1rem',
+      flexWrap: 'wrap' // Mobile par wrap ho jayega
     },
     socialIcon: {
-      width: '36px',
-      height: '36px',
+      width: '40px',
+      height: '40px',
       background: '#1F2937',
       borderRadius: '8px',
       display: 'flex',
@@ -150,7 +163,7 @@ const Footer = () => {
       fontSize: '1rem',
       transition: 'all 0.2s',
       cursor: 'pointer',
-      '&:hover': {
+      ':hover': {
         background: '#3B82F6',
         color: 'white'
       }
@@ -166,7 +179,12 @@ const Footer = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       color: '#6B7280',
-      fontSize: '0.85rem'
+      fontSize: '0.85rem',
+      '@media (maxWidth: 480px)': {
+        flexDirection: 'column', // Mobile par vertically stack
+        gap: '0.5rem',
+        textAlign: 'center'
+      }
     }
   };
 
@@ -254,6 +272,30 @@ const Footer = () => {
         <span>© 2026 Study Portal. All rights reserved.</span>
         <span>Made with ❤️ for education</span>
       </div>
+
+      {/* Media Queries via Style Tag */}
+      <style>
+        {`
+          @media (max-width: 768px) {
+            footer > div:first-child {
+              grid-template-columns: 1fr !important;
+              gap: 2.5rem !important;
+            }
+            
+            .contact-section span {
+              word-break: break-word;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            footer > div:last-child {
+              flex-direction: column !important;
+              text-align: center !important;
+              gap: 0.5rem !important;
+            }
+          }
+        `}
+      </style>
     </footer>
   );
 };
