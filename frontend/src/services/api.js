@@ -1,5 +1,5 @@
 // ✅ HARDCODED RENDER BACKEND URL
-const API_URL = 'https://study-portal-ill8.onrender.com/api';
+export const API_URL = 'https://study-portal-ill8.onrender.com/api';
 
 // Helper function for API calls
 async function fetchAPI(endpoint, options = {}) {

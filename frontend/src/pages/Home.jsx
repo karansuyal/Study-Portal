@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import CourseCard from '../components/CourseCard';
 import config, { getAllCourses } from '../config/config';
-import { 
-  getRecentMaterials, 
-  getFeaturedCourses, 
-  getStats, 
-  checkHealth,
-  addSampleCourses,
-  API_URL  // ✅ Import API_URL from api.js
-} from '../services/api';
+import { getRecentMaterials, getFeaturedCourses, getStats, checkHealth, addSampleCourses } from '../services/api';
 import './Home.css';  
 import { useNavigate } from 'react-router-dom';
-
+const API_URL = 'https://study-portal-ill8.onrender.com/api';
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [backendCourses, setBackendCourses] = useState([]);
