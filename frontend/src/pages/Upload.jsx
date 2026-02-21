@@ -1019,7 +1019,7 @@ export default Upload;
 //   const fetchCoursesFromBackend = async () => {
 //     try {
 //       setLoadingCourses(true);
-//       const response = await fetch('http://localhost:5000/api/courses');
+//       const response = await fetch('https://study-portal-ill8.onrender.com/api/courses');
       
 //       if (response.ok) {
 //         const data = await response.json();
@@ -1269,7 +1269,7 @@ export default Upload;
 //       uploadData.append('description', fullDescription);
 
 //       // Send to backend
-//       const response = await fetch('http://localhost:5000/api/upload', {
+//       const response = await fetch('https://study-portal-ill8.onrender.com/api/upload', {
 //         method: 'POST',
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
@@ -1318,7 +1318,7 @@ export default Upload;
 //       console.error('Upload error:', error);
       
 //       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-//         alert('❌ Network Error: Cannot connect to backend at http://localhost:5000\n\nPlease ensure backend server is running.');
+//         alert('❌ Network Error: Cannot connect to backend at https://study-portal-ill8.onrender.com\n\nPlease ensure backend server is running.');
 //       } else {
 //         alert(`❌ Upload Error: ${error.message}`);
 //       }

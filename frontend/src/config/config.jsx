@@ -2,7 +2,7 @@
 
 const config = {
   // API Configuration
-  API_BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:8000',
+  API_BASE_URL: process.env.REACT_APP_API_URL || 'https://study-portal-ill8.onrender.com',
   API_TIMEOUT: 10000, // 10 seconds
   
   // App Configuration

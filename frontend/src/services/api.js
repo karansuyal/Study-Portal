@@ -1265,7 +1265,7 @@ export default api;
 // // export default api;
 
 
-// // // const API_URL = 'http://localhost:5000/api';
+// // // const API_URL = 'https://study-portal-ill8.onrender.com/api';
 
 // // // // Helper function for API calls
 // // // async function fetchAPI(endpoint, options = {}) {

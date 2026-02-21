@@ -16,7 +16,7 @@ const AllMaterials = () => {
   const fetchAllMaterials = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/materials');
+      const response = await fetch('https://study-portal-ill8.onrender.com/api/materials');
       const data = await response.json();
       
       if (data.success) {
@@ -52,7 +52,7 @@ const AllMaterials = () => {
     for (const path of possiblePaths) {
       if (fileFound) break;
       
-      const testUrl = `http://localhost:5000/api/files/${path}`;
+      const testUrl = `https://study-portal-ill8.onrender.com/api/files/${path}`;
       
       try {
         const response = await fetch(testUrl, {
@@ -61,7 +61,7 @@ const AllMaterials = () => {
         });
         
         if (response.ok) {
-          await fetch(`http://localhost:5000/api/notes/${material.id}`, {
+          await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
             method: 'GET',
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
           });
@@ -101,7 +101,7 @@ const AllMaterials = () => {
         return;
       }
       
-      const downloadUrl = `http://localhost:5000/api/notes/${material.id}/download`;
+      const downloadUrl = `https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`;
       
       const response = await fetch(downloadUrl, {
         method: 'GET',

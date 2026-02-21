@@ -24,7 +24,7 @@ const AdminPanel = () => {
   const fetchPendingNotes = async () => {
     try {
       const token = getToken();
-      const response = await fetch('http://localhost:5000/api/admin/pending-notes', {
+      const response = await fetch('https://study-portal-ill8.onrender.com/api/admin/pending-notes', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -42,7 +42,7 @@ const AdminPanel = () => {
   const fetchStats = async () => {
     try {
       const token = getToken();
-      const response = await fetch('http://localhost:5000/api/admin/stats', {
+      const response = await fetch('https://study-portal-ill8.onrender.com/api/admin/stats', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -59,7 +59,7 @@ const AdminPanel = () => {
     
     try {
       const token = getToken();
-      const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}/approve`, {
+      const response = await fetch(`https://study-portal-ill8.onrender.com/api/admin/notes/${noteId}/approve`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -91,7 +91,7 @@ const AdminPanel = () => {
     
     try {
       const token = getToken();
-      const response = await fetch(`http://localhost:5000/api/admin/notes/${noteId}/reject`, {
+      const response = await fetch(`https://study-portal-ill8.onrender.com/api/admin/notes/${noteId}/reject`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -254,7 +254,7 @@ const AdminPanel = () => {
                     </p>
                   </div>
                   <a 
-                    href={`http://localhost:5000/api/files/${note.file_name}`}
+                    href={`https://study-portal-ill8.onrender.com/api/files/${note.file_name}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{

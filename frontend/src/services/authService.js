@@ -1,5 +1,5 @@
 // src/services/authService.js
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://study-portal-ill8.onrender.com/api';
 
 export const register = async (userData) => {
   const response = await fetch(`${API_URL}/auth/register`, {
