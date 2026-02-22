@@ -268,7 +268,7 @@ def send_verification_email(to_email, token, name):
         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
 
         sender_email = "studyportal02@gmail.com"
-        sender_password = "msrk alfc nprb vetd"
+        sender_password = "wbdi hqpm krch yhix"
 
         import smtplib
         from email.mime.text import MIMEText
