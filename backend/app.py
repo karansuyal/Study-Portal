@@ -68,7 +68,9 @@ app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 
 # Initialize extensions
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
-CORS(app, supports_credentials=True)
+CORS(app, 
+     origins=["https://study-portal-qitc.vercel.app", "http://localhost:3000"], 
+     supports_credentials=True)
 
 # Print database info on startup
 print("\n" + "="*70)
