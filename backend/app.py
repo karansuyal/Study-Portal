@@ -265,7 +265,7 @@ class Note(db.Model):
 
 def send_verification_email(to_email, token, name):
     try:
-        verification_link = f"http://localhost:5000/api/verify-email?token={token}"
+        verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
 
         sender_email = "studyportal02@gmail.com"
         sender_password = "msrk alfc nprb vetd"
