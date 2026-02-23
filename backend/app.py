@@ -487,38 +487,32 @@ def init_db_route():
 def login():
     try:
         data = request.get_json()
-
         if not data.get('email') or not data.get('password'):
-            return jsonify({
-                'success': False,
-                'error': 'Email and password required'
-            }), 400
+            return jsonify({'success': False, 'error': 'Email and password required'}), 400
 
         user = User.query.filter_by(email=data['email']).first()
 
         if not user or not user.check_password(data['password']):
+            return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
+
+        if not user.is_verified:
             return jsonify({
                 'success': False,
-                'error': 'Invalid credentials'
-            }), 401
-
-        # ✅ Email verification check removed
+                'error': 'Please verify your email first',
+                'needs_verification': True,
+                'email': user.email
+            }), 403
 
         token = create_access_token(identity=str(user.id))
-
         return jsonify({
             'success': True,
             'message': 'Login successful',
             'user': user.to_dict(),
             'access_token': token
-        }), 200
-
+        })
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-        
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -529,41 +523,37 @@ def register():
         required = ['name', 'email', 'password', 'branch', 'semester']
         for field in required:
             if not data.get(field):
-                return jsonify({
-                    'success': False,
-                    'error': f'{field} required'
-                }), 400
+                return jsonify({'success': False, 'error': f'{field} required'}), 400
 
         existing_user = db.session.execute(
             db.select(User).filter_by(email=data['email'])
         ).scalar_one_or_none()
 
         if existing_user:
-            return jsonify({
-                'success': False,
-                'error': 'Email already exists'
-            }), 409
+            return jsonify({'success': False, 'error': 'Email already exists'}), 409
 
-        # ✅ Create user (no email verification)
         user = User(
             name=data['name'],
             email=data['email'],
             branch=data['branch'],
             semester=int(data['semester']),
             role=data.get('role', 'student'),
-            is_verified=True   # Optional: set True or remove from model completely
+            is_verified=False
         )
-
         user.set_password(data['password'])
+
+        token = user.generate_verification_token()
+        print(f"🔑 Generated token: {token}")
 
         db.session.add(user)
         db.session.commit()
-
         print(f"✅ User saved with ID: {user.id}")
+
+        send_verification_email(user.email, token, user.name)
 
         return jsonify({
             'success': True,
-            'message': 'Registration successful!',
+            'message': 'Registration successful! Please check your email to verify your account.',
             'user': user.to_dict()
         }), 201
 
@@ -571,12 +561,9 @@ def register():
         db.session.rollback()
         print(f"❌ ERROR in register: {str(e)}")
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-        
-        
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/auth/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
@@ -595,46 +582,46 @@ def get_profile():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-# @app.route('/api/verify-email', methods=['GET'])
-# def verify_email():
-#     try:
-#         token = request.args.get('token')
+@app.route('/api/verify-email', methods=['GET'])
+def verify_email():
+    try:
+        token = request.args.get('token')
 
-#         if not token:
-#             return jsonify({'success': False, 'error': 'No token provided'}), 400
+        if not token:
+            return jsonify({'success': False, 'error': 'No token provided'}), 400
 
-#         print(f"🔍 Verifying token: {token}")
+        print(f"🔍 Verifying token: {token}")
 
-#         user = User.query.filter_by(verification_token=token).first()
+        user = User.query.filter_by(verification_token=token).first()
 
-#         if not user:
-#             return jsonify({'success': False, 'error': 'Invalid token'}), 400
+        if not user:
+            return jsonify({'success': False, 'error': 'Invalid token'}), 400
 
-#         current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(timezone.utc)
 
-#         if user.verification_token_expiry.tzinfo is None:
-#             expiry = user.verification_token_expiry.replace(tzinfo=timezone.utc)
-#         else:
-#             expiry = user.verification_token_expiry
+        if user.verification_token_expiry.tzinfo is None:
+            expiry = user.verification_token_expiry.replace(tzinfo=timezone.utc)
+        else:
+            expiry = user.verification_token_expiry
 
-#         if expiry < current_time:
-#             return jsonify({'success': False, 'error': 'Token expired'}), 400
+        if expiry < current_time:
+            return jsonify({'success': False, 'error': 'Token expired'}), 400
 
-#         user.is_verified = True
-#         user.verification_token = None
-#         user.verification_token_expiry = None
-#         db.session.commit()
+        user.is_verified = True
+        user.verification_token = None
+        user.verification_token_expiry = None
+        db.session.commit()
 
-#         print(f"✅ User {user.email} verified successfully")
+        print(f"✅ User {user.email} verified successfully")
 
-#         return jsonify({
-#             'success': True,
-#             'message': 'Email verified successfully! You can now login.'
-#         })
+        return jsonify({
+            'success': True,
+            'message': 'Email verified successfully! You can now login.'
+        })
 
-#     except Exception as e:
-#         print(f"❌ Verification error: {str(e)}")
-#         return jsonify({'success': False, 'error': str(e)}), 500
+    except Exception as e:
+        print(f"❌ Verification error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== ADMIN ROUTES ====================
