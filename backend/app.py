@@ -495,13 +495,13 @@ def login():
         if not user or not user.check_password(data['password']):
             return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
-        if not user.is_verified:
-            return jsonify({
-                'success': False,
-                'error': 'Please verify your email first',
-                'needs_verification': True,
-                'email': user.email
-            }), 403
+        # if not user.is_verified:
+        #     return jsonify({
+        #         'success': False,
+        #         'error': 'Please verify your email first',
+        #         'needs_verification': True,
+        #         'email': user.email
+        #     }), 403
 
         token = create_access_token(identity=str(user.id))
         return jsonify({
