@@ -481,6 +481,7 @@ def init_db_route():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# ==================== AUTH ROUTES ====================
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
@@ -494,6 +495,14 @@ def login():
         if not user or not user.check_password(data['password']):
             return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
+        if not user.is_verified:
+            return jsonify({
+                'success': False,
+                'error': 'Please verify your email first',
+                'needs_verification': True,
+                'email': user.email
+            }), 403
+
         token = create_access_token(identity=str(user.id))
         return jsonify({
             'success': True,
@@ -503,16 +512,56 @@ def login():
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-    
-    
-user = User(
-    name=data['name'],
-    email=data['email'],
-    branch=data['branch'],
-    semester=int(data['semester']),
-    role=data.get('role', 'student'),
-    is_verified=True  
-)
+
+
+@app.route('/api/auth/register', methods=['POST'])
+def register():
+    try:
+        data = request.get_json()
+        print(f"📥 Registration data: {data}")
+
+        required = ['name', 'email', 'password', 'branch', 'semester']
+        for field in required:
+            if not data.get(field):
+                return jsonify({'success': False, 'error': f'{field} required'}), 400
+
+        existing_user = db.session.execute(
+            db.select(User).filter_by(email=data['email'])
+        ).scalar_one_or_none()
+
+        if existing_user:
+            return jsonify({'success': False, 'error': 'Email already exists'}), 409
+
+        user = User(
+            name=data['name'],
+            email=data['email'],
+            branch=data['branch'],
+            semester=int(data['semester']),
+            role=data.get('role', 'student'),
+            is_verified=False
+        )
+        user.set_password(data['password'])
+
+        token = user.generate_verification_token()
+        print(f"🔑 Generated token: {token}")
+
+        db.session.add(user)
+        db.session.commit()
+        print(f"✅ User saved with ID: {user.id}")
+
+        send_verification_email(user.email, token, user.name)
+
+        return jsonify({
+            'success': True,
+            'message': 'Registration successful! Please check your email to verify your account.',
+            'user': user.to_dict()
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ ERROR in register: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/auth/profile', methods=['GET'])
