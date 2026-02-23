@@ -487,32 +487,38 @@ def init_db_route():
 def login():
     try:
         data = request.get_json()
+
         if not data.get('email') or not data.get('password'):
-            return jsonify({'success': False, 'error': 'Email and password required'}), 400
+            return jsonify({
+                'success': False,
+                'error': 'Email and password required'
+            }), 400
 
         user = User.query.filter_by(email=data['email']).first()
 
         if not user or not user.check_password(data['password']):
-            return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
+            return jsonify({
+                'success': False,
+                'error': 'Invalid credentials'
+            }), 401
 
-        # if not user.is_verified:
-        #     return jsonify({
-        #         'success': False,
-        #         'error': 'Please verify your email first',
-        #         'needs_verification': True,
-        #         'email': user.email
-        #     }), 403
+        # ✅ Email verification check removed
 
         token = create_access_token(identity=str(user.id))
+
         return jsonify({
             'success': True,
             'message': 'Login successful',
             'user': user.to_dict(),
             'access_token': token
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        }), 200
 
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+        
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -523,37 +529,41 @@ def register():
         required = ['name', 'email', 'password', 'branch', 'semester']
         for field in required:
             if not data.get(field):
-                return jsonify({'success': False, 'error': f'{field} required'}), 400
+                return jsonify({
+                    'success': False,
+                    'error': f'{field} required'
+                }), 400
 
         existing_user = db.session.execute(
             db.select(User).filter_by(email=data['email'])
         ).scalar_one_or_none()
 
         if existing_user:
-            return jsonify({'success': False, 'error': 'Email already exists'}), 409
+            return jsonify({
+                'success': False,
+                'error': 'Email already exists'
+            }), 409
 
+        # ✅ Create user (no email verification)
         user = User(
             name=data['name'],
             email=data['email'],
             branch=data['branch'],
             semester=int(data['semester']),
             role=data.get('role', 'student'),
-            is_verified=False
+            is_verified=True   # Optional: set True or remove from model completely
         )
-        user.set_password(data['password'])
 
-        token = user.generate_verification_token()
-        print(f"🔑 Generated token: {token}")
+        user.set_password(data['password'])
 
         db.session.add(user)
         db.session.commit()
-        print(f"✅ User saved with ID: {user.id}")
 
-        send_verification_email(user.email, token, user.name)
+        print(f"✅ User saved with ID: {user.id}")
 
         return jsonify({
             'success': True,
-            'message': 'Registration successful! Please check your email to verify your account.',
+            'message': 'Registration successful!',
             'user': user.to_dict()
         }), 201
 
@@ -561,9 +571,12 @@ def register():
         db.session.rollback()
         print(f"❌ ERROR in register: {str(e)}")
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+        
+        
 @app.route('/api/auth/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
