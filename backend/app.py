@@ -511,7 +511,7 @@ user = User(
     branch=data['branch'],
     semester=int(data['semester']),
     role=data.get('role', 'student'),
-    is_verified=True  # ✅ Ye change kar diya
+    is_verified=True  
 )
 # ==================== AUTH ROUTES ====================
 
