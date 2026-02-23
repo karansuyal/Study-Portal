@@ -595,46 +595,46 @@ def get_profile():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/verify-email', methods=['GET'])
-def verify_email():
-    try:
-        token = request.args.get('token')
+# @app.route('/api/verify-email', methods=['GET'])
+# def verify_email():
+#     try:
+#         token = request.args.get('token')
 
-        if not token:
-            return jsonify({'success': False, 'error': 'No token provided'}), 400
+#         if not token:
+#             return jsonify({'success': False, 'error': 'No token provided'}), 400
 
-        print(f"🔍 Verifying token: {token}")
+#         print(f"🔍 Verifying token: {token}")
 
-        user = User.query.filter_by(verification_token=token).first()
+#         user = User.query.filter_by(verification_token=token).first()
 
-        if not user:
-            return jsonify({'success': False, 'error': 'Invalid token'}), 400
+#         if not user:
+#             return jsonify({'success': False, 'error': 'Invalid token'}), 400
 
-        current_time = datetime.now(timezone.utc)
+#         current_time = datetime.now(timezone.utc)
 
-        if user.verification_token_expiry.tzinfo is None:
-            expiry = user.verification_token_expiry.replace(tzinfo=timezone.utc)
-        else:
-            expiry = user.verification_token_expiry
+#         if user.verification_token_expiry.tzinfo is None:
+#             expiry = user.verification_token_expiry.replace(tzinfo=timezone.utc)
+#         else:
+#             expiry = user.verification_token_expiry
 
-        if expiry < current_time:
-            return jsonify({'success': False, 'error': 'Token expired'}), 400
+#         if expiry < current_time:
+#             return jsonify({'success': False, 'error': 'Token expired'}), 400
 
-        user.is_verified = True
-        user.verification_token = None
-        user.verification_token_expiry = None
-        db.session.commit()
+#         user.is_verified = True
+#         user.verification_token = None
+#         user.verification_token_expiry = None
+#         db.session.commit()
 
-        print(f"✅ User {user.email} verified successfully")
+#         print(f"✅ User {user.email} verified successfully")
 
-        return jsonify({
-            'success': True,
-            'message': 'Email verified successfully! You can now login.'
-        })
+#         return jsonify({
+#             'success': True,
+#             'message': 'Email verified successfully! You can now login.'
+#         })
 
-    except Exception as e:
-        print(f"❌ Verification error: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+#     except Exception as e:
+#         print(f"❌ Verification error: {str(e)}")
+#         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== ADMIN ROUTES ====================
