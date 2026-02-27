@@ -58,10 +58,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 86400  # 24 hours
 print("\n" + "="*60)
 print("📧 MAIL CONFIGURATION")
 print("="*60)
-print(f"MAIL_SERVER: {app.config['MAIL_SERVER']}")
-print(f"MAIL_PORT: {app.config['MAIL_PORT']}")
-print(f"MAIL_USERNAME: {app.config['MAIL_USERNAME']}")
-print(f"MAIL_DEFAULT_SENDER: {app.config['MAIL_DEFAULT_SENDER']}")
+print("📧 Using SendGrid for emails")
 print("="*60 + "\n")
 
 # ✅ POSTGRESQL CONNECTION WITH RENDER FIX
