@@ -37,6 +37,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'notes-hub-secret-key-2024')
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'jwt-super-secret-key')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 86400  # 24 hours
+app.config['JWT_ALGORITHM'] = 'HS256'
+app.config['JWT_DECODE_ALGORITHMS'] = ['HS256']
 
 # ==================== MAIL CONFIGURATION ====================
 # app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
