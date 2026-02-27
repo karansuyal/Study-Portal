@@ -19,6 +19,7 @@ from flask_mail import Mail, Message
 
 # Load environment variables
 load_dotenv()
+print(f"📁 .env file loaded, MAIL_USERNAME from env: {os.environ.get('MAIL_USERNAME')}")
 
 # Initialize app
 app = Flask(__name__)
@@ -36,13 +37,20 @@ app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'jwt-super-secre
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 86400  # 24 hours
 
 # ==================== MAIL CONFIGURATION ====================
-app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
-app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
+# app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+# app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+# app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
+# app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+# app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+# app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
 # Initialize mail
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'studyportal02@gmail.com'
+app.config['MAIL_PASSWORD'] = 'wbdihqpmkrchyhix'
+app.config['MAIL_DEFAULT_SENDER'] = 'studyportal02@gmail.com'
 mail = Mail(app)
 
 print("\n" + "="*60)
@@ -269,6 +277,7 @@ def send_verification_email(to_email, token, name):
 
         sender_email = "studyportal02@gmail.com"
         sender_password = "wbdihqpmkrchyhix"
+        print(f"📧 Sending email from: {sender_email}")
 
         import smtplib
         from email.mime.text import MIMEText
