@@ -933,6 +933,39 @@ def rate_note(note_id):
         db.session.rollback()
         print(f"❌ Rating error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+@app.route('/api/notes/<int:note_id>/user-rating', methods=['GET', 'OPTIONS'])
+@jwt_required(optional=True)
+def get_user_rating(note_id):
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        user_id = get_jwt_identity()
+        if not user_id:
+            return jsonify({'success': False, 'rating': 0}), 200
+            
+        user = db.session.get(User, int(user_id))
+        if not user:
+            return jsonify({'success': False, 'rating': 0}), 200
+            
+        rating = db.session.execute(
+            db.select(UserRating).filter_by(
+                note_id=note_id,
+                user_id=user.id
+            )
+        ).scalar_one_or_none()
+        
+        return jsonify({
+            'success': True,
+            'rating': rating.rating if rating else 0
+        })
+        
+    except Exception as e:
+        print(f"❌ Error fetching user rating: {str(e)}")
+        return jsonify({'success': False, 'rating': 0}), 200
 
 
 # ==================== MATERIALS ROUTE (PUBLIC) ====================
