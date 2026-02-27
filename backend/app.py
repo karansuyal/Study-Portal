@@ -277,8 +277,7 @@ def send_verification_email(to_email, token, name):
     try:
         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
         
-        # SendGrid API key - hardcode kar rahe hain abhi
-        SENDGRID_API_KEY = "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"  # API key yahan daalo
+        SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
         
         import sendgrid
         from sendgrid.helpers.mail import Mail, Email, To, Content
