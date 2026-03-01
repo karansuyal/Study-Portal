@@ -1245,6 +1245,63 @@ def get_user_details(user_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# Yeh routes add karne hain
+@app.route('/api/admin/notes/<int:note_id>/approve', methods=['POST', 'OPTIONS'])
+@jwt_required()
+def approve_note(note_id):
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        user_id = get_jwt_identity()
+        user = db.session.get(User, int(user_id))
+        if not user or user.role != 'admin':
+            return jsonify({'success': False, 'error': 'Admin access required'}), 403
+        
+        note = db.session.get(Note, note_id)
+        if not note:
+            return jsonify({'success': False, 'error': 'Note not found'}), 404
+        
+        note.status = 'approved'
+        note.approved_at = datetime.now(timezone.utc)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Note approved successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/notes/<int:note_id>/reject', methods=['POST', 'OPTIONS'])
+@jwt_required()
+def reject_note(note_id):
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        user_id = get_jwt_identity()
+        user = db.session.get(User, int(user_id))
+        if not user or user.role != 'admin':
+            return jsonify({'success': False, 'error': 'Admin access required'}), 403
+        
+        data = request.get_json()
+        reason = data.get('reason', 'Rejected by admin')
+        
+        note = db.session.get(Note, note_id)
+        if not note:
+            return jsonify({'success': False, 'error': 'Note not found'}), 404
+        
+        note.status = 'rejected'
+        note.rejection_reason = reason
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Note rejected successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
+
 @app.route('/api/admin/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
 def update_user(user_id):
@@ -1377,17 +1434,36 @@ def delete_note(note_id):
 @app.route('/api/files/<path:filepath>', methods=['GET'])
 def get_file(filepath):
     try:
+        print(f"🔍 FILE REQUEST: {filepath}")  # Debug line
         directory = os.path.dirname(filepath)
         filename = os.path.basename(filepath)
 
+        # Multiple paths check karo
+        possible_paths = []
+        
         if directory:
-            full_path = os.path.join(app.config['UPLOAD_FOLDER'], directory)
-            return send_from_directory(full_path, filename)
-        else:
-            return send_from_directory(app.config['UPLOAD_FOLDER'], filepath)
-    except Exception as e:
+            path1 = os.path.join(app.config['UPLOAD_FOLDER'], directory, filename)
+            possible_paths.append(('with directory', path1))
+        
+        path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        possible_paths.append(('without directory', path2))
+        
+        # Try to find the file
+        for path_type, full_path in possible_paths:
+            print(f"🔍 Trying {path_type}: {full_path}")
+            if os.path.exists(full_path):
+                print(f"✅ Found at: {full_path}")
+                if directory:
+                    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], directory), filename)
+                else:
+                    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+        
+        print(f"❌ File not found in any location")
         return jsonify({'success': False, 'error': 'File not found'}), 404
-
+        
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return jsonify({'success': False, 'error': 'File not found'}), 404
 
 @app.route('/api/notes/<int:note_id>/download', methods=['GET'])
 def download_note(note_id):
@@ -1396,8 +1472,33 @@ def download_note(note_id):
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
+        # Debug - check file path
+        print(f"🔍 Download - Note ID: {note_id}")
+        print(f"🔍 File path from DB: {note.file_path}")
+        print(f"🔍 File exists: {os.path.exists(note.file_path)}")
+
         if not os.path.exists(note.file_path):
-            return jsonify({'success': False, 'error': 'File not found'}), 404
+            # Try alternative paths
+            filename = os.path.basename(note.file_path)
+            course = note.course_ref.name.replace(' ', '_')
+            
+            alt_paths = [
+                os.path.join(app.config['UPLOAD_FOLDER'], filename),  # Direct
+                os.path.join(app.config['UPLOAD_FOLDER'], course, filename),  # Course folder
+            ]
+            
+            found = False
+            for alt_path in alt_paths:
+                print(f"🔍 Trying alternative: {alt_path}")
+                if os.path.exists(alt_path):
+                    note.file_path = alt_path
+                    db.session.commit()
+                    print(f"✅ Found at alternative path")
+                    found = True
+                    break
+            
+            if not found:
+                return jsonify({'success': False, 'error': 'File not found on server'}), 404
 
         note.downloads += 1
         db.session.commit()
@@ -1424,6 +1525,8 @@ def download_note(note_id):
         )
 
     except Exception as e:
+        print(f"❌ Download error: {str(e)}")
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
