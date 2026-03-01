@@ -621,7 +621,7 @@ Upload Date: ${new Date().toLocaleDateString()}
         {/* Description */}
         <div className="form-group">
           <label className="form-label">
-            Description <small>(Optional details about the material)</small>
+            Description <small>(Details about the material)</small>
           </label>
           <textarea
             name="description"

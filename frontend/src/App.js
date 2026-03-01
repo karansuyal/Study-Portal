@@ -17,6 +17,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Register from './pages/Register';
 import SearchResults from './pages/SearchResults';
 import AllMaterials from './pages/AllMaterials';
+import AdminPanel from './pages/AdminPanel';
 
 
 // ✅ HIERARCHICAL PAGES IMPORTS
@@ -24,6 +25,8 @@ import YearSelection from './pages/YearSelection.jsx';
 import SemesterSelection from './pages/SemesterSelection.jsx';
 import SubjectSelection from './pages/SubjectSelection.jsx';
 import MaterialsPage from './pages/MaterialsPage.jsx';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -51,6 +54,11 @@ function App() {
               <Route path="/search" element={<SearchResults />} />
               <Route path="/materials" element={<MaterialsPage />} />
               <Route path="/all-materials" element={<AllMaterials />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin-panel" element={<AdminPanel />} />
+              <Route path="/admin-dashboard" element={<AdminPanel />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
              
 
 

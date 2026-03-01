@@ -179,7 +179,7 @@ const Footer = () => {
 
   const quickLinks = [
     { name: 'Home', path: '/' },
-    { name: 'All Courses', path: '/courses' },
+    // { name: 'All Courses', path: '/courses' },
     { name: 'About Us', path: '/about' },
     { name: 'Upload', path: '/upload' }
   ];
