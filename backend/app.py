@@ -747,6 +747,49 @@ def admin_stats():
         return jsonify({'success': True, 'stats': stats})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+@app.route('/api/admin/pending-notes', methods=['GET'])
+@jwt_required()
+def get_pending_notes():
+    try:
+        # Verify admin
+        user_id = get_jwt_identity()
+        user = db.session.get(User, int(user_id))
+        if not user or user.role != 'admin':
+            return jsonify({'success': False, 'error': 'Admin access required'}), 403
+        
+        # Fetch pending notes
+        notes = Note.query.filter_by(status='pending').order_by(Note.uploaded_at.desc()).all()
+        
+        return jsonify({
+            'success': True,
+            'notes': [note.to_dict() for note in notes]
+        })
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/approved-notes', methods=['GET'])
+@jwt_required()
+def get_approved_notes():
+    try:
+        # Verify admin
+        user_id = get_jwt_identity()
+        user = db.session.get(User, int(user_id))
+        if not user or user.role != 'admin':
+            return jsonify({'success': False, 'error': 'Admin access required'}), 403
+        
+        # Fetch approved notes
+        notes = Note.query.filter_by(status='approved').order_by(Note.uploaded_at.desc()).all()
+        
+        return jsonify({
+            'success': True,
+            'notes': [note.to_dict() for note in notes]
+        })
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== COURSE ROUTES ====================
