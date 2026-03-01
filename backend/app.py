@@ -1434,37 +1434,50 @@ def delete_note(note_id):
 @app.route('/api/files/<path:filepath>', methods=['GET'])
 def get_file(filepath):
     try:
-        print(f"🔍 FILE REQUEST: {filepath}")  # Debug line
-        directory = os.path.dirname(filepath)
-        filename = os.path.basename(filepath)
-
-        # Multiple paths check karo
-        possible_paths = []
+        print(f"🔍 FILE REQUEST: {filepath}")
         
-        if directory:
-            path1 = os.path.join(app.config['UPLOAD_FOLDER'], directory, filename)
-            possible_paths.append(('with directory', path1))
-        
-        path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        possible_paths.append(('without directory', path2))
-        
-        # Try to find the file
-        for path_type, full_path in possible_paths:
-            print(f"🔍 Trying {path_type}: {full_path}")
+        # Case 1: filepath already includes course folder (e.g., "BCA/filename.pdf")
+        if '/' in filepath:
+            directory = filepath.split('/')[0]
+            filename = '/'.join(filepath.split('/')[1:])
+            
+            full_path = os.path.join(app.config['UPLOAD_FOLDER'], directory, filename)
+            print(f"📂 Case 1 - Directory: {directory}, File: {filename}")
+            print(f"🔍 Full path: {full_path}")
+            
             if os.path.exists(full_path):
-                print(f"✅ Found at: {full_path}")
-                if directory:
-                    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], directory), filename)
-                else:
-                    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+                print(f"✅ Found in course folder")
+                return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], directory), filename)
         
-        print(f"❌ File not found in any location")
+        # Case 2: filepath is just filename (no folder)
+        full_path = os.path.join(app.config['UPLOAD_FOLDER'], filepath)
+        print(f"📂 Case 2 - Direct file: {full_path}")
+        
+        if os.path.exists(full_path):
+            print(f"✅ Found in root uploads")
+            return send_from_directory(app.config['UPLOAD_FOLDER'], filepath)
+        
+        # Case 3: Try to find file anywhere in uploads
+        print(f"🔍 Searching for {filepath} in all subfolders...")
+        for root, dirs, files in os.walk(app.config['UPLOAD_FOLDER']):
+            if filepath in files:
+                full_path = os.path.join(root, filepath)
+                relative_path = os.path.relpath(full_path, app.config['UPLOAD_FOLDER'])
+                directory = os.path.dirname(relative_path)
+                filename = os.path.basename(relative_path)
+                
+                print(f"✅ Found in subfolder: {directory}")
+                return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], directory), filename)
+        
+        # File not found
+        print(f"❌ File not found: {filepath}")
         return jsonify({'success': False, 'error': 'File not found'}), 404
         
     except Exception as e:
         print(f"❌ Error: {str(e)}")
-        return jsonify({'success': False, 'error': 'File not found'}), 404
-
+        return jsonify({'success': False, 'error': str(e)}), 404
+    
+    
 @app.route('/api/notes/<int:note_id>/download', methods=['GET'])
 def download_note(note_id):
     try:
