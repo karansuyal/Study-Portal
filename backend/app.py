@@ -858,57 +858,7 @@ def reset_password():
     except Exception as e:
         print(f"❌ Reset password error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
-    
-    
-@app.route('/api/auth/reset-password', methods=['POST', 'OPTIONS'])
-def reset_password():
-    # Handle preflight OPTIONS request
-    if request.method == 'OPTIONS':
-        response = jsonify({'success': True})
-        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-qitc.vercel.app')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response, 200
-        
-    try:
-        data = request.get_json()
-        token = data.get('token')
-        new_password = data.get('password')
-        
-        if not token or not new_password:
-            return jsonify({'success': False, 'error': 'Token and password are required'}), 400
-            
-        # Find user by token
-        user = User.query.filter_by(verification_token=token).first()
-        
-        if not user:
-            return jsonify({'success': False, 'error': 'Invalid or expired token'}), 400
-            
-        # Check expiry
-        current_time = datetime.now(timezone.utc)
-        if user.verification_token_expiry.tzinfo is None:
-            expiry = user.verification_token_expiry.replace(tzinfo=timezone.utc)
-        else:
-            expiry = user.verification_token_expiry
-            
-        if expiry < current_time:
-            return jsonify({'success': False, 'error': 'Token expired'}), 400
-            
-        # Update password
-        user.set_password(new_password)
-        user.verification_token = None
-        user.verification_token_expiry = None
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Password reset successfully! You can now login with your new password.'
-        }), 200
-        
-    except Exception as e:
-        print(f"❌ Reset password error: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 
 @app.route('/api/auth/profile', methods=['GET'])
