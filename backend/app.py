@@ -1528,6 +1528,82 @@ def download_note(note_id):
         print(f"❌ Download error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+@app.route('/api/debug/files', methods=['GET', 'OPTIONS'])
+def debug_files():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        # Check if user is admin
+        auth_header = request.headers.get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            return jsonify({'success': False, 'error': 'Authentication required'}), 401
+            
+        token = auth_header[7:]
+        try:
+            from flask_jwt_extended import decode_token
+            decoded = decode_token(token)
+            user_id = decoded['sub']
+        except:
+            return jsonify({'success': False, 'error': 'Invalid token'}), 401
+            
+        user = db.session.get(User, int(user_id))
+        if not user or user.role != 'admin':
+            return jsonify({'success': False, 'error': 'Admin access required'}), 403
+            
+        # Saare notes ke file paths check karo
+        notes = Note.query.all()
+        result = []
+        
+        for note in notes:
+            file_info = {
+                'id': note.id,
+                'title': note.title,
+                'file_name': note.file_name,
+                'original_filename': note.original_filename,
+                'db_path': note.file_path,
+                'exists_in_db_path': os.path.exists(note.file_path) if note.file_path else False,
+                'course': note.course_ref.name if note.course_ref else 'Unknown',
+                'upload_folder': app.config['UPLOAD_FOLDER']
+            }
+            
+            # Alternative paths check karo
+            if note.file_name:
+                # Direct uploads folder mein
+                alt_path1 = os.path.join(app.config['UPLOAD_FOLDER'], note.file_name)
+                file_info['alt_path1'] = alt_path1
+                file_info['alt_path1_exists'] = os.path.exists(alt_path1)
+                
+                # Course folder mein
+                if note.course_ref:
+                    course_folder = note.course_ref.name.replace(' ', '_')
+                    alt_path2 = os.path.join(app.config['UPLOAD_FOLDER'], course_folder, note.file_name)
+                    file_info['alt_path2'] = alt_path2
+                    file_info['alt_path2_exists'] = os.path.exists(alt_path2)
+            
+            result.append(file_info)
+        
+        # Upload folder ka structure bhi dekho
+        folder_structure = []
+        for root, dirs, files in os.walk(app.config['UPLOAD_FOLDER']):
+            for file in files:
+                folder_structure.append({
+                    'path': os.path.join(root, file),
+                    'relative': os.path.relpath(os.path.join(root, file), app.config['UPLOAD_FOLDER'])
+                })
+        
+        return jsonify({
+            'success': True,
+            'notes': result,
+            'folder_structure': folder_structure,
+            'upload_folder': app.config['UPLOAD_FOLDER']
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== ROOT ROUTE ====================
