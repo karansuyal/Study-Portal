@@ -4,7 +4,9 @@ import config, { getAllCourses } from '../config/config';
 import { getRecentMaterials, getFeaturedCourses, getStats, checkHealth, addSampleCourses } from '../services/api';
 import './Home.css';  
 import { useNavigate } from 'react-router-dom';
+
 const API_URL = 'https://study-portal-ill8.onrender.com/api';
+
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [backendCourses, setBackendCourses] = useState([]);
@@ -17,8 +19,8 @@ const Home = () => {
     { title: 'Courses', value: 'Loading...', icon: '🎓', key: 'courses' },
     { title: 'Downloads', value: 'Loading...', icon: '⬇️', key: 'downloads' },
   ]);
-  const [showAddCoursesBtn, setShowAddCoursesBtn] = useState(false);
   
+  const [showAddCoursesBtn, setShowAddCoursesBtn] = useState(false);
   const [latestMaterials, setLatestMaterials] = useState([]);
   const [materialsLoading, setMaterialsLoading] = useState(true);
   const [materialsError, setMaterialsError] = useState('');
@@ -26,6 +28,9 @@ const Home = () => {
   const navigate = useNavigate();
   
   const staticCourses = getAllCourses();
+
+  const isMobile = windowWidth <= 768;
+  const isTablet = windowWidth > 768 && windowWidth <= 1024;
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,7 +47,6 @@ const Home = () => {
     fetchLatestMaterials();
   }, []);
 
-  // ✅ FIXED: Fetch materials from Render backend
   const fetchLatestMaterials = async () => {
     try {
       setMaterialsLoading(true);
@@ -50,8 +54,6 @@ const Home = () => {
       
       const response = await fetch(`${API_URL}/materials`);
       const data = await response.json();
-      
-      console.log('Materials API Response:', data);
       
       if (data.success) {
         const transformedMaterials = data.materials.map(m => ({
@@ -67,8 +69,8 @@ const Home = () => {
           file_name: m.file_name
         }));
         
-        setLatestMaterials(transformedMaterials.slice(0, 6));
-        console.log('✅ Transformed materials:', transformedMaterials);
+        const itemsToShow = isMobile ? 3 : (isTablet ? 4 : 6);
+        setLatestMaterials(transformedMaterials.slice(0, itemsToShow));
       } else {
         setMaterialsError(data.error || 'Failed to fetch materials');
       }
@@ -80,7 +82,6 @@ const Home = () => {
     }
   };
 
-  // ✅ FIXED: Download from Render backend
   const handleMaterialClick = async (material) => {
     try {
       const token = localStorage.getItem('study_portal_token');
@@ -95,7 +96,7 @@ const Home = () => {
       
       const downloadBtn = document.getElementById(`download-${material.id}`);
       if (downloadBtn) {
-        downloadBtn.textContent = '⏳ Downloading...';
+        downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
         downloadBtn.disabled = true;
       }
       
@@ -157,14 +158,14 @@ const Home = () => {
         localStorage.removeItem('study_portal_token');
         navigate('/login');
       } else if (error.message.includes('404')) {
-        alert('❌ File not found on server. It may have been deleted.');
+        alert('❌ File not found on server.');
       } else {
-        alert(`❌ Download failed: ${error.message}`);
+        alert(`❌ Failed: ${error.message}`);
       }
     } finally {
       const downloadBtn = document.getElementById(`download-${material.id}`);
       if (downloadBtn) {
-        downloadBtn.textContent = 'Download';
+        downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
         downloadBtn.disabled = false;
       }
     }
@@ -173,7 +174,6 @@ const Home = () => {
   const checkBackend = async () => {
     try {
       const health = await checkHealth();
-      
       if (health.course_count === 0) {
         setShowAddCoursesBtn(true);
       }
@@ -199,7 +199,8 @@ const Home = () => {
 
   const fetchData = async () => {
     try {
-      const coursesData = await getFeaturedCourses(6);
+      const coursesToShow = isMobile ? 3 : (isTablet ? 4 : 6);
+      const coursesData = await getFeaturedCourses(coursesToShow);
       
       const transformedCourses = coursesData.courses.map(course => ({
         id: course.id,
@@ -217,30 +218,10 @@ const Home = () => {
       
       const statsData = await getStats();
       setStats([
-        { 
-          title: 'Total Notes', 
-          value: `${statsData.totalNotes || config.STATS_DEFAULTS.totalNotes}+`, 
-          icon: '📄',
-          key: 'notes'
-        },
-        { 
-          title: 'PYQs', 
-          value: `${statsData.totalPYQs || config.STATS_DEFAULTS.totalPYQs}+`, 
-          icon: '📝',
-          key: 'pyqs'
-        },
-        { 
-          title: 'Courses', 
-          value: `${statsData.totalCourses || config.STATS_DEFAULTS.totalCourses}+`, 
-          icon: '🎓',
-          key: 'courses'
-        },
-        { 
-          title: 'Downloads', 
-          value: `${statsData.totalDownloads || config.STATS_DEFAULTS.totalDownloads}+`, 
-          icon: '⬇️',
-          key: 'downloads'
-        },
+        { title: 'Total Notes', value: `${statsData.totalNotes || config.STATS_DEFAULTS.totalNotes}+`, icon: '📄', key: 'notes' },
+        { title: 'PYQs', value: `${statsData.totalPYQs || config.STATS_DEFAULTS.totalPYQs}+`, icon: '📝', key: 'pyqs' },
+        { title: 'Courses', value: `${statsData.totalCourses || config.STATS_DEFAULTS.totalCourses}+`, icon: '🎓', key: 'courses' },
+        { title: 'Downloads', value: `${statsData.totalDownloads || config.STATS_DEFAULTS.totalDownloads}+`, icon: '⬇️', key: 'downloads' },
       ]);
       
     } catch (error) {
@@ -249,30 +230,10 @@ const Home = () => {
       setBackendCourses([]);
       
       setStats([
-        { 
-          title: 'Total Notes', 
-          value: `${config.STATS_DEFAULTS.totalNotes}+`, 
-          icon: '📄',
-          key: 'notes'
-        },
-        { 
-          title: 'PYQs', 
-          value: `${config.STATS_DEFAULTS.totalPYQs}+`, 
-          icon: '📝',
-          key: 'pyqs'
-        },
-        { 
-          title: 'Courses', 
-          value: `${config.STATS_DEFAULTS.totalCourses}+`, 
-          icon: '🎓',
-          key: 'courses'
-        },
-        { 
-          title: 'Downloads', 
-          value: `${config.STATS_DEFAULTS.totalDownloads}+`, 
-          icon: '⬇️',
-          key: 'downloads'
-        },
+        { title: 'Total Notes', value: `${config.STATS_DEFAULTS.totalNotes}+`, icon: '📄', key: 'notes' },
+        { title: 'PYQs', value: `${config.STATS_DEFAULTS.totalPYQs}+`, icon: '📝', key: 'pyqs' },
+        { title: 'Courses', value: `${config.STATS_DEFAULTS.totalCourses}+`, icon: '🎓', key: 'courses' },
+        { title: 'Downloads', value: `${config.STATS_DEFAULTS.totalDownloads}+`, icon: '⬇️', key: 'downloads' },
       ]);
     } finally {
       setLoading(false);
@@ -292,7 +253,7 @@ const Home = () => {
 
   const displayCourses = backendCourses.length > 0 
     ? backendCourses 
-    : staticCourses.map(course => ({
+    : staticCourses.slice(0, isMobile ? 3 : (isTablet ? 4 : 6)).map(course => ({
         id: course.id,
         name: course.name,
         branch: course.branches?.[0] || 'General',
@@ -318,14 +279,14 @@ const Home = () => {
       'notes': { background: '#dbeafe', color: '#1d4ed8', label: '📄 NOTES' },
       'pyq': { background: '#fef3c7', color: '#92400e', label: '📝 PYQ' },
       'syllabus': { background: '#dcfce7', color: '#166534', label: '📋 SYLLABUS' },
-      'imp_questions': { background: '#f3e8ff', color: '#6b21a8', label: '❓ IMP QUESTIONS' },
+      'imp_questions': { background: '#f3e8ff', color: '#6b21a8', label: '❓ IMP Q' },
       'lab': { background: '#ffe4e6', color: '#9d174d', label: '🔬 LAB' },
-      'assignment': { background: '#fff7ed', color: '#9a3412', label: '📝 ASSIGNMENT' },
+      'assignment': { background: '#fff7ed', color: '#9a3412', label: '📝 ASSIGN' },
       'project': { background: '#ecfccb', color: '#3f6212', label: '📁 PROJECT' }
     };
     
     const normalizedType = type?.toLowerCase() || 'notes';
-    return typeMap[normalizedType] || { background: '#f1f5f9', color: '#475569', label: '📄 NOTES' };
+    return typeMap[normalizedType] || typeMap.notes;
   };
 
   const formatDate = (dateString) => {
@@ -344,28 +305,34 @@ const Home = () => {
 
   return (
     <div className="home-page">
+      {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">Welcome to {config.APP_NAME}</h1>
+          <h1 className="hero-title">
+            Welcome to <span className="hero-gradient">{config.APP_NAME}</span>
+          </h1>
           <p className="hero-subtitle">
             Your one-stop destination for notes, PYQs, syllabus and study materials
           </p>
           
-          <div className="search-container">
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search courses, notes, PYQs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <button 
-              className="search-button"
-              onClick={handleSearch}
-            >
-              🔍 Search
-            </button>
+          <div className="search-wrapper">
+            <div className="search-box">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search courses, notes, PYQs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <button 
+                className="search-button"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+            </div>
           </div>
 
           {showAddCoursesBtn && (
@@ -380,6 +347,7 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Stats Section */}
       <section className="stats-section">
         <div className="stats-grid">
           {stats.map((stat, index) => (
@@ -392,8 +360,9 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Courses Section */}
       <section className="courses-section">
-        <h2 className="section-title">Select Your Course</h2>
+        <h2 className="section-title">Popular Courses</h2>
         
         {loading ? (
           <div className="loading-container">
@@ -403,7 +372,7 @@ const Home = () => {
         ) : displayCourses.length === 0 ? (
           <div className="error-container">
             <div className="error-icon">📭</div>
-            <h3 className="error-message">No courses found in database!</h3>
+            <h3>No courses found</h3>
             <button 
               className="error-retry-btn"
               onClick={handleAddSampleCourses}
@@ -418,7 +387,7 @@ const Home = () => {
               {displayCourses.map(course => (
                 <div 
                   key={course.id} 
-                  className="course-item"
+                  className="course-card-wrapper"
                   onClick={() => handleCourseClick(course.id)}
                 >
                   <CourseCard 
@@ -431,17 +400,13 @@ const Home = () => {
               ))}
             </div>
             
-            <div className="view-all">
-              <p className="view-all-text">
-                Click on any course card to select and view years
-              </p>
-            </div>
           </>
         )}
       </section>
 
+      {/* Materials Section */}
       <section className="materials-section">
-        <h2 className="section-title">📚 Latest Study Materials</h2>
+        <h2 className="section-title">Latest Study Materials</h2>
         
         {materialsLoading ? (
           <div className="loading-container">
@@ -451,7 +416,7 @@ const Home = () => {
         ) : materialsError ? (
           <div className="error-container">
             <div className="error-icon">❌</div>
-            <h3 className="error-message">Failed to load materials</h3>
+            <h3>Failed to load materials</h3>
             <p>{materialsError}</p>
           </div>
         ) : latestMaterials.length === 0 ? (
@@ -468,52 +433,43 @@ const Home = () => {
                 
                 return (
                   <div key={material.id} className="material-card">
-                    <h4 className="material-title">
-                      {typeStyle.label.split(' ')[0]} {material.title}
-                    </h4>
+                    <div className="material-header">
+                      <span 
+                        className="material-type"
+                        style={{ background: typeStyle.background, color: typeStyle.color }}
+                      >
+                        {typeStyle.label}
+                      </span>
+                      <span className="material-date">{formatDate(material.uploaded_at)}</span>
+                    </div>
                     
-                    <div className="material-details">
-                      <div className="detail-item">
-                        <span className="detail-icon">📚</span>
-                        <span className="detail-text">{material.course_name}</span>
+                    <h4 className="material-title">{material.title}</h4>
+                    
+                    <div className="material-info">
+                      <div className="info-item">
+                        <span className="info-icon">📚</span>
+                        <span className="info-text">{material.course_name}</span>
                       </div>
-                      <div className="detail-item">
-                        <span className="detail-icon">👤</span>
-                        <span className="detail-text">{material.user_name}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="detail-icon">📅</span>
-                        <span className="detail-text">{formatDate(material.uploaded_at)}</span>
-                      </div>
-                      
-                      <div className="detail-item badge-detail-item">
-                        <span className="detail-icon">{typeStyle.label.split(' ')[0]}</span>
-                        <span 
-                          className="detail-badge"
-                          style={{
-                            background: typeStyle.background,
-                            color: typeStyle.color
-                          }}
-                        >
-                          {typeStyle.label.split(' ')[1] || typeStyle.label}
-                        </span>
+                      <div className="info-item">
+                        <span className="info-icon">👤</span>
+                        <span className="info-text">{material.user_name}</span>
                       </div>
                     </div>
                     
                     <div className="material-stats">
                       <div className="stat-item">
                         <span className="stat-icon">👁️</span>
-                        <span className="stat-number">{material.views}</span>
+                        <span className="stat-value">{material.views}</span>
                       </div>
                       <div className="stat-item">
                         <span className="stat-icon">⬇️</span>
-                        <span className="stat-number">{material.downloads}</span>
+                        <span className="stat-value">{material.downloads}</span>
                       </div>
                     </div>
                     
                     <button 
                       id={`download-${material.id}`}
-                      className="download-btn-home"
+                      className="download-btn"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleMaterialClick(material);
@@ -538,8 +494,9 @@ const Home = () => {
         )}
       </section>
 
+      {/* Features Section */}
       <section className="features-section">
-        <h2 className="section-title">Why Choose {config.APP_NAME}?</h2>
+        <h2 className="section-title">Why Choose Us?</h2>
         <div className="features-grid">
           {features.map((feature, index) => (
             <div key={index} className="feature-card">

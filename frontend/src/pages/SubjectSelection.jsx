@@ -103,31 +103,6 @@ const SubjectSelection = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div style={styles.searchSection}>
-        <div style={styles.searchContainer}>
-          <FaSearch style={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Search subjects by name or code..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
-          />
-          {searchQuery && (
-            <button 
-              onClick={() => setSearchQuery('')}
-              style={styles.clearButton}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-        <p style={styles.searchInfo}>
-          Found {filteredSubjects.length} subject{filteredSubjects.length !== 1 ? 's' : ''}
-        </p>
-      </div>
-
       {/* Subjects Grid */}
       <div style={styles.subjectsGrid}>
         {filteredSubjects.length === 0 ? (

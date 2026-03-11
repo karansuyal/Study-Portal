@@ -235,41 +235,9 @@ const SemesterSelection = () => {
         <button onClick={handleBack} className="back-button">
           ← Back to Years
         </button>
-        <div className="page-header">
-          <h1 className="title">
-            <span className="course-icon">{course.icon}</span>
-            {course.name} - Year {yearId}
-          </h1>
-          <p className="subtitle">
-            {course.description} • Select your semester
-          </p>
-        </div>
       </div>
 
-      <div className="course-info-banner">
-        <div className="course-info-item">
-          <span className="info-icon">📅</span>
-          <div>
-            <p className="info-label">Total Years</p>
-            <p className="info-value">{course.duration}</p>
-          </div>
-        </div>
-        <div className="course-info-item">
-          <span className="info-icon">📚</span>
-          <div>
-            <p className="info-label">Total Semesters</p>
-            <p className="info-value">{course.totalSemesters}</p>
-          </div>
-        </div>
-        <div className="course-info-item">
-          <span className="info-icon">🎯</span>
-          <div>
-            <p className="info-label">Current Year</p>
-            <p className="info-value">{yearId} of {course.duration}</p>
-          </div>
-        </div>
-      </div>
-
+     
       <div className="semesters-grid">
         {semesters.map((semester) => (
           <div

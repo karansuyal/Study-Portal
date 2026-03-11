@@ -348,7 +348,7 @@ export const getDBInfo = async () => {
     };
   } catch (error) {
     return {
-      tables: { notes: 5000, pyqs: 2000, courses: 5, downloads: 15000, subjects: 50, users: 100 }
+      tables: { notes: 500, pyqs: 1000, courses: 5, downloads: 1500, subjects: 50, users: 100 }
     };
   }
 };

@@ -18,6 +18,7 @@ import Register from './pages/Register';
 import SearchResults from './pages/SearchResults';
 import AllMaterials from './pages/AllMaterials';
 import AdminPanel from './pages/AdminPanel';
+import ScrollToTop from './components/ScrollToTop';
 
 
 // ✅ HIERARCHICAL PAGES IMPORTS
@@ -32,6 +33,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <ScrollToTop /> {}
         <div
           className="App"
           style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}

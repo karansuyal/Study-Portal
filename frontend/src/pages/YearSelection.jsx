@@ -106,22 +106,21 @@ const YearSelection = () => {
 
   return (
     <div style={styles.container}>
-      {/* Header */}
-      <div style={styles.header}>
-        <button onClick={handleBack} style={styles.backButton}>
+      {/* Compact Header */}
+      <div style={styles.compactHeader}>
+        <button onClick={handleBack} style={styles.compactBackButton}>
           ← Back to Courses
         </button>
-        <div style={styles.courseInfo}>
-          <span style={styles.courseIcon}>{course.icon}</span>
-          <h1 style={styles.courseName}>{course.name}</h1>
-          <p style={styles.courseDescription}>Select your academic year</p>
-          <p style={styles.courseDetails}>
-            {course.duration} Years • {course.totalSemesters} Semesters • {course.branches.length} Branches
-          </p>
+        <div style={styles.compactCourseInfo}>
+          <span style={styles.compactCourseIcon}>{course.icon}</span>
+          <span style={styles.compactCourseName}>{course.name}</span>
+          <span style={styles.compactCourseDetails}>
+            {course.duration} Years • {course.totalSemesters} Semesters
+          </span>
         </div>
       </div>
 
-      {/* Years Grid */}
+      {/* Years Grid - Ab upar se shuru */}
       <div style={styles.yearsGrid}>
         {years.map((year) => (
           <div
@@ -143,7 +142,7 @@ const YearSelection = () => {
               <span style={styles.materialBadge}>📋 Syllabus</span>
               <span style={styles.materialBadge}>📚 Notes</span>
               <span style={styles.materialBadge}>📝 PYQs</span>
-              {['1', '2', '5'].includes(courseId) ? ( // B.Tech, BCA, MCA
+              {['1', '2', '5'].includes(courseId) ? (
                 <span style={styles.materialBadge}>🔬 Labs</span>
               ) : (
                 <span style={styles.materialBadge}>📊 Cases</span>
@@ -166,20 +165,11 @@ const YearSelection = () => {
         ))}
       </div>
 
-      {/* Course Info Footer */}
-      <div style={styles.footer}>
+      {/* Simple Footer */}
+      <div style={styles.simpleFooter}>
         <p>
-          <strong>{course.name}</strong> • {course.duration} Years • 
-          {course.totalSemesters} Semesters • Complete study materials
+          <strong>{course.name}</strong> • {course.duration} Years • Complete study materials
         </p>
-        <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', color: '#6b7280' }}>
-          Available branches: {course.branches.join(', ')}
-        </p>
-        <div style={styles.courseStats}>
-          <span>📅 {course.duration}-Year Program</span>
-          <span>📚 {years.length} Academic Years</span>
-          <span>🎓 {['4', '5'].includes(courseId) ? 'Postgraduate' : 'Undergraduate'}</span>
-        </div>
       </div>
     </div>
   );
@@ -189,162 +179,149 @@ const styles = {
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    padding: '2rem 1rem',
+    padding: '1.5rem 1rem',
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
   },
-  header: {
-    marginBottom: '3rem',
-    textAlign: 'center'
+  
+  // Compact Header
+  compactHeader: {
+    marginBottom: '2rem',
   },
-  backButton: {
-    padding: '0.75rem 1.5rem',
+  compactBackButton: {
+    padding: '0.4rem 1rem',
     background: '#4f46e5',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '20px',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: '0.85rem',
     marginBottom: '1rem',
     display: 'inline-block',
-    transition: 'all 0.3s',
-    '&:hover': {
-      background: '#4338ca',
-      transform: 'translateX(-5px)'
-    }
+    transition: 'all 0.3s'
   },
-  courseInfo: {
+  compactCourseInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
     background: 'white',
-    padding: '2rem',
-    borderRadius: '15px',
-    boxShadow: '0 5px 15px rgba(0,0,0,0.05)'
+    padding: '0.75rem 1.5rem',
+    borderRadius: '40px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    width: 'fit-content',
+    margin: '0 auto'
   },
-  courseIcon: {
-    fontSize: '3rem',
-    marginBottom: '1rem',
-    display: 'inline-block'
+  compactCourseIcon: {
+    fontSize: '1.2rem',
   },
-  courseName: {
-    fontSize: '2.5rem',
-    marginBottom: '0.5rem',
-    color: '#1f2937'
-  },
-  courseDescription: {
-    color: '#6b7280',
+  compactCourseName: {
     fontSize: '1.1rem',
-    marginBottom: '0.5rem'
+    fontWeight: '600',
+    color: '#1f2937',
   },
-  courseDetails: {
-    color: '#4f46e5',
-    fontSize: '0.9rem',
-    fontWeight: '500'
+  compactCourseDetails: {
+    fontSize: '0.8rem',
+    color: '#6b7280',
+    borderLeft: '1px solid #e5e7eb',
+    paddingLeft: '0.75rem',
   },
+  
+  // Years Grid
   yearsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '2rem',
-    marginBottom: '3rem'
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: '1.5rem',
+    marginBottom: '2rem'
   },
   yearCard: {
     background: 'white',
     padding: '1.5rem',
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
     textAlign: 'center',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    border: '2px solid transparent',
-    '&:hover': {
-      transform: 'translateY(-5px)',
-      boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-      borderColor: '#4f46e5'
-    }
+    border: '1px solid #e5e7eb'
   },
   yearNumberCircle: {
-    width: '60px',
-    height: '60px',
+    width: '50px',
+    height: '50px',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: '0 auto 1rem',
+    margin: '0 auto 0.8rem',
     color: 'white',
-    fontSize: '1.5rem',
+    fontSize: '1.2rem',
     fontWeight: 'bold'
   },
   yearNumber: {
     color: '#1f2937'
   },
   yearName: {
-    fontSize: '1.5rem',
-    marginBottom: '0.5rem',
-    color: '#1f2937'
+    fontSize: '1.2rem',
+    marginBottom: '0.3rem',
+    color: '#1f2937',
+    fontWeight: '600'
   },
   yearDescription: {
     color: '#6b7280',
-    marginBottom: '0.5rem',
-    fontSize: '0.9rem'
+    marginBottom: '0.8rem',
+    fontSize: '0.8rem',
   },
   materialsPreview: {
     display: 'flex',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    gap: '0.5rem',
-    margin: '1rem 0'
+    gap: '0.4rem',
+    margin: '0.8rem 0'
   },
   materialBadge: {
     background: '#f3f4f6',
     color: '#4b5563',
-    padding: '0.25rem 0.75rem',
-    borderRadius: '15px',
-    fontSize: '0.75rem',
-    border: '1px solid #e5e7eb'
+    padding: '0.2rem 0.6rem',
+    borderRadius: '12px',
+    fontSize: '0.7rem',
+    border: '1px solid #e5e7eb',
   },
   stats: {
     display: 'flex',
     justifyContent: 'center',
-    gap: '1rem',
-    margin: '1rem 0',
-    fontSize: '0.9rem',
-    color: '#666'
+    gap: '0.8rem',
+    margin: '0.8rem 0',
+    fontSize: '0.8rem',
+    color: '#666',
+    flexWrap: 'wrap'
   },
   stat: {
     background: '#f3f4f6',
-    padding: '0.25rem 0.75rem',
-    borderRadius: '15px'
+    padding: '0.2rem 0.6rem',
+    borderRadius: '12px',
   },
   selectButton: {
-    marginTop: '1rem',
-    padding: '0.75rem 1.5rem',
+    marginTop: '0.8rem',
+    padding: '0.6rem 1rem',
     color: 'white',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: '0.85rem',
     width: '100%',
     fontWeight: '500',
-    transition: 'all 0.3s',
-    '&:hover': {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
-    }
+    transition: 'all 0.3s'
   },
-  footer: {
+  
+  // Simple Footer
+  simpleFooter: {
     textAlign: 'center',
-    padding: '1.5rem',
+    padding: '1rem',
     background: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-    color: '#6b7280'
+    borderRadius: '30px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+    color: '#6b7280',
+    fontSize: '0.85rem'
   },
-  courseStats: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '2rem',
-    marginTop: '1rem',
-    fontSize: '0.9rem',
-    color: '#4f46e5'
-  },
+  
   loadingContainer: {
     display: 'flex',
     flexDirection: 'column',

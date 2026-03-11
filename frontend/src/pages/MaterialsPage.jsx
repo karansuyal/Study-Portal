@@ -8,7 +8,7 @@ import {
   FaFileArchive, FaSync, FaCloudUploadAlt
 } from 'react-icons/fa';
 import { coursesData, getSubjects } from '../data/coursesData';
-import api, { API_URL } from '../services/api';  // ✅ API_URL import kiya
+import api, { API_URL } from '../services/api';
 import './MaterialsPage.css';
 
 const MaterialsPage = () => {
@@ -25,12 +25,24 @@ const MaterialsPage = () => {
   const [courseInfo, setCourseInfo] = useState(null);
   const [error, setError] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
+  const [showFilters, setShowFilters] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // ✅ RATING COMPONENT - FIXED URL
+  // Check mobile on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // ✅ RATING COMPONENT - FIXED
   const Rating = ({ materialId, currentRating, onRate, userRating: initialUserRating }) => {
     const [rating, setRating] = useState(currentRating || 0);
     const [hover, setHover] = useState(0);
     const [userRating, setUserRating] = useState(initialUserRating || null);
+    const [isRated, setIsRated] = useState(false);
     
     useEffect(() => {
       const fetchUserRating = async () => {
@@ -51,7 +63,10 @@ const MaterialsPage = () => {
     }, [materialId]);
     
     const handleRating = async (value) => {
+      if (isRated) return; // Prevent multiple ratings
+      
       try {
+        setIsRated(true);
         const token = localStorage.getItem('study_portal_token');
         const response = await fetch(`${API_URL}/notes/${materialId}/rate`, {
           method: 'POST',
@@ -67,36 +82,43 @@ const MaterialsPage = () => {
           setUserRating(value);
           setRating(data.new_rating);
           if (onRate) onRate(data.new_rating);
+          showNotification('Rating submitted!', 'Thank you for rating', 'success');
         }
       } catch (error) {
         console.error('Rating error:', error);
+        showNotification('Rating failed', 'Please try again', 'error');
+      } finally {
+        setTimeout(() => setIsRated(false), 2000);
       }
     };
     
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+      <div style={isMobile ? styles.mobileRatingContainer : styles.ratingContainer}>
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
             onClick={() => handleRating(star)}
-            onMouseEnter={() => setHover(star)}
-            onMouseLeave={() => setHover(0)}
+            onMouseEnter={() => !isMobile && setHover(star)}
+            onMouseLeave={() => !isMobile && setHover(0)}
             style={{
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              fontSize: '20px',
+              fontSize: isMobile ? '16px' : '20px',
               color: (hover || userRating || rating) >= star ? '#ffc107' : '#e4e5e9',
               opacity: userRating === star ? 1 : 0.8,
-              transform: userRating === star ? 'scale(1.2)' : 'scale(1)'
+              transform: userRating === star ? 'scale(1.2)' : 'scale(1)',
+              padding: isMobile ? '2px' : '0'
             }}
           >
             ★
           </button>
         ))}
-        <span style={{ fontSize: '14px', color: '#6c757d', marginLeft: '5px' }}>
-          ({rating?.toFixed(1) || '0'}) • {userRating ? `Your rating: ${userRating}★` : 'Rate now'}
-        </span>
+        {!isMobile && (
+          <span style={{ fontSize: '14px', color: '#6c757d', marginLeft: '5px' }}>
+            ({rating?.toFixed(1) || '0'}) {userRating ? `• Your: ${userRating}★` : ''}
+          </span>
+        )}
       </div>
     );
   };
@@ -112,7 +134,7 @@ const MaterialsPage = () => {
     { id: 'assignment', name: 'Assignments', icon: <FaFilePdf />, color: '#EC4899' }
   ];
 
-  // ✅ DOWNLOAD FUNCTION - FIXED URL
+  // ✅ DOWNLOAD FUNCTION - FIXED
   const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: true }));
     
@@ -160,6 +182,7 @@ const MaterialsPage = () => {
       
       showNotification('✅ Download Complete!', material.title, 'success');
       
+      // Update download count
       setMaterials(prev =>
         prev.map(m =>
           m.id === material.id
@@ -176,23 +199,14 @@ const MaterialsPage = () => {
     }
   };
 
-  // ✅ VIEWS INCREMENT - FIXED URL
+  // ✅ VIEWS INCREMENT - FIXED
   useEffect(() => {
     const incrementViews = async () => {
-      console.log('📢 incrementViews called with materials:', materials);
-      
-      if (materials.length === 0) {
-        console.log('⚠️ No materials to increment views');
-        return;
-      }
+      if (materials.length === 0) return;
       
       for (const material of materials) {
-        console.log(`📢 Calling views API for material ${material.id}`);
-        
         try {
           const token = localStorage.getItem('study_portal_token');
-          console.log(`📢 Token exists:`, !!token);
-          
           const response = await fetch(`${API_URL}/notes/${material.id}`, {
             method: 'GET',
             headers: {
@@ -201,53 +215,34 @@ const MaterialsPage = () => {
             }
           });
           
-          console.log(`📢 Response status for ${material.id}:`, response.status);
-          
           if (response.ok) {
             const data = await response.json();
-            console.log(`📢 Response data for ${material.id}:`, data);
-            console.log(`📢 Views count now:`, data.note.views);
-          } else {
-            console.log(`❌ Error response:`, await response.text());
+            if (data.note && data.note.views) {
+              setMaterials(prev =>
+                prev.map(m =>
+                  m.id === material.id
+                    ? { ...m, views: data.note.views }
+                    : m
+                )
+              );
+            }
           }
         } catch (err) {
-          console.error(`❌ Fetch error for ${material.id}:`, err);
+          console.error(`❌ Views error for ${material.id}:`, err);
         }
       }
     };
     
-    incrementViews();
-  }, [materials]);
+    if (materials.length > 0) {
+      incrementViews();
+    }
+  }, [materials.length]); // Only run when materials first load
 
-  // ✅ PREVIEW FUNCTION
+  // ✅ PREVIEW FUNCTION - FIXED
   const handlePreview = (material) => {
-    const previewContent = `
-      <div style="padding: 20px; max-width: 500px;">
-        <h3 style="color: #1f2937; margin-bottom: 10px;">${material.title}</h3>
-        <p style="color: #6b7280; margin-bottom: 15px;">${material.description}</p>
-        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-          <p style="margin: 5px 0;"><strong>📁 File Type:</strong> ${material.fileType?.toUpperCase() || 'PDF'}</p>
-          <p style="margin: 5px 0;"><strong>📏 File Size:</strong> ${material.fileSize}</p>
-          <p style="margin: 5px 0;"><strong>👤 Uploaded by:</strong> ${material.user}</p>
-          <p style="margin: 5px 0;"><strong>📅 Upload Date:</strong> ${material.uploadDate}</p>
-          <p style="margin: 5px 0;"><strong>⭐ Rating:</strong> ${material.rating}/5</p>
-          <p style="margin: 5px 0;"><strong>📥 Downloads:</strong> ${material.downloads}</p>
-          <p style="margin: 5px 0;"><strong>👁️ Views:</strong> ${material.views}</p>
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <button onclick="handlePreviewDownload()" style="flex: 1; padding: 10px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
-            Download Now
-          </button>
-          <button onclick="window.closeModal()" style="flex: 1; padding: 10px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer;">
-            Close
-          </button>
-        </div>
-      </div>
-    `;
-
-    const modal = document.createElement('div');
-    modal.id = 'previewModal';
-    modal.style.cssText = `
+    const previewModal = document.createElement('div');
+    previewModal.id = 'previewModal';
+    previewModal.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
@@ -260,35 +255,58 @@ const MaterialsPage = () => {
       z-index: 1000;
     `;
     
-    const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
+    const previewContent = document.createElement('div');
+    previewContent.style.cssText = `
       background: white;
       border-radius: 12px;
-      padding: 0;
-      max-width: 600px;
-      width: 90%;
+      padding: 20px;
+      max-width: ${isMobile ? '90%' : '500px'};
+      width: ${isMobile ? '95%' : '90%'};
       max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
     `;
-    modalContent.innerHTML = previewContent;
     
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
+    previewContent.innerHTML = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h3 style="color: #1f2937; margin-bottom: 10px;">${material.title}</h3>
+        <p style="color: #6b7280; font-size: 14px;">${material.description}</p>
+      </div>
+      <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <p style="margin: 5px 0;"><strong>📁 File Type:</strong> ${material.fileType?.toUpperCase() || 'PDF'}</p>
+        <p style="margin: 5px 0;"><strong>📏 File Size:</strong> ${material.fileSize}</p>
+        <p style="margin: 5px 0;"><strong>👤 Uploaded by:</strong> ${material.user}</p>
+        <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${material.uploadDate}</p>
+        <p style="margin: 5px 0;"><strong>⭐ Rating:</strong> ${material.rating}/5</p>
+        <p style="margin: 5px 0;"><strong>📥 Downloads:</strong> ${material.downloads}</p>
+        <p style="margin: 5px 0;"><strong>👁️ Views:</strong> ${material.views}</p>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button id="previewDownloadBtn" style="flex: 1; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          Download Now
+        </button>
+        <button id="previewCloseBtn" style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          Close
+        </button>
+      </div>
+    `;
     
-    window.closeModal = () => {
-      document.body.removeChild(modal);
+    previewModal.appendChild(previewContent);
+    document.body.appendChild(previewModal);
+    
+    document.getElementById('previewDownloadBtn').onclick = () => {
+      handleDownload(material);
+      document.body.removeChild(previewModal);
     };
     
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        window.closeModal();
-      }
-    });
+    document.getElementById('previewCloseBtn').onclick = () => {
+      document.body.removeChild(previewModal);
+    };
     
-    window.handlePreviewDownload = () => {
-      handleDownload(material);
-      window.closeModal();
+    previewModal.onclick = (e) => {
+      if (e.target === previewModal) {
+        document.body.removeChild(previewModal);
+      }
     };
   };
 
@@ -315,19 +333,21 @@ const MaterialsPage = () => {
       <div style="font-size: 20px;">${type === 'success' ? '✅' : '❌'}</div>
       <div>
         <div style="font-weight: 600;">${title}</div>
-        <div style="font-size: 14px; opacity: 0.9;">${message}</div>
+        <div style="font-size: 12px; opacity: 0.9;">${message}</div>
       </div>
     `;
     
     document.body.appendChild(notification);
     
     setTimeout(() => {
-      notification.style.animation = 'slideOut 0.3s ease';
-      setTimeout(() => {
-        if (notification.parentNode) {
-          document.body.removeChild(notification);
-        }
-      }, 300);
+      if (notification.parentNode) {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            document.body.removeChild(notification);
+          }
+        }, 300);
+      }
     }, 3000);
   };
 
@@ -366,7 +386,8 @@ const MaterialsPage = () => {
           type: note.note_type || note.type || 'notes',
           description: note.description || 'No description available',
           fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
-          pages: note.pages || 0,
+          original_filename: note.original_filename,
+          fileType: note.file_type || 'pdf',
           uploadDate: note.uploaded_at ? new Date(note.uploaded_at).toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
@@ -377,7 +398,6 @@ const MaterialsPage = () => {
           rating: note.rating || 0,
           rating_count: note.rating_count || 0,
           fileUrl: note.file_url || '#',
-          fileType: note.file_type || 'pdf',
           user: note.user_name || note.uploader_name || 'Unknown',
           isNew: note.uploaded_at ? new Date(note.uploaded_at) > new Date(Date.now() - 7*24*60*60*1000) : false
         }));
@@ -492,19 +512,20 @@ const MaterialsPage = () => {
 
   const materialStats = getMaterialStats();
 
-  // ✅ STYLES
+  // ✅ STYLES - Laptop (original) + Mobile (optimized)
   const styles = {
     container: {
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px',
+      padding: isMobile ? '10px' : '20px',
       fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
     },
     innerContainer: {
       maxWidth: '1200px',
       margin: '0 auto'
     },
-    headerButtons: {
+    // Laptop styles
+    laptopHeaderButtons: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -512,7 +533,7 @@ const MaterialsPage = () => {
       flexWrap: 'wrap',
       gap: '15px'
     },
-    backButton: {
+    laptopBackButton: {
       display: 'inline-flex',
       alignItems: 'center',
       gap: '8px',
@@ -527,7 +548,7 @@ const MaterialsPage = () => {
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
       transition: 'all 0.3s ease'
     },
-    refreshButton: {
+    laptopRefreshButton: {
       display: 'inline-flex',
       alignItems: 'center',
       gap: '8px',
@@ -542,7 +563,7 @@ const MaterialsPage = () => {
       boxShadow: '0 4px 6px rgba(16, 185, 129, 0.3)',
       transition: 'all 0.3s ease'
     },
-    subjectHeader: {
+    laptopSubjectHeader: {
       background: 'white',
       padding: '30px',
       borderRadius: '16px',
@@ -553,7 +574,7 @@ const MaterialsPage = () => {
       gap: '25px',
       flexWrap: 'wrap'
     },
-    subjectIconContainer: {
+    laptopSubjectIconContainer: {
       width: '90px',
       height: '90px',
       borderRadius: '50%',
@@ -563,20 +584,20 @@ const MaterialsPage = () => {
       justifyContent: 'center',
       flexShrink: '0'
     },
-    subjectIcon: {
+    laptopSubjectIcon: {
       fontSize: '40px',
       color: 'white'
     },
-    subjectInfo: {
+    laptopSubjectInfo: {
       flex: '1'
     },
-    subjectName: {
+    laptopSubjectName: {
       fontSize: '32px',
       fontWeight: '700',
       color: '#1f2937',
       marginBottom: '10px'
     },
-    subjectCode: {
+    laptopSubjectCode: {
       fontSize: '18px',
       color: '#6b7280',
       marginBottom: '15px',
@@ -585,7 +606,7 @@ const MaterialsPage = () => {
       gap: '20px',
       flexWrap: 'wrap'
     },
-    breadcrumb: {
+    laptopBreadcrumb: {
       display: 'flex',
       alignItems: 'center',
       gap: '10px',
@@ -593,16 +614,16 @@ const MaterialsPage = () => {
       color: '#9ca3af',
       flexWrap: 'wrap'
     },
-    breadcrumbItem: {
+    laptopBreadcrumbItem: {
       padding: '6px 12px',
       background: '#f3f4f6',
       borderRadius: '6px'
     },
-    currentBreadcrumb: {
+    laptopCurrentBreadcrumb: {
       background: '#4f46e5',
       color: 'white'
     },
-    statsBox: {
+    laptopStatsBox: {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       padding: '20px',
       borderRadius: '12px',
@@ -610,41 +631,600 @@ const MaterialsPage = () => {
       textAlign: 'center',
       minWidth: '120px'
     },
-    statsNumber: {
+    laptopStatsNumber: {
       fontSize: '32px',
       fontWeight: '700',
       marginBottom: '5px'
     },
-    statsLabel: {
+    laptopStatsLabel: {
       fontSize: '14px',
       opacity: '0.9'
     },
-    lastRefreshed: {
+    laptopLastRefreshed: {
       fontSize: '12px',
       color: '#9ca3af',
       marginTop: '10px',
       textAlign: 'right'
+    },
+    laptopSearchContainer: {
+      position: 'relative',
+      marginBottom: '25px'
+    },
+    laptopSearchInput: {
+      width: '100%',
+      padding: '16px 20px 16px 50px',
+      fontSize: '16px',
+      border: '2px solid #e5e7eb',
+      borderRadius: '10px',
+      background: '#f9fafb',
+      transition: 'all 0.3s',
+      outline: 'none'
+    },
+    laptopSearchIcon: {
+      position: 'absolute',
+      left: '20px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: '#9ca3af',
+      fontSize: '18px'
+    },
+    laptopFiltersContainer: {
+      background: 'white',
+      padding: '20px',
+      borderRadius: '12px',
+      marginBottom: '25px',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
+    },
+    laptopFiltersTitle: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#1f2937',
+      marginBottom: '15px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px'
+    },
+    laptopFiltersGrid: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '10px'
+    },
+    laptopFilterButton: (type, selected) => ({
+      padding: '12px 20px',
+      border: `2px solid ${selected ? type.color : '#e5e7eb'}`,
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      fontSize: '14px',
+      fontWeight: '500',
+      background: selected ? `${type.color}15` : 'white',
+      color: selected ? type.color : '#4b5563',
+      transition: 'all 0.3s'
+    }),
+    laptopFilterCount: {
+      background: '#f3f4f6',
+      color: '#6b7280',
+      padding: '2px 8px',
+      borderRadius: '12px',
+      fontSize: '12px',
+      fontWeight: 'bold'
+    },
+    laptopMaterialsGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+      gap: '25px'
+    },
+    laptopMaterialCard: {
+      border: '1px solid #e5e7eb',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      transition: 'all 0.4s ease',
+      background: 'white',
+      position: 'relative'
+    },
+    laptopNewBadge: {
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      background: '#ef4444',
+      color: 'white',
+      padding: '4px 12px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: 'bold',
+      zIndex: 1,
+      boxShadow: '0 2px 4px rgba(239, 68, 68, 0.3)'
+    },
+    laptopMaterialHeader: (color) => ({
+      padding: '18px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderBottom: '1px solid #e5e7eb',
+      background: `${color}10`
+    }),
+    laptopMaterialType: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px'
+    },
+    laptopMaterialContent: {
+      padding: '25px'
+    },
+    laptopMaterialTitle: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#1f2937',
+      marginBottom: '12px',
+      lineHeight: '1.4'
+    },
+    laptopMaterialDescription: {
+      color: '#6b7280',
+      fontSize: '14px',
+      lineHeight: '1.6',
+      marginBottom: '20px',
+      minHeight: '60px'
+    },
+    laptopMaterialStats: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '15px',
+      marginBottom: '20px',
+      background: '#f9fafb',
+      padding: '15px',
+      borderRadius: '8px'
+    },
+    laptopStatItem: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      color: '#6b7280',
+      fontSize: '13px'
+    },
+    laptopRatingContainer: {
+      gridColumn: 'span 2',
+      display: 'flex',
+      justifyContent: 'center',
+      marginTop: '5px'
+    },
+    laptopFileInfo: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingTop: '15px',
+      borderTop: '1px solid #e5e7eb',
+      fontSize: '13px',
+      color: '#9ca3af'
+    },
+    laptopMaterialActions: {
+      padding: '20px',
+      background: '#f9fafb',
+      borderTop: '1px solid #e5e7eb',
+      display: 'flex',
+      gap: '12px'
+    },
+    laptopPreviewButton: {
+      flex: '1',
+      padding: '12px',
+      background: 'white',
+      border: '2px solid #e5e7eb',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      fontWeight: '600',
+      color: '#4b5563',
+      fontSize: '14px'
+    },
+    laptopDownloadButton: (downloading) => ({
+      flex: '2',
+      padding: '12px',
+      background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: downloading ? 'not-allowed' : 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      fontWeight: '600',
+      fontSize: '14px',
+      opacity: downloading ? 0.7 : 1
+    }),
+    
+    // Mobile styles
+    mobileHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      background: 'white',
+      padding: '12px 15px',
+      borderRadius: '12px',
+      marginBottom: '15px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    },
+    mobileBackButton: {
+      background: '#f3f4f6',
+      border: 'none',
+      width: '40px',
+      height: '40px',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '18px',
+      color: '#4f46e5',
+      cursor: 'pointer'
+    },
+    mobileTitle: {
+      fontSize: '16px',
+      fontWeight: '600',
+      color: '#1f2937',
+      flex: 1,
+      textAlign: 'center',
+      padding: '0 10px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    },
+    mobileRefreshButton: {
+      background: '#f3f4f6',
+      border: 'none',
+      width: '40px',
+      height: '40px',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '18px',
+      color: '#10b981',
+      cursor: 'pointer'
+    },
+    mobileSubjectCard: {
+      background: 'white',
+      borderRadius: '16px',
+      padding: '20px',
+      marginBottom: '15px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '15px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+    },
+    mobileSubjectIconContainer: {
+      width: '60px',
+      height: '60px',
+      borderRadius: '50%',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0
+    },
+    mobileSubjectIcon: {
+      fontSize: '30px',
+      color: 'white'
+    },
+    mobileSubjectInfo: {
+      flex: 1
+    },
+    mobileSubjectName: {
+      fontSize: '18px',
+      fontWeight: '700',
+      color: '#1f2937',
+      marginBottom: '4px'
+    },
+    mobileSubjectCode: {
+      fontSize: '13px',
+      color: '#6b7280',
+      marginBottom: '6px'
+    },
+    mobileSubjectMeta: {
+      display: 'flex',
+      gap: '12px',
+      fontSize: '12px',
+      color: '#4f46e5',
+      flexWrap: 'wrap'
+    },
+    mobileSearchContainer: {
+      position: 'relative',
+      marginBottom: '15px'
+    },
+    mobileSearchIcon: {
+      position: 'absolute',
+      left: '15px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: '#9ca3af',
+      fontSize: '16px'
+    },
+    mobileSearchInput: {
+      width: '100%',
+      padding: '14px 45px 14px 45px',
+      fontSize: '14px',
+      border: 'none',
+      borderRadius: '12px',
+      background: 'white',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      outline: 'none'
+    },
+    mobileClearButton: {
+      position: 'absolute',
+      right: '15px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      background: 'none',
+      border: 'none',
+      color: '#9ca3af',
+      fontSize: '16px',
+      cursor: 'pointer',
+      padding: '5px'
+    },
+    mobileFilterToggle: {
+      width: '100%',
+      padding: '12px',
+      background: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      marginBottom: '10px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#4f46e5',
+      cursor: 'pointer',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    },
+    mobileFiltersContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '8px',
+      marginBottom: '15px',
+      background: 'white',
+      padding: '15px',
+      borderRadius: '12px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    },
+    mobileFilterButton: (type, selected) => ({
+      padding: '8px 12px',
+      border: `1px solid ${selected ? type.color : '#e5e7eb'}`,
+      borderRadius: '20px',
+      background: selected ? `${type.color}15` : 'white',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      fontSize: '12px',
+      fontWeight: '500',
+      color: selected ? type.color : '#4b5563',
+      cursor: 'pointer',
+      transition: 'all 0.2s'
+    }),
+    mobileFilterCount: {
+      background: '#f3f4f6',
+      color: '#6b7280',
+      padding: '2px 6px',
+      borderRadius: '12px',
+      fontSize: '10px',
+      marginLeft: '4px'
+    },
+    mobileErrorMessage: {
+      background: '#fee2e2',
+      color: '#dc2626',
+      padding: '12px',
+      borderRadius: '8px',
+      marginBottom: '15px',
+      textAlign: 'center',
+      fontSize: '13px'
+    },
+    mobileEmptyState: {
+      background: 'white',
+      padding: '40px 20px',
+      borderRadius: '16px',
+      textAlign: 'center'
+    },
+    mobileEmptyIcon: {
+      fontSize: '48px',
+      marginBottom: '15px',
+      opacity: 0.5
+    },
+    mobileUploadButton: {
+      marginTop: '15px',
+      padding: '12px 24px',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontWeight: '600',
+      display: 'inlineFlex',
+      alignItems: 'center',
+      gap: '8px',
+      cursor: 'pointer'
+    },
+    mobileMaterialsList: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gap: '15px'
+    },
+    mobileMaterialCard: {
+      background: 'white',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      position: 'relative',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+    },
+    mobileNewBadge: {
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      background: '#ef4444',
+      color: 'white',
+      padding: '4px 8px',
+      borderRadius: '12px',
+      fontSize: '10px',
+      fontWeight: 'bold',
+      zIndex: 1
+    },
+    mobileMaterialHeader: {
+      padding: '12px 15px',
+      background: '#f9fafb',
+      borderBottom: '1px solid #e5e7eb'
+    },
+    mobileMaterialType: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      fontSize: '12px'
+    },
+    mobileMaterialContent: {
+      padding: '15px'
+    },
+    mobileMaterialTitle: {
+      fontSize: '15px',
+      fontWeight: '600',
+      color: '#1f2937',
+      marginBottom: '8px',
+      lineHeight: '1.4'
+    },
+    mobileMaterialDescription: {
+      fontSize: '13px',
+      color: '#6b7280',
+      marginBottom: '12px',
+      lineHeight: '1.5',
+      display: '-webkit-box',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden'
+    },
+    mobileMaterialMeta: {
+      display: 'flex',
+      gap: '12px',
+      marginBottom: '12px',
+      fontSize: '11px',
+      color: '#9ca3af',
+      flexWrap: 'wrap'
+    },
+    mobileMetaItem: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px'
+    },
+    mobileRatingContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '3px',
+      marginBottom: '12px'
+    },
+    mobileStarButton: {
+      background: 'none',
+      border: 'none',
+      fontSize: '16px',
+      cursor: 'pointer',
+      padding: '2px'
+    },
+    mobileFileInfo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      fontSize: '11px',
+      color: '#9ca3af',
+      paddingTop: '8px',
+      borderTop: '1px solid #e5e7eb'
+    },
+    mobileMaterialActions: {
+      display: 'flex',
+      gap: '8px',
+      padding: '15px',
+      background: '#f9fafb',
+      borderTop: '1px solid #e5e7eb'
+    },
+    mobilePreviewButton: {
+      flex: 1,
+      padding: '10px',
+      background: 'white',
+      border: '1px solid #e5e7eb',
+      borderRadius: '8px',
+      fontSize: '12px',
+      fontWeight: '500',
+      color: '#4b5563',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '5px',
+      cursor: 'pointer'
+    },
+    mobileDownloadButton: (downloading) => ({
+      flex: 2,
+      padding: '10px',
+      background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '12px',
+      fontWeight: '500',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '5px',
+      cursor: downloading ? 'not-allowed' : 'pointer',
+      opacity: downloading ? 0.7 : 1
+    }),
+    loadingContainer: {
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white'
+    },
+    loadingSpinner: {
+      width: isMobile ? '40px' : '50px',
+      height: isMobile ? '40px' : '50px',
+      border: isMobile ? '3px solid rgba(255,255,255,0.3)' : '5px solid rgba(255,255,255,0.3)',
+      borderTop: isMobile ? '3px solid white' : '5px solid white',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+      marginBottom: isMobile ? '10px' : '20px'
+    },
+    errorContainer: {
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
+      padding: '20px',
+      textAlign: 'center'
+    },
+    backButton: {
+      padding: isMobile ? '10px 20px' : '12px 24px',
+      background: '#4f46e5',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: isMobile ? '14px' : '16px',
+      marginTop: '20px',
+      display: 'inlineFlex',
+      alignItems: 'center',
+      gap: '8px'
     }
   };
 
   // ✅ LOADING STATE
   if (loading) {
     return (
-      <div style={styles.container}>
-        <div style={styles.innerContainer}>
-          <div style={{ textAlign: 'center', padding: '100px', background: 'white', borderRadius: '16px' }}>
-            <div style={{
-              width: '50px',
-              height: '50px',
-              border: '5px solid #f3f4f6',
-              borderTop: '5px solid #4f46e5',
-              borderRadius: '50%',
-              margin: '0 auto 20px',
-              animation: 'spin 1s linear infinite'
-            }}></div>
-            <h3 style={{ color: '#6b7280' }}>Loading Study Materials...</h3>
-          </div>
-        </div>
+      <div style={styles.loadingContainer}>
+        <div style={styles.loadingSpinner}></div>
+        <p>Loading materials...</p>
       </div>
     );
   }
@@ -652,166 +1232,137 @@ const MaterialsPage = () => {
   // ✅ SUBJECT NOT FOUND
   if (!subject) {
     return (
-      <div style={styles.container}>
-        <div style={styles.innerContainer}>
-          <button style={styles.backButton} onClick={() => navigate(-1)}>
-            <FaArrowLeft /> Back
-          </button>
-          <div style={{ background: 'white', padding: '60px', borderRadius: '16px', textAlign: 'center' }}>
-            <div style={{ fontSize: '60px', marginBottom: '20px' }}>🔍</div>
-            <h2 style={{ fontSize: '24px', color: '#1f2937', marginBottom: '10px' }}>Subject not found</h2>
-            <p style={{ color: '#6b7280' }}>The requested subject could not be found in our database.</p>
-          </div>
-        </div>
+      <div style={styles.errorContainer}>
+        <div style={{ fontSize: isMobile ? '48px' : '60px', marginBottom: '20px' }}>🔍</div>
+        <h2 style={{ fontSize: isMobile ? '20px' : '24px' }}>Subject not found</h2>
+        <button style={styles.backButton} onClick={handleBack}>
+          <FaArrowLeft /> Go Back
+        </button>
       </div>
     );
   }
 
-  // ✅ MAIN RENDER
-  return (
-    <div style={styles.container}>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOut {
-          from { transform: translateX(0); opacity: 1; }
-          to { transform: translateX(100%); opacity: 0; }
-        }
-      `}</style>
-      
-      <div style={styles.innerContainer}>
-        {/* Header */}
-        <div style={styles.headerButtons}>
-          <button style={styles.backButton} onClick={handleBack}>
-            <FaArrowLeft /> Back to Subjects
-          </button>
-          
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button 
-              style={styles.refreshButton}
-              onClick={handleRefresh}
-              disabled={refreshing}
-            >
-              <FaSync style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
-              {refreshing ? 'Refreshing...' : 'Refresh'}
+  // ✅ LAPTOP VIEW
+  if (!isMobile) {
+    return (
+      <div style={styles.container}>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+          }
+        `}</style>
+        
+        <div style={styles.innerContainer}>
+          {/* Header */}
+          <div style={styles.laptopHeaderButtons}>
+            <button style={styles.laptopBackButton} onClick={handleBack}>
+              <FaArrowLeft /> Back to Subjects
             </button>
             
-            <button 
-              style={{ ...styles.refreshButton, background: '#8b5cf6' }}
-              onClick={() => navigate('/upload')}
-            >
-              <FaCloudUploadAlt /> Upload
-            </button>
-          </div>
-        </div>
-        
-        {/* Error Message */}
-        {error && (
-          <div style={{
-            background: '#fee2e2',
-            color: '#dc2626',
-            padding: '15px',
-            borderRadius: '8px',
-            marginBottom: '20px',
-            textAlign: 'center'
-          }}>
-            ⚠️ {error}
-          </div>
-        )}
-        
-        {/* Last Refreshed */}
-        <div style={styles.lastRefreshed}>
-          Last updated: {lastRefreshed.toLocaleTimeString()}
-        </div>
-        
-        {/* Subject Header */}
-        <div style={styles.subjectHeader}>
-          <div style={styles.subjectIconContainer}>
-            <div style={styles.subjectIcon}>📚</div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                style={styles.laptopRefreshButton}
+                onClick={handleRefresh}
+                disabled={refreshing}
+              >
+                <FaSync style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+                {refreshing ? 'Refreshing...' : 'Refresh'}
+              </button>
+              
+              <button 
+                style={{ ...styles.laptopRefreshButton, background: '#8b5cf6' }}
+                onClick={() => navigate('/upload')}
+              >
+                <FaCloudUploadAlt /> Upload
+              </button>
+            </div>
           </div>
           
-          <div style={styles.subjectInfo}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
-              <div>
-                <h1 style={styles.subjectName}>{subject.name}</h1>
-                <div style={styles.subjectCode}>
-                  <span>Code: <strong>{subject.code}</strong></span>
-                  <span>⭐ <strong>{subject.credits} Credits</strong></span>
-                  <span>📁 <strong>{materials.length} Materials</strong></span>
-                  <span>🏷️ <strong>{subject.type || 'Theory'}</strong></span>
+          {/* Error Message */}
+          {error && (
+            <div style={{
+              background: '#fee2e2',
+              color: '#dc2626',
+              padding: '15px',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              textAlign: 'center'
+            }}>
+              ⚠️ {error}
+            </div>
+          )}
+          
+          {/* Last Refreshed */}
+          <div style={styles.laptopLastRefreshed}>
+            Last updated: {lastRefreshed.toLocaleTimeString()}
+          </div>
+          
+          {/* Subject Header */}
+          <div style={styles.laptopSubjectHeader}>
+            <div style={styles.laptopSubjectIconContainer}>
+              <div style={styles.laptopSubjectIcon}>📚</div>
+            </div>
+            
+            <div style={styles.laptopSubjectInfo}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+                <div>
+                  <h1 style={styles.laptopSubjectName}>{subject.name}</h1>
+                  <div style={styles.laptopSubjectCode}>
+                    <span>Code: <strong>{subject.code}</strong></span>
+                    <span>⭐ <strong>{subject.credits} Credits</strong></span>
+                    <span>📁 <strong>{materials.length} Materials</strong></span>
+                    <span>🏷️ <strong>{subject.type || 'Theory'}</strong></span>
+                  </div>
+                  
+                  <div style={styles.laptopBreadcrumb}>
+                    <span style={styles.laptopBreadcrumbItem}>
+                      {courseInfo?.name || `Course ${courseId}`}
+                    </span>
+                    <span>→</span>
+                    <span style={styles.laptopBreadcrumbItem}>
+                      Year {yearId}
+                    </span>
+                    <span>→</span>
+                    <span style={styles.laptopBreadcrumbItem}>
+                      Semester {semId}
+                    </span>
+                    <span>→</span>
+                    <span style={{ ...styles.laptopBreadcrumbItem, ...styles.laptopCurrentBreadcrumb }}>
+                      {subject.name}
+                    </span>
+                  </div>
                 </div>
                 
-                <div style={styles.breadcrumb}>
-                  <span style={styles.breadcrumbItem}>
-                    {courseInfo?.name || `Course ${courseId}`}
-                  </span>
-                  <span>→</span>
-                  <span style={styles.breadcrumbItem}>
-                    Year {yearId}
-                  </span>
-                  <span>→</span>
-                  <span style={styles.breadcrumbItem}>
-                    Semester {semId}
-                  </span>
-                  <span>→</span>
-                  <span style={{ ...styles.breadcrumbItem, ...styles.currentBreadcrumb }}>
-                    {subject.name}
-                  </span>
-                </div>
-              </div>
-              
-              <div style={styles.statsBox}>
-                <div style={styles.statsNumber}>{materials.length}</div>
-                <div style={styles.statsLabel}>Total Files</div>
-                <div style={{ ...styles.statsLabel, fontSize: '12px', marginTop: '5px' }}>
-                  {materials.filter(m => m.isNew).length} New
+                <div style={styles.laptopStatsBox}>
+                  <div style={styles.laptopStatsNumber}>{materials.length}</div>
+                  <div style={styles.laptopStatsLabel}>Total Files</div>
+                  <div style={{ ...styles.laptopStatsLabel, fontSize: '12px', marginTop: '5px' }}>
+                    {materials.filter(m => m.isNew).length} New
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Search Bar */}
-        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '12px',
-          marginBottom: '25px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-        }}>
-          <div style={{ position: 'relative' }}>
+          {/* Search Bar */}
+          <div style={styles.laptopSearchContainer}>
+            <div style={styles.laptopSearchIcon}><FaSearch /></div>
             <input
               type="text"
               placeholder={`Search in ${subject.name} materials...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '16px 20px 16px 50px',
-                fontSize: '16px',
-                border: '2px solid #e5e7eb',
-                borderRadius: '10px',
-                background: '#f9fafb',
-                transition: 'all 0.3s',
-                outline: 'none'
-              }}
+              style={styles.laptopSearchInput}
             />
-            <div style={{
-              position: 'absolute',
-              left: '20px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#9ca3af',
-              fontSize: '18px'
-            }}>
-              <FaSearch />
-            </div>
             {searchQuery && (
               <button
                 style={{
@@ -831,106 +1382,54 @@ const MaterialsPage = () => {
               </button>
             )}
           </div>
-        </div>
 
-        {/* Filter Buttons */}
-        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '12px',
-          marginBottom: '25px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-        }}>
-          <h3 style={{
-            fontSize: '20px',
-            fontWeight: '600',
-            color: '#1f2937',
-            marginBottom: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <FaFilter /> Filter by Material Type
-          </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            {materialTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => setSelectedType(type.id)}
-                style={{
-                  padding: '12px 20px',
-                  border: `2px solid ${selectedType === type.id ? type.color : '#e5e7eb'}`,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  background: selectedType === type.id ? `${type.color}15` : 'white',
-                  color: selectedType === type.id ? type.color : '#4b5563',
-                  transition: 'all 0.3s'
-                }}
-              >
-                <span style={{ color: type.color }}>{type.icon}</span>
-                {type.name}
-                {type.id !== 'all' && (
-                  <span style={{
-                    background: '#f3f4f6',
-                    color: '#6b7280',
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    fontWeight: 'bold'
-                  }}>
-                    {materialStats[type.id] || 0}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Materials Grid */}
-        {filteredMaterials.length === 0 ? (
-          <div style={{
-            background: 'white',
-            padding: '60px 20px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-          }}>
-            <div style={{ fontSize: '60px', marginBottom: '20px', opacity: '0.5' }}>📭</div>
-            <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#6b7280', marginBottom: '10px' }}>
-              No materials found
+          {/* Filter Buttons */}
+          <div style={styles.laptopFiltersContainer}>
+            <h3 style={styles.laptopFiltersTitle}>
+              <FaFilter /> Filter by Material Type
             </h3>
-            <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '30px' }}>
-              {searchQuery 
-                ? `No materials match "${searchQuery}"`
-                : 'No approved materials available yet. Upload something!'}
-            </p>
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-              <button
-                style={{
-                  padding: '12px 30px',
-                  background: '#4f46e5',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  fontSize: '16px'
-                }}
-                onClick={() => navigate('/upload')}
-              >
-                <FaCloudUploadAlt style={{ marginRight: '8px' }} />
-                Upload Materials
-              </button>
-              {searchQuery && (
+            <div style={styles.laptopFiltersGrid}>
+              {materialTypes.map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setSelectedType(type.id)}
+                  style={styles.laptopFilterButton(type, selectedType === type.id)}
+                >
+                  <span style={{ color: type.color }}>{type.icon}</span>
+                  {type.name}
+                  {type.id !== 'all' && (
+                    <span style={styles.laptopFilterCount}>
+                      {materialStats[type.id] || 0}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Materials Grid */}
+          {filteredMaterials.length === 0 ? (
+            <div style={{
+              background: 'white',
+              padding: '60px 20px',
+              borderRadius: '12px',
+              textAlign: 'center',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
+            }}>
+              <div style={{ fontSize: '60px', marginBottom: '20px', opacity: '0.5' }}>📭</div>
+              <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#6b7280', marginBottom: '10px' }}>
+                No materials found
+              </h3>
+              <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '30px' }}>
+                {searchQuery 
+                  ? `No materials match "${searchQuery}"`
+                  : 'No approved materials available yet. Upload something!'}
+              </p>
+              <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
                 <button
                   style={{
                     padding: '12px 30px',
-                    background: '#6b7280',
+                    background: '#4f46e5',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -938,245 +1437,337 @@ const MaterialsPage = () => {
                     fontWeight: '600',
                     fontSize: '16px'
                   }}
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => navigate('/upload')}
                 >
-                  Clear Search
+                  <FaCloudUploadAlt style={{ marginRight: '8px' }} />
+                  Upload Materials
                 </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div style={{
-            background: 'white',
-            padding: '30px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-              <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#1f2937' }}>
-                {selectedType === 'all' ? 'All Study Materials' : materialTypes.find(t => t.id === selectedType)?.name}
-              </h3>
-              <span style={{ 
-                background: '#f3f4f6',
-                padding: '5px 15px',
-                borderRadius: '20px',
-                color: '#6b7280',
-                fontWeight: '500'
-              }}>
-                {filteredMaterials.length} material{filteredMaterials.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-            
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-              gap: '25px'
-            }}>
-              {filteredMaterials.map((material) => {
-                const typeInfo = materialTypes.find(t => t.id === material.type) || materialTypes[1];
-                
-                return (
-                  <div
-                    key={material.id}
+                {searchQuery && (
+                  <button
                     style={{
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '12px',
-                      overflow: 'hidden',
-                      transition: 'all 0.4s ease',
-                      background: 'white',
-                      position: 'relative'
+                      padding: '12px 30px',
+                      background: '#6b7280',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontWeight: '600',
+                      fontSize: '16px'
                     }}
+                    onClick={() => setSearchQuery('')}
                   >
-                    {/* New Badge */}
-                    {material.isNew && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '10px',
-                        right: '10px',
-                        background: '#ef4444',
-                        color: 'white',
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        zIndex: 1,
-                        boxShadow: '0 2px 4px rgba(239, 68, 68, 0.3)'
-                      }}>
-                        NEW
-                      </div>
-                    )}
+                    Clear Search
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              background: 'white',
+              padding: '30px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#1f2937' }}>
+                  {selectedType === 'all' ? 'All Study Materials' : materialTypes.find(t => t.id === selectedType)?.name}
+                </h3>
+                <span style={{ 
+                  background: '#f3f4f6',
+                  padding: '5px 15px',
+                  borderRadius: '20px',
+                  color: '#6b7280',
+                  fontWeight: '500'
+                }}>
+                  {filteredMaterials.length} material{filteredMaterials.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              
+              <div style={styles.laptopMaterialsGrid}>
+                {filteredMaterials.map((material) => {
+                  const typeInfo = materialTypes.find(t => t.id === material.type) || materialTypes[1];
+                  
+                  return (
+                    <div key={material.id} style={styles.laptopMaterialCard}>
                     
-                    {/* Header */}
-                    <div style={{
-                      padding: '18px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      borderBottom: '1px solid #e5e7eb',
-                      background: `${typeInfo?.color}10`
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: typeInfo?.color, fontSize: '16px' }}>
-                          {typeInfo?.icon}
-                        </span>
-                        <span style={{ color: typeInfo?.color, fontWeight: '600', fontSize: '14px' }}>
-                          {typeInfo?.name}
-                        </span>
-                      </div>
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#6b7280', fontSize: '12px' }}>
-                          <FaUser size={10} /> {material.user}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Content */}
-                    <div style={{ padding: '25px' }}>
-                      <h4 style={{
-                        fontSize: '18px',
-                        fontWeight: '600',
-                        color: '#1f2937',
-                        marginBottom: '12px',
-                        lineHeight: '1.4'
-                      }}>
-                        {material.title}
-                      </h4>
-                      <p style={{
-                        color: '#6b7280',
-                        fontSize: '14px',
-                        lineHeight: '1.6',
-                        marginBottom: '20px',
-                        minHeight: '60px'
-                      }}>
-                        {material.description}
-                      </p>
-                      
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '15px',
-                        marginBottom: '20px',
-                        background: '#f9fafb',
-                        padding: '15px',
-                        borderRadius: '8px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '13px' }}>
-                          <FaClock color="#9ca3af" size={12} />
-                          <span>{material.uploadDate}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '13px' }}>
-                          <FaDownload color="#9ca3af" size={12} />
-                          <span>{material.downloads} downloads</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '13px' }}>
-                          <FaEye color="#9ca3af" size={12} />
-                          <span>{material.views} views</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '13px' }}>
-                          <FaStar color="#fbbf24" size={12} />
-                          <span>{material.rating}/5</span>
+                      {/* Header */}
+                      <div style={styles.laptopMaterialHeader(typeInfo.color)}>
+                        <div style={styles.laptopMaterialType}>
+                          <span style={{ color: typeInfo.color, fontSize: '16px' }}>
+                            {typeInfo.icon}
+                          </span>
+                          <span style={{ color: typeInfo.color, fontWeight: '600', fontSize: '14px' }}>
+                            {typeInfo.name}
+                          </span>
                         </div>
                         
-                        <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'center', marginTop: '5px' }}>
-                          <Rating 
-                            materialId={material.id} 
-                            currentRating={material.rating}
-                            onRate={(newRating) => {
-                              console.log('New rating:', newRating);
-                              setMaterials(prev =>
-                                prev.map(m =>
-                                  m.id === material.id
-                                    ? { ...m, rating: newRating }
-                                    : m
-                                )
-                              );
-                            }}
-                          />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#6b7280', fontSize: '12px' }}>
+                            <FaUser size={10} /> {material.user}
+                          </div>
                         </div>
                       </div>
                       
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        paddingTop: '15px',
-                        borderTop: '1px solid #e5e7eb',
-                        fontSize: '13px',
-                        color: '#9ca3af'
-                      }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          {getFileIcon(material.fileType)}
-                          <span>{material.fileSize}</span>
-                        </span>
+                      {/* Content */}
+                      <div style={styles.laptopMaterialContent}>
+                        <h4 style={styles.laptopMaterialTitle}>
+                          {material.title}
+                        </h4>
+                        <p style={styles.laptopMaterialDescription}>
+                          {material.description}
+                        </p>
+                        
+                        <div style={styles.laptopMaterialStats}>
+                          <div style={styles.laptopStatItem}>
+                            <FaClock color="#9ca3af" size={12} />
+                            <span>{material.uploadDate}</span>
+                          </div>
+                          <div style={styles.laptopStatItem}>
+                            <FaDownload color="#9ca3af" size={12} />
+                            <span>{material.downloads} downloads</span>
+                          </div>
+                          <div style={styles.laptopStatItem}>
+                            <FaEye color="#9ca3af" size={12} />
+                            <span>{material.views} views</span>
+                          </div>
+                          <div style={styles.laptopStatItem}>
+                            <FaStar color="#fbbf24" size={12} />
+                            <span>{material.rating}/5</span>
+                          </div>
+                          
+                          <div style={styles.laptopRatingContainer}>
+                            <Rating 
+                              materialId={material.id} 
+                              currentRating={material.rating}
+                              onRate={(newRating) => {
+                                setMaterials(prev =>
+                                  prev.map(m =>
+                                    m.id === material.id
+                                      ? { ...m, rating: newRating }
+                                      : m
+                                  )
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div style={styles.laptopFileInfo}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            {getFileIcon(material.fileType)}
+                            <span>{material.fileSize}</span>
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Action Buttons */}
+                      <div style={styles.laptopMaterialActions}>
+                        <button
+                          style={styles.laptopPreviewButton}
+                          onClick={() => handlePreview(material)}
+                        >
+                          <FaEye size={14} /> Preview
+                        </button>
+                        
+                        <button
+                          style={styles.laptopDownloadButton(downloading[material.id])}
+                          onClick={() => handleDownload(material)}
+                          disabled={downloading[material.id]}
+                        >
+                          {downloading[material.id] ? (
+                            <>
+                              <FaSpinner style={{ animation: 'spin 1s linear infinite' }} size={14} />
+                              Downloading...
+                            </>
+                          ) : (
+                            <>
+                              <FaDownload size={14} /> Download
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ MOBILE VIEW
+  return (
+    <div style={styles.container}>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+      
+      <div style={styles.innerContainer}>
+        {/* Mobile Header */}
+        <div style={styles.mobileHeader}>
+          <button style={styles.mobileBackButton} onClick={handleBack}>
+            <FaArrowLeft />
+          </button>
+          <h2 style={styles.mobileTitle}>{subject.name}</h2>
+          <button style={styles.mobileRefreshButton} onClick={handleRefresh}>
+            <FaSync style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+          </button>
+        </div>
+
+        {/* Subject Info Card */}
+        <div style={styles.mobileSubjectCard}>
+          <div style={styles.mobileSubjectIconContainer}>
+            <span style={styles.mobileSubjectIcon}>📚</span>
+          </div>
+          <div style={styles.mobileSubjectInfo}>
+            <h1 style={styles.mobileSubjectName}>{subject.name}</h1>
+            <p style={styles.mobileSubjectCode}>{subject.code}</p>
+            <div style={styles.mobileSubjectMeta}>
+              <span>🎓 {subject.credits} Credits</span>
+              <span>📁 {materials.length} Files</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div style={styles.mobileSearchContainer}>
+          <div style={styles.mobileSearchIcon}><FaSearch /></div>
+          <input
+            type="text"
+            placeholder="Search materials..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={styles.mobileSearchInput}
+          />
+          {searchQuery && (
+            <button style={styles.mobileClearButton} onClick={() => setSearchQuery('')}>
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Filter Toggle for Mobile */}
+        <button style={styles.mobileFilterToggle} onClick={() => setShowFilters(!showFilters)}>
+          <FaFilter /> {showFilters ? 'Hide Filters' : 'Show Filters'}
+        </button>
+
+        {/* Filters */}
+        {showFilters && (
+          <div style={styles.mobileFiltersContainer}>
+            {materialTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setSelectedType(type.id)}
+                style={styles.mobileFilterButton(type, selectedType === type.id)}
+              >
+                <span style={{ color: type.color }}>{type.icon}</span>
+                {type.name}
+                {type.id !== 'all' && (
+                  <span style={styles.mobileFilterCount}>{materialStats[type.id] || 0}</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div style={styles.mobileErrorMessage}>
+            ⚠️ {error}
+          </div>
+        )}
+
+        {/* Materials List */}
+        {filteredMaterials.length === 0 ? (
+          <div style={styles.mobileEmptyState}>
+            <div style={styles.mobileEmptyIcon}>📭</div>
+            <h3 style={{ fontSize: '18px', marginBottom: '10px' }}>No materials found</h3>
+            <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>
+              {searchQuery ? `No results for "${searchQuery}"` : 'Upload something!'}
+            </p>
+            <button style={styles.mobileUploadButton} onClick={() => navigate('/upload')}>
+              <FaCloudUploadAlt /> Upload
+            </button>
+          </div>
+        ) : (
+          <div style={styles.mobileMaterialsList}>
+            {filteredMaterials.map((material) => {
+              const typeInfo = materialTypes.find(t => t.id === material.type) || materialTypes[1];
+              
+              return (
+                <div key={material.id} style={styles.mobileMaterialCard}>
+                  {material.isNew && <span style={styles.mobileNewBadge}>NEW</span>}
+                  
+                  <div style={styles.mobileMaterialHeader}>
+                    <div style={styles.mobileMaterialType}>
+                      <span style={{ color: typeInfo?.color }}>{typeInfo?.icon}</span>
+                      <span style={{ color: typeInfo?.color, fontWeight: '500' }}>{typeInfo?.name}</span>
+                    </div>
+                  </div>
+                  
+                  <div style={styles.mobileMaterialContent}>
+                    <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
+                    <p style={styles.mobileMaterialDescription}>{material.description}</p>
+                    
+                    <div style={styles.mobileMaterialMeta}>
+                      <div style={styles.mobileMetaItem}>
+                        <FaClock /> {material.uploadDate}
+                      </div>
+                      <div style={styles.mobileMetaItem}>
+                        <FaEye /> {material.views}
+                      </div>
+                      <div style={styles.mobileMetaItem}>
+                        <FaDownload /> {material.downloads}
                       </div>
                     </div>
                     
-                    {/* Action Buttons */}
-                    <div style={{
-                      padding: '20px',
-                      background: '#f9fafb',
-                      borderTop: '1px solid #e5e7eb',
-                      display: 'flex',
-                      gap: '12px'
-                    }}>
-                      <button
-                        style={{
-                          flex: '1',
-                          padding: '12px',
-                          background: 'white',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                          fontWeight: '600',
-                          color: '#4b5563',
-                          fontSize: '14px'
+                    <div style={styles.mobileRatingContainer}>
+                      <Rating 
+                        materialId={material.id} 
+                        currentRating={material.rating}
+                        onRate={(newRating) => {
+                          setMaterials(prev =>
+                            prev.map(m =>
+                              m.id === material.id ? { ...m, rating: newRating } : m
+                            )
+                          );
                         }}
-                        onClick={() => handlePreview(material)}
-                      >
-                        <FaEye size={14} /> Preview
-                      </button>
-                      
-                      <button
-                        style={{
-                          flex: '2',
-                          padding: '12px',
-                          background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '8px',
-                          cursor: downloading[material.id] ? 'not-allowed' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          opacity: downloading[material.id] ? 0.7 : 1
-                        }}
-                        onClick={() => handleDownload(material)}
-                        disabled={downloading[material.id]}
-                      >
-                        {downloading[material.id] ? (
-                          <>
-                            <FaSpinner style={{ animation: 'spin 1s linear infinite' }} size={14} />
-                            Downloading...
-                          </>
-                        ) : (
-                          <>
-                            <FaDownload size={14} /> Download
-                          </>
-                        )}
-                      </button>
+                      />
+                    </div>
+                    
+                    <div style={styles.mobileFileInfo}>
+                      {getFileIcon(material.fileType)}
+                      <span>{material.fileSize}</span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                  
+                  <div style={styles.mobileMaterialActions}>
+                    <button 
+                      style={styles.mobilePreviewButton} 
+                      onClick={() => handlePreview(material)}
+                    >
+                      <FaEye /> Preview
+                    </button>
+                    <button
+                      style={styles.mobileDownloadButton(downloading[material.id])}
+                      onClick={() => handleDownload(material)}
+                      disabled={downloading[material.id]}
+                    >
+                      {downloading[material.id] ? (
+                        <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Downloading</>
+                      ) : (
+                        <><FaDownload /> Download</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
