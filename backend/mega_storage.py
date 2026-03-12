@@ -1,6 +1,6 @@
 # mega_storage.py
 import os
-from mega import Mega
+from megapy import Mega
 import uuid
 import json
 import time
