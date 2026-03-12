@@ -18,6 +18,10 @@ from dotenv import load_dotenv
 from flask_mail import Mail, Message
 import sendgrid 
 from sendgrid.helpers.mail import Mail, Email, To, Content
+from mega_storage import MegaStorage
+import uuid
+from datetime import datetime
+from flask import redirect 
 
 # Load environment variables
 load_dotenv()
@@ -39,23 +43,6 @@ app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'jwt-super-secre
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 86400  # 24 hours
 app.config['JWT_ALGORITHM'] = 'HS256'
 app.config['JWT_DECODE_ALGORITHMS'] = ['HS256']
-
-# ==================== MAIL CONFIGURATION ====================
-# app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-# app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
-# app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
-# app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-# app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-# app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
-# Initialize mail
-
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-# app.config['MAIL_PORT'] = 587
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USERNAME'] = 'studyportal02@gmail.com'
-# app.config['MAIL_PASSWORD'] = 'wbdihqpmkrchyhix'
-# app.config['MAIL_DEFAULT_SENDER'] = 'studyportal02@gmail.com'
-# mail = Mail(app)
 
 print("\n" + "="*60)
 print("📧 MAIL CONFIGURATION")
@@ -221,6 +208,7 @@ class Note(db.Model):
     file_type = db.Column(db.String(20))
     file_size = db.Column(db.Integer)
     note_type = db.Column(db.String(20), default='notes')
+    mega_link = db.Column(db.String(500))
     rating = db.Column(db.Float, default=0)
     rating_count = db.Column(db.Integer, default=0)
     rating_sum = db.Column(db.Integer, default=0)
@@ -269,6 +257,17 @@ class Note(db.Model):
             'user_email': user.email if user else 'Unknown'
         }
 
+# ==================== MEGA STORAGE INIT ====================
+print("\n" + "="*60)
+print("📦 MEGA STORAGE INITIALIZATION")
+print("="*60)
+try:
+    mega_storage = MegaStorage()
+    print("✅ MEGA Storage initialized successfully!")
+except Exception as e:
+    print(f"❌ MEGA Storage initialization failed: {e}")
+    mega_storage = None
+print("="*60 + "\n")
 
 # ==================== EMAIL SERVICE ====================
 
@@ -1259,9 +1258,9 @@ def get_all_materials():
     except Exception as e:
         print(f"❌ Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+    
 
-
-# ==================== UPLOAD ROUTE ====================
+# # ==================== UPLOAD ROUTE ====================
 
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
@@ -1318,37 +1317,60 @@ def upload_note():
 
         print(f"✅ Course found: {course.name}")
 
-        course_folder = course.name.replace(' ', '_')
-        course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
-        os.makedirs(course_upload_path, exist_ok=True)
-        print(f"📁 Folder created: {course_upload_path}")
-
-        original_filename = secure_filename(file.filename)
-        file_ext = original_filename.rsplit('.', 1)[1].lower()
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        unique_filename = f"{note_type}_{timestamp}_{uuid.uuid4().hex[:6]}.{file_ext}"
-        file_path = os.path.join(course_upload_path, unique_filename)
-        file.save(file_path)
-        file_size = os.path.getsize(file_path)
-        print(f"💾 File saved: {file_path}")
+        
+        if mega_storage:
+            # Create MEGA folder path: BCA/Data_Structures/notes
+            folder_path = f"{course.name.upper()}/{subject_id}_{note_type}" if subject_id else f"{course.name.upper()}/{note_type}"
+            
+            # Upload to MEGA
+            file_data = file.read()
+            result = mega_storage.upload_file(
+                file_data,
+                f"{uuid.uuid4().hex[:8]}_{file.filename}",
+                folder_path
+            )
+            
+            if not result['success']:
+                return jsonify({'success': False, 'error': f'MEGA upload failed: {result["error"]}'}), 500
+                
+            mega_link = result['download_link']
+            file_path = result.get('file_path', '')
+            print(f"✅ Uploaded to MEGA: {mega_link}")
+        else:
+            # Fallback to local filesystem if MEGA not available
+            print("⚠️ MEGA not available, using local filesystem")
+            course_folder = course.name.replace(' ', '_')
+            course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
+            os.makedirs(course_upload_path, exist_ok=True)
+            
+            original_filename = secure_filename(file.filename)
+            file_ext = original_filename.rsplit('.', 1)[1].lower()
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_filename = f"{note_type}_{timestamp}_{uuid.uuid4().hex[:6]}.{file_ext}"
+            file_path = os.path.join(course_upload_path, unique_filename)
+            file.save(file_path)
+            file_size = os.path.getsize(file_path)
+            mega_link = None
+            print(f"💾 File saved locally: {file_path}")
 
         is_admin = user.role == 'admin'
 
         note = Note(
             title=title,
             description=description,
-            file_name=unique_filename,
-            original_filename=original_filename,
-            file_path=file_path,
-            file_type=file_ext,
-            file_size=file_size,
+            file_name=unique_filename if not mega_storage else result['file_name'],
+            original_filename=file.filename,
+            file_path=file_path if not mega_storage else '',
+            file_type=file_ext if not mega_storage else file.filename.rsplit('.', 1)[1].lower(),
+            file_size=file_size if not mega_storage else 0,
             note_type=note_type,
             course_id=course.id,
             subject_id=subject_id if subject_id else None,
             user_id=user.id,
             status='approved' if is_admin else 'pending',
             uploaded_at=datetime.now(timezone.utc),
-            approved_at=datetime.now(timezone.utc) if is_admin else None
+            approved_at=datetime.now(timezone.utc) if is_admin else None,
+            mega_link=mega_link  # Naya field add karna hoga
         )
 
         db.session.add(note)
@@ -1359,7 +1381,7 @@ def upload_note():
             'success': True,
             'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if is_admin else ' Waiting for admin approval.'),
             'note': note.to_dict(),
-            'file_url': f'/api/files/{course_folder}/{unique_filename}',
+            'mega_link': mega_link,
             'status': note.status
         }
         print(f"📤 Sending response: {response_data}")
@@ -1371,6 +1393,117 @@ def upload_note():
         print(f"❌ EXCEPTION: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+# # ==================== UPLOAD ROUTE ====================
+
+# @app.route('/api/upload', methods=['POST'])
+# @jwt_required()
+# def upload_note():
+#     try:
+#         user_id = get_jwt_identity()
+#         print(f"👤 User ID from token: {user_id}")
+
+#         user = db.session.get(User, int(user_id))
+#         if not user:
+#             print("❌ User not found")
+#             return jsonify({'success': False, 'error': 'User not found'}), 404
+
+#         if 'file' not in request.files:
+#             print("❌ No file in request")
+#             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+
+#         file = request.files['file']
+#         if file.filename == '':
+#             print("❌ Empty filename")
+#             return jsonify({'success': False, 'error': 'No file selected'}), 400
+
+#         title = request.form.get('title', '').strip()
+#         description = request.form.get('description', '').strip()
+#         course_id = request.form.get('course_id')
+#         subject_id = request.form.get('subject_id')
+#         note_type = request.form.get('type', 'notes')
+
+#         print(f"\n📥 UPLOAD REQUEST:")
+#         print(f"   Title: {title}")
+#         print(f"   Course ID: {course_id}")
+#         print(f"   Subject ID: {subject_id}")
+#         print(f"   Type: {note_type}")
+
+#         if not title:
+#             print("❌ No title")
+#             return jsonify({'success': False, 'error': 'Title is required'}), 400
+#         if not course_id:
+#             print("❌ No course_id")
+#             return jsonify({'success': False, 'error': 'Course ID is required'}), 400
+
+#         if not allowed_file(file.filename):
+#             print(f"❌ File type not allowed: {file.filename}")
+#             return jsonify({'success': False, 'error': 'File type not allowed'}), 400
+
+#         try:
+#             course = db.session.get(Course, int(course_id))
+#             if not course:
+#                 print(f"❌ Course not found: {course_id}")
+#                 return jsonify({'success': False, 'error': f'Course with ID {course_id} not found'}), 404
+#         except ValueError:
+#             print(f"❌ Invalid course_id: {course_id}")
+#             return jsonify({'success': False, 'error': 'Invalid course ID'}), 400
+
+#         print(f"✅ Course found: {course.name}")
+
+#         course_folder = course.name.replace(' ', '_')
+#         course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
+#         os.makedirs(course_upload_path, exist_ok=True)
+#         print(f"📁 Folder created: {course_upload_path}")
+
+#         original_filename = secure_filename(file.filename)
+#         file_ext = original_filename.rsplit('.', 1)[1].lower()
+#         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+#         unique_filename = f"{note_type}_{timestamp}_{uuid.uuid4().hex[:6]}.{file_ext}"
+#         file_path = os.path.join(course_upload_path, unique_filename)
+#         file.save(file_path)
+#         file_size = os.path.getsize(file_path)
+#         print(f"💾 File saved: {file_path}")
+
+#         is_admin = user.role == 'admin'
+
+#         note = Note(
+#             title=title,
+#             description=description,
+#             file_name=unique_filename,
+#             original_filename=original_filename,
+#             file_path=file_path,
+#             file_type=file_ext,
+#             file_size=file_size,
+#             note_type=note_type,
+#             course_id=course.id,
+#             subject_id=subject_id if subject_id else None,
+#             user_id=user.id,
+#             status='approved' if is_admin else 'pending',
+#             uploaded_at=datetime.now(timezone.utc),
+#             approved_at=datetime.now(timezone.utc) if is_admin else None
+#         )
+
+#         db.session.add(note)
+#         db.session.commit()
+#         print(f"✅ Note saved with ID: {note.id}")
+
+#         response_data = {
+#             'success': True,
+#             'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if is_admin else ' Waiting for admin approval.'),
+#             'note': note.to_dict(),
+#             'file_url': f'/api/files/{course_folder}/{unique_filename}',
+#             'status': note.status
+#         }
+#         print(f"📤 Sending response: {response_data}")
+
+#         return jsonify(response_data), 201
+
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"❌ EXCEPTION: {str(e)}")
+#         traceback.print_exc()
+#         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== USER MANAGEMENT ROUTES ====================
@@ -1671,6 +1804,11 @@ def download_note(note_id):
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
+        if note.mega_link:
+            note.downloads += 1
+            db.session.commit()
+            return redirect(note.mega_link)
+        
         # Debug - check file path
         print(f"🔍 Download - Note ID: {note_id}")
         print(f"🔍 File path from DB: {note.file_path}")
