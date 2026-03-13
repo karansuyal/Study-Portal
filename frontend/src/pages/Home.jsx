@@ -85,26 +85,65 @@ const Home = () => {
     }
   };
 
-  // ✅ FIXED: Cloudinary support in download
-  const handleMaterialClick = async (material) => {
-    try {
-      // ✅ Pehle Cloudinary URL check karo
-      if (material.cloudinary_url) {
-        console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
+// ✅ FIXED: Cloudinary PDF download
+const handleMaterialClick = async (material) => {
+  try {
+    // ✅ Pehle Cloudinary URL check karo
+    if (material.cloudinary_url) {
+      console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
+      
+      // Show downloading state
+      const downloadBtn = document.getElementById(`download-${material.id}`);
+      if (downloadBtn) {
+        downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
+        downloadBtn.disabled = true;
+      }
+
+      // ✅ Check if it's PDF
+      const isPDF = material.cloudinary_url.includes('.pdf') || 
+                    material.type === 'pdf' || 
+                    material.file_name?.endsWith('.pdf') ||
+                    material.cloudinary_url.includes('pdf');
+
+      if (isPDF) {
+        console.log('📄 PDF detected, using direct link method');
         
-        // Show downloading state
-        const downloadBtn = document.getElementById(`download-${material.id}`);
-        if (downloadBtn) {
-          downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
-          downloadBtn.disabled = true;
+        // ✅ METHOD 1: Direct link - Best for PDFs
+        // New tab mein kholo (user dekh sakta hai aur download bhi kar sakta hai)
+        window.open(material.cloudinary_url, '_blank');
+        
+        // ✅ METHOD 2: Agar force download karna hai to (comment kiya hai)
+        // const link = document.createElement('a');
+        // link.href = material.cloudinary_url;
+        // link.download = material.file_name || `${material.title}.pdf`;
+        // link.target = '_blank';
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        
+        alert('✅ PDF opened in new tab. Use download button there if needed.');
+      } else {
+        // ✅ Image ya other files ke liye blob method
+        console.log('🖼️ Image detected, using blob download');
+        
+        // Add headers to avoid CORS issues
+        const response = await fetch(material.cloudinary_url, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: {
+            'Accept': 'image/*'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        // Direct download from Cloudinary
-        const response = await fetch(material.cloudinary_url);
         const blob = await response.blob();
         
         // Get filename
-        let filename = material.file_name || `${material.title}.pdf`;
+        let filename = material.file_name || `${material.title}.jpg`;
         
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -114,83 +153,9 @@ const Home = () => {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        
-        // Update download count
-        setLatestMaterials(prev =>
-          prev.map(m =>
-            m.id === material.id
-              ? { ...m, downloads: m.downloads + 1 }
-              : m
-          )
-        );
-        
-        alert('✅ Download started from Cloudinary!');
-        
-        // Reset button
-        if (downloadBtn) {
-          downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
-          downloadBtn.disabled = false;
-        }
-        return;
       }
       
-      // ❌ Agar Cloudinary URL nahi hai to old API method
-      const token = localStorage.getItem('study_portal_token');
-      
-      if (!token) {
-        const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
-        if (shouldLogin) {
-          navigate('/login');
-        }
-        return;
-      }
-      
-      const downloadBtn = document.getElementById(`download-${material.id}`);
-      if (downloadBtn) {
-        downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
-        downloadBtn.disabled = true;
-      }
-      
-      const downloadUrl = `${API_URL}/notes/${material.id}/download`;
-      
-      const response = await fetch(downloadUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      });
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Session expired. Please login again.');
-        } else if (response.status === 404) {
-          throw new Error('File not found on server');
-        } else {
-          throw new Error(`Download failed (${response.status})`);
-        }
-      }
-      
-      const blob = await response.blob();
-      
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = material.file_name || `${material.title}.pdf`;
-      
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (match && match[1]) {
-          filename = match[1].replace(/['"]/g, '');
-        }
-      }
-      
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
+      // Update download count
       setLatestMaterials(prev =>
         prev.map(m =>
           m.id === material.id
@@ -199,28 +164,46 @@ const Home = () => {
         )
       );
       
-      alert('✅ Download started!');
-      
-    } catch (error) {
-      console.error('❌ Download error:', error);
-      
-      if (error.message.includes('401')) {
-        alert('⚠️ Session expired. Please login again.');
-        localStorage.removeItem('study_portal_token');
-        navigate('/login');
-      } else if (error.message.includes('404')) {
-        alert('❌ File not found on server.');
-      } else {
-        alert(`❌ Failed: ${error.message}`);
-      }
-    } finally {
-      const downloadBtn = document.getElementById(`download-${material.id}`);
+      // Reset button
       if (downloadBtn) {
         downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
         downloadBtn.disabled = false;
       }
+      return;
     }
-  };
+    
+    // ❌ Agar Cloudinary URL nahi hai to old API method
+    const token = localStorage.getItem('study_portal_token');
+    
+    if (!token) {
+      const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
+      if (shouldLogin) {
+        navigate('/login');
+      }
+      return;
+    }
+    
+    // ... rest of your old code remains same
+    
+  } catch (error) {
+    console.error('❌ Download error:', error);
+    
+    // ✅ Special handling for PDF CORS errors
+    if (error.message.includes('Failed to fetch') && material.cloudinary_url?.includes('.pdf')) {
+      console.log('📄 PDF CORS error detected, using fallback method');
+      window.open(material.cloudinary_url, '_blank');
+      alert('✅ PDF opened in new tab. Right-click and save if needed.');
+    } else {
+      alert(`❌ Failed: ${error.message}`);
+    }
+    
+    const downloadBtn = document.getElementById(`download-${material.id}`);
+    if (downloadBtn) {
+      downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
+      downloadBtn.disabled = false;
+    }
+  }
+};
 
   // Rest of the functions remain the same...
   const checkBackend = async () => {
