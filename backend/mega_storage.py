@@ -50,7 +50,7 @@ class MegaStorage:
         self.api = None
         return False
     
-    def upload_file(self, file_data, filename):
+    def upload_file(self, file_data, filename, folder_path=None):
         """Upload file to MEGA and return public link"""
         if not self.api:
             return {'success': False, 'error': 'Not logged in to MEGA'}
@@ -68,26 +68,73 @@ class MegaStorage:
             
             print(f"📤 Uploading: {filename}")
             
-            # Upload to MEGA
-            self.api.upload(temp_path)
+            # Upload to MEGA (with optional folder)
+            if folder_path:
+                # Create folder structure if needed
+                try:
+                    # Navigate to/create folder
+                    folders = folder_path.split('/')
+                    current_node = None
+                    
+                    for folder in folders:
+                        if not folder:
+                            continue
+                        try:
+                            # Check if folder exists
+                            folder_node = self.api.find(folder)
+                            if folder_node:
+                                current_node = folder_node[0] if isinstance(folder_node, list) else folder_node
+                            else:
+                                # Create folder
+                                if current_node:
+                                    current_node = self.api.create_folder(folder, current_node)
+                                else:
+                                    current_node = self.api.create_folder(folder)
+                                # Handle return format
+                                if isinstance(current_node, list):
+                                    current_node = current_node[0]
+                        except Exception as e:
+                            print(f"⚠️ Folder warning: {e}")
+                    
+                    # Upload to folder
+                    self.api.upload(temp_path, dest=current_node)
+                except Exception as e:
+                    print(f"⚠️ Folder upload failed, uploading to root: {e}")
+                    self.api.upload(temp_path)
+            else:
+                # Upload to root
+                self.api.upload(temp_path)
             
             # Wait for file to register
             time.sleep(2)
             
-            # Get public link
-            file_node = self.api.find(filename)
-            if not file_node:
+            # Get public link with retry
+            link = None
+            for attempt in range(3):
+                try:
+                    # Try to find by filename
+                    file_node = self.api.find(filename)
+                    if file_node:
+                        if isinstance(file_node, list):
+                            file_node = file_node[0]
+                        link = self.api.get_link(file_node)
+                        break
+                except:
+                    time.sleep(1)
+            
+            if not link:
                 # Try to find in recent files
                 files = self.api.get_files()
                 for file_id, info in files.items():
                     if info.get('a', {}).get('n') == filename:
-                        file_node = info
-                        break
+                        try:
+                            link = self.api.get_link(info)
+                            break
+                        except:
+                            continue
             
-            if not file_node:
+            if not link:
                 return {'success': False, 'error': 'File uploaded but link generation failed'}
-            
-            link = self.api.get_link(file_node)
             
             print(f"✅ Upload complete!")
             print(f"🔗 Link: {link}")
@@ -100,6 +147,8 @@ class MegaStorage:
             
         except Exception as e:
             print(f"❌ Upload error: {e}")
+            import traceback
+            traceback.print_exc()
             return {'success': False, 'error': str(e)}
         
         finally:
