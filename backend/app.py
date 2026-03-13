@@ -22,6 +22,11 @@ from mega_storage import MegaStorage
 import uuid
 from datetime import datetime
 from flask import redirect 
+from cloudinary_config import configure_cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+configure_cloudinary()
 
 # Load environment variables
 load_dotenv()
@@ -208,10 +213,11 @@ class Note(db.Model):
     file_type = db.Column(db.String(20))
     file_size = db.Column(db.Integer)
     note_type = db.Column(db.String(20), default='notes')
-    mega_link = db.Column(db.String(500))
     rating = db.Column(db.Float, default=0)
     rating_count = db.Column(db.Integer, default=0)
     rating_sum = db.Column(db.Integer, default=0)
+    cloudinary_url = db.Column(db.String(500))  
+    cloudinary_public_id = db.Column(db.String(200))
 
     status = db.Column(db.String(20), default='pending')
     rejection_reason = db.Column(db.Text)
@@ -254,7 +260,9 @@ class Note(db.Model):
             'subject_name': subject.name if subject else 'General',
             'user_id': self.user_id,
             'user_name': user.name if user else 'Unknown',
-            'user_email': user.email if user else 'Unknown'
+            'user_email': user.email if user else 'Unknown',
+            'cloudinary_url': self.cloudinary_url,  
+            'cloudinary_public_id': self.cloudinary_public_id,
         }
 
 # ==================== MEGA STORAGE INIT ====================
@@ -1259,26 +1267,26 @@ def get_all_materials():
         print(f"❌ Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
     
-
 # ==================== UPLOAD ROUTE ====================
-
-# app.py mein upload route update karo - MEGA fail ho to local use karo
-
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
 def upload_note():
     try:
         user_id = get_jwt_identity()
-        user = db.session.get(User, int(user_id))
+        print(f"👤 User ID from token: {user_id}")
 
+        user = db.session.get(User, int(user_id))
         if not user:
+            print("❌ User not found")
             return jsonify({'success': False, 'error': 'User not found'}), 404
 
         if 'file' not in request.files:
+            print("❌ No file in request")
             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
 
         file = request.files['file']
         if file.filename == '':
+            print("❌ Empty filename")
             return jsonify({'success': False, 'error': 'No file selected'}), 400
 
         title = request.form.get('title', '').strip()
@@ -1287,119 +1295,128 @@ def upload_note():
         subject_id = request.form.get('subject_id')
         note_type = request.form.get('type', 'notes')
 
-        if not title or not course_id:
-            return jsonify({'success': False, 'error': 'Title and Course ID required'}), 400
+        print(f"\n📥 UPLOAD REQUEST:")
+        print(f"   Title: {title}")
+        print(f"   Course ID: {course_id}")
+        print(f"   Subject ID: {subject_id}")
+        print(f"   Type: {note_type}")
+
+        if not title:
+            print("❌ No title")
+            return jsonify({'success': False, 'error': 'Title is required'}), 400
+        if not course_id:
+            print("❌ No course_id")
+            return jsonify({'success': False, 'error': 'Course ID is required'}), 400
 
         if not allowed_file(file.filename):
+            print(f"❌ File type not allowed: {file.filename}")
             return jsonify({'success': False, 'error': 'File type not allowed'}), 400
 
-        course = db.session.get(Course, int(course_id))
-        if not course:
-            return jsonify({'success': False, 'error': 'Course not found'}), 404
+        try:
+            course = db.session.get(Course, int(course_id))
+            if not course:
+                print(f"❌ Course not found: {course_id}")
+                return jsonify({'success': False, 'error': f'Course with ID {course_id} not found'}), 404
+        except ValueError:
+            print(f"❌ Invalid course_id: {course_id}")
+            return jsonify({'success': False, 'error': 'Invalid course ID'}), 400
 
-        # ==================== TRY MEGA FIRST ====================
-        mega_link = None
-        file_name = None
-        file_path = None
-        file_size = 0
+        print(f"✅ Course found: {course.name}")
+
+        # ==================== CLOUDINARY UPLOAD ====================
+        import cloudinary.uploader
+        import time
         
-        # Read file data
+        # File ko read karo
         file.seek(0)
         file_data = file.read()
-        file_size = len(file_data)
         
-        # Try MEGA if available
-        if mega_storage and mega_storage.api:
-            try:
-                # Create folder path
-                subject_name = "General"
-                if subject_id:
-                    subject = db.session.get(Subject, int(subject_id))
-                    if subject:
-                        subject_name = subject.name.replace('/', '_').replace(' ', '_')
-                
-                course_name = course.name.replace('/', '_').replace(' ', '_')
-                note_type_clean = note_type.replace(' ', '_')
-                folder_path = f"{course_name}/{subject_name}/{note_type_clean}"
-                
-                print(f"📤 Trying MEGA upload to folder: {folder_path}")
-                
-                result = mega_storage.upload_file(
-                    file_data,
-                    file.filename,
-                    folder_path
-                )
-                
-                if result['success']:
-                    mega_link = result['download_link']
-                    file_name = result['file_name']
-                    print(f"✅ MEGA upload successful: {mega_link}")
-                else:
-                    print(f"⚠️ MEGA upload failed: {result['error']}")
-                    
-            except Exception as e:
-                print(f"⚠️ MEGA exception: {e}")
+        # Filename clean karo
+        original_filename = secure_filename(file.filename)
+        file_ext = original_filename.rsplit('.', 1)[1].lower()
         
-        # ==================== FALLBACK TO LOCAL STORAGE ====================
-        if not mega_link:
-            print("📁 Using local storage fallback...")
-            
-            # Create course folder
-            course_folder = course.name.replace(' ', '_').replace('/', '_')
-            course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
-            os.makedirs(course_upload_path, exist_ok=True)
-            
-            # Generate unique filename
-            original_filename = secure_filename(file.filename)
-            file_ext = original_filename.rsplit('.', 1)[1].lower()
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            unique_id = uuid.uuid4().hex[:8]
-            file_name = f"{note_type}_{timestamp}_{unique_id}.{file_ext}"
-            file_path = os.path.join(course_upload_path, file_name)
-            
-            # Save file
-            with open(file_path, 'wb') as f:
-                f.write(file_data)
-            
-            print(f"✅ File saved locally: {file_path}")
-            print(f"📁 Size: {file_size} bytes")
+        # Create folder structure in Cloudinary
+        course_folder = course.name.replace(' ', '_').replace('/', '_')
+        subject_folder = "General"
+        if subject_id:
+            subject = db.session.get(Subject, int(subject_id))
+            if subject:
+                subject_folder = subject.name.replace(' ', '_').replace('/', '_')
+        
+        # Cloudinary folder path
+        cloudinary_folder = f"study_portal/{course_folder}/{subject_folder}/{note_type}"
+        
+        # Generate unique public ID
+        timestamp = int(time.time())
+        unique_id = uuid.uuid4().hex[:8]
+        public_id = f"{timestamp}_{unique_id}"
+        
+        print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
+        
+        # Upload to Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            file_data,
+            folder=cloudinary_folder,
+            public_id=public_id,
+            resource_type='auto',  # Auto-detect PDF, image, etc.
+            type='upload',
+            overwrite=False,
+            invalidate=True
+        )
+        
+        print(f"✅ Cloudinary upload successful!")
+        print(f"🔗 URL: {upload_result['secure_url']}")
+        
+        file_size = upload_result['bytes']
+        cloudinary_url = upload_result['secure_url']
+        cloudinary_public_id = upload_result['public_id']
+        
+        # ==================== DATABASE SAVE ====================
+        is_admin = user.role == 'admin'
 
-        # ==================== SAVE TO DATABASE ====================
         note = Note(
             title=title,
             description=description,
-            file_name=file_name or file.filename,
-            original_filename=file.filename,
-            file_path=file_path if file_path else '',
-            file_type=file.filename.rsplit('.', 1)[1].lower(),
+            file_name=original_filename,  # Original filename for display
+            original_filename=original_filename,
+            # Store Cloudinary info instead of local path
+            file_path=cloudinary_url,  # Cloudinary URL
+            file_type=file_ext,
             file_size=file_size,
             note_type=note_type,
             course_id=course.id,
             subject_id=subject_id if subject_id else None,
             user_id=user.id,
-            status='approved' if user.role == 'admin' else 'pending',
+            status='approved' if is_admin else 'pending',
             uploaded_at=datetime.now(timezone.utc),
-            mega_link=mega_link  # ✅ NULL bhi ho sakta hai
+            approved_at=datetime.now(timezone.utc) if is_admin else None,
+            # Add Cloudinary fields to your Note model
+            cloudinary_url=cloudinary_url,
+            cloudinary_public_id=cloudinary_public_id
         )
 
         db.session.add(note)
         db.session.commit()
+        print(f"✅ Note saved with ID: {note.id}")
 
-        return jsonify({
+        response_data = {
             'success': True,
-            'message': 'File uploaded successfully!' + (' (MEGA)' if mega_link else ' (Local)'),
+            'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if is_admin else ' Waiting for admin approval.'),
             'note': note.to_dict(),
-            'mega_link': mega_link,
+            'file_url': cloudinary_url,  # Direct Cloudinary URL
             'status': note.status
-        }), 201
+        }
+        print(f"📤 Sending response: {response_data}")
+
+        return jsonify(response_data), 201
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Upload error: {str(e)}")
+        print(f"❌ EXCEPTION: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-# # ==================== UPLOAD ROUTE ====================
-
+    
+    
 # @app.route('/api/upload', methods=['POST'])
 # @jwt_required()
 # def upload_note():
@@ -1808,11 +1825,11 @@ def download_note(note_id):
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
-        if note.mega_link:
+        if note.cloudinary_url:
             note.downloads += 1
             db.session.commit()
-            return redirect(note.mega_link)
-        
+            
+            return redirect(note.cloudinary_url)
         # Debug - check file path
         print(f"🔍 Download - Note ID: {note_id}")
         print(f"🔍 File path from DB: {note.file_path}")
