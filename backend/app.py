@@ -1262,7 +1262,7 @@ def get_all_materials():
 
 # ==================== UPLOAD ROUTE ====================
 
-# In app.py - Update the upload route
+# app.py mein upload route update karo - MEGA fail ho to local use karo
 
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
@@ -1297,52 +1297,89 @@ def upload_note():
         if not course:
             return jsonify({'success': False, 'error': 'Course not found'}), 404
 
-        # ==================== MEGA UPLOAD ====================
-        if not mega_storage or not mega_storage.api:
-            print("❌ MEGA not available")
-            return jsonify({'success': False, 'error': 'Storage service unavailable'}), 500
-
-        # Create folder path - ✅ Clean folder names
-        subject_name = "General"
-        if subject_id:
-            subject = db.session.get(Subject, int(subject_id))
-            if subject:
-                subject_name = subject.name.replace('/', '_').replace(' ', '_')
-        
-        course_name = course.name.replace('/', '_').replace(' ', '_')
-        note_type_clean = note_type.replace(' ', '_')
-        
-        folder_path = f"{course_name}/{subject_name}/{note_type_clean}"
+        # ==================== TRY MEGA FIRST ====================
+        mega_link = None
+        file_name = None
+        file_path = None
+        file_size = 0
         
         # Read file data
         file.seek(0)
         file_data = file.read()
+        file_size = len(file_data)
         
-        # Upload to MEGA
-        result = mega_storage.upload_file(
-            file_data,
-            file.filename,
-            folder_path
-        )
+        # Try MEGA if available
+        if mega_storage and mega_storage.api:
+            try:
+                # Create folder path
+                subject_name = "General"
+                if subject_id:
+                    subject = db.session.get(Subject, int(subject_id))
+                    if subject:
+                        subject_name = subject.name.replace('/', '_').replace(' ', '_')
+                
+                course_name = course.name.replace('/', '_').replace(' ', '_')
+                note_type_clean = note_type.replace(' ', '_')
+                folder_path = f"{course_name}/{subject_name}/{note_type_clean}"
+                
+                print(f"📤 Trying MEGA upload to folder: {folder_path}")
+                
+                result = mega_storage.upload_file(
+                    file_data,
+                    file.filename,
+                    folder_path
+                )
+                
+                if result['success']:
+                    mega_link = result['download_link']
+                    file_name = result['file_name']
+                    print(f"✅ MEGA upload successful: {mega_link}")
+                else:
+                    print(f"⚠️ MEGA upload failed: {result['error']}")
+                    
+            except Exception as e:
+                print(f"⚠️ MEGA exception: {e}")
         
-        if not result['success']:
-            return jsonify({'success': False, 'error': f'MEGA upload failed: {result["error"]}'}), 500
+        # ==================== FALLBACK TO LOCAL STORAGE ====================
+        if not mega_link:
+            print("📁 Using local storage fallback...")
+            
+            # Create course folder
+            course_folder = course.name.replace(' ', '_').replace('/', '_')
+            course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
+            os.makedirs(course_upload_path, exist_ok=True)
+            
+            # Generate unique filename
+            original_filename = secure_filename(file.filename)
+            file_ext = original_filename.rsplit('.', 1)[1].lower()
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_id = uuid.uuid4().hex[:8]
+            file_name = f"{note_type}_{timestamp}_{unique_id}.{file_ext}"
+            file_path = os.path.join(course_upload_path, file_name)
+            
+            # Save file
+            with open(file_path, 'wb') as f:
+                f.write(file_data)
+            
+            print(f"✅ File saved locally: {file_path}")
+            print(f"📁 Size: {file_size} bytes")
 
-        # Create note
+        # ==================== SAVE TO DATABASE ====================
         note = Note(
             title=title,
             description=description,
-            file_name=file.filename,
+            file_name=file_name or file.filename,
             original_filename=file.filename,
+            file_path=file_path if file_path else '',
             file_type=file.filename.rsplit('.', 1)[1].lower(),
-            file_size=len(file_data),
+            file_size=file_size,
             note_type=note_type,
             course_id=course.id,
             subject_id=subject_id if subject_id else None,
             user_id=user.id,
             status='approved' if user.role == 'admin' else 'pending',
             uploaded_at=datetime.now(timezone.utc),
-            mega_link=result['download_link']  # ✅ Save MEGA link
+            mega_link=mega_link  # ✅ NULL bhi ho sakta hai
         )
 
         db.session.add(note)
@@ -1350,9 +1387,10 @@ def upload_note():
 
         return jsonify({
             'success': True,
-            'message': 'File uploaded successfully to MEGA!',
+            'message': 'File uploaded successfully!' + (' (MEGA)' if mega_link else ' (Local)'),
             'note': note.to_dict(),
-            'mega_link': result['download_link']
+            'mega_link': mega_link,
+            'status': note.status
         }), 201
 
     except Exception as e:
