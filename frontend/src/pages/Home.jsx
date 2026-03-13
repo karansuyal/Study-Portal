@@ -56,6 +56,7 @@ const Home = () => {
       const data = await response.json();
       
       if (data.success) {
+        // ✅ Transform materials with Cloudinary URL
         const transformedMaterials = data.materials.map(m => ({
           id: m.id,
           title: m.title,
@@ -63,10 +64,12 @@ const Home = () => {
           course_name: m.course || m.course_name || 'Unknown',
           user_name: m.user_name || 'Unknown',
           uploaded_at: m.uploaded_at,
-          views: m.views || Math.floor(Math.random() * 50) + 5,
-          downloads: m.downloads || Math.floor(Math.random() * 20) + 1,
+          views: m.views || 0,
+          downloads: m.downloads || 0,
           material_type: m.material_type || m.note_type,
-          file_name: m.file_name
+          file_name: m.file_name,
+          // ✅ IMPORTANT: Cloudinary URL
+          cloudinary_url: m.cloudinary_url || null
         }));
         
         const itemsToShow = isMobile ? 3 : (isTablet ? 4 : 6);
@@ -82,8 +85,56 @@ const Home = () => {
     }
   };
 
+  // ✅ FIXED: Cloudinary support in download
   const handleMaterialClick = async (material) => {
     try {
+      // ✅ Pehle Cloudinary URL check karo
+      if (material.cloudinary_url) {
+        console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
+        
+        // Show downloading state
+        const downloadBtn = document.getElementById(`download-${material.id}`);
+        if (downloadBtn) {
+          downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
+          downloadBtn.disabled = true;
+        }
+        
+        // Direct download from Cloudinary
+        const response = await fetch(material.cloudinary_url);
+        const blob = await response.blob();
+        
+        // Get filename
+        let filename = material.file_name || `${material.title}.pdf`;
+        
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Update download count
+        setLatestMaterials(prev =>
+          prev.map(m =>
+            m.id === material.id
+              ? { ...m, downloads: m.downloads + 1 }
+              : m
+          )
+        );
+        
+        alert('✅ Download started from Cloudinary!');
+        
+        // Reset button
+        if (downloadBtn) {
+          downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
+          downloadBtn.disabled = false;
+        }
+        return;
+      }
+      
+      // ❌ Agar Cloudinary URL nahi hai to old API method
       const token = localStorage.getItem('study_portal_token');
       
       if (!token) {
@@ -171,6 +222,7 @@ const Home = () => {
     }
   };
 
+  // Rest of the functions remain the same...
   const checkBackend = async () => {
     try {
       const health = await checkHealth();
@@ -399,7 +451,6 @@ const Home = () => {
                 </div>
               ))}
             </div>
-            
           </>
         )}
       </section>
@@ -477,6 +528,13 @@ const Home = () => {
                     >
                       ⬇️ Download
                     </button>
+                    
+                    {/* Optional: Show Cloudinary badge */}
+                    {material.cloudinary_url && (
+                      <div style={{ fontSize: '10px', color: '#6b7280', textAlign: 'right', marginTop: '5px' }}>
+                        ☁️ Cloudinary
+                      </div>
+                    )}
                   </div>
                 );
               })}

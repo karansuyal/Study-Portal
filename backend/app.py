@@ -1817,6 +1817,7 @@ def download_note(note_id):
             db.session.commit()
             print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
             return redirect(note.cloudinary_url)
+        
         # Debug - check file path
         print(f"🔍 Download - Note ID: {note_id}")
         print(f"🔍 File path from DB: {note.file_path}")
