@@ -1343,18 +1343,13 @@ def upload_note():
         print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
         
         # Upload to Cloudinary
-        
-        if file_ext in ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt']:
-            resource_type = "raw"
-        else:
-            resource_type = "image"
         upload_result = cloudinary.uploader.upload(
-            file,
+            file_data,
             folder=cloudinary_folder,
             public_id=public_id,
             resource_type='auto',  # Auto-detect PDF, image, etc.
             type='upload',
-            access_mode='public',
+            access_mode="public",
             overwrite=False,
             invalidate=True
         )
