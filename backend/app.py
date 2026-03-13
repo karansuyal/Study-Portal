@@ -1347,7 +1347,7 @@ def upload_note():
             file_data,
             folder=cloudinary_folder,
             public_id=public_id,
-            resource_type='auto',  # Auto-detect PDF, image, etc.
+            resource_type='raw',  # Auto-detect PDF, image, etc.
             type='upload',
             access_mode='public',
             overwrite=False,
