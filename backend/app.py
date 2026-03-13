@@ -1260,7 +1260,7 @@ def get_all_materials():
         return jsonify({'success': False, 'error': str(e)}), 500
     
 
-# # ==================== UPLOAD ROUTE ====================
+# ==================== UPLOAD ROUTE ====================
 
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
@@ -1317,6 +1317,14 @@ def upload_note():
 
         print(f"✅ Course found: {course.name}")
 
+        # Initialize variables
+        mega_link = None
+        file_name = None
+        file_path = None
+        file_size = 0
+        file_type = None
+        original_filename = file.filename
+
         # ==================== MEGA UPLOAD ====================
         if mega_storage and mega_storage.api:
             # Create folder path
@@ -1341,26 +1349,9 @@ def upload_note():
                 
             mega_link = result['download_link']
             file_name = result['file_name']
-            print(f"✅ Uploaded to MEGA: {mega_link}")
+            file_type = file.filename.rsplit('.', 1)[1].lower()
             
-            # Create note with MEGA link
-            note = Note(
-                title=title,
-                description=description,
-                file_name=file_name,
-                original_filename=file.filename,
-                file_path='',
-                file_type=file.filename.rsplit('.', 1)[1].lower(),
-                file_size=0,
-                note_type=note_type,
-                course_id=course.id,
-                subject_id=subject_id if subject_id else None,
-                user_id=user.id,
-                status='approved' if user.role == 'admin' else 'pending',
-                uploaded_at=datetime.now(timezone.utc),
-                approved_at=datetime.now(timezone.utc) if user.role == 'admin' else None,
-                mega_link=mega_link
-            )
+            print(f"✅ Uploaded to MEGA: {mega_link}")
             
         else:
             # Fallback to local filesystem
@@ -1372,30 +1363,32 @@ def upload_note():
             original_filename = secure_filename(file.filename)
             file_ext = original_filename.rsplit('.', 1)[1].lower()
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            unique_filename = f"{note_type}_{timestamp}_{uuid.uuid4().hex[:6]}.{file_ext}"
-            file_path = os.path.join(course_upload_path, unique_filename)
+            file_name = f"{note_type}_{timestamp}_{uuid.uuid4().hex[:6]}.{file_ext}"
+            file_path = os.path.join(course_upload_path, file_name)
             file.save(file_path)
             file_size = os.path.getsize(file_path)
-            
-            note = Note(
-                title=title,
-                description=description,
-                file_name=unique_filename,
-                original_filename=original_filename,
-                file_path=file_path,
-                file_type=file_ext,
-                file_size=file_size,
-                note_type=note_type,
-                course_id=course.id,
-                subject_id=subject_id if subject_id else None,
-                user_id=user.id,
-                status='approved' if user.role == 'admin' else 'pending',
-                uploaded_at=datetime.now(timezone.utc),
-                approved_at=datetime.now(timezone.utc) if user.role == 'admin' else None,
-                mega_link=None
-            )
+            file_type = file_ext
             
             print(f"💾 File saved locally: {file_path}")
+
+        # Create note (common for both MEGA and local)
+        note = Note(
+            title=title,
+            description=description,
+            file_name=file_name,
+            original_filename=original_filename,
+            file_path=file_path if file_path else '',
+            file_type=file_type,
+            file_size=file_size,
+            note_type=note_type,
+            course_id=course.id,
+            subject_id=subject_id if subject_id else None,
+            user_id=user.id,
+            status='approved' if user.role == 'admin' else 'pending',
+            uploaded_at=datetime.now(timezone.utc),
+            approved_at=datetime.now(timezone.utc) if user.role == 'admin' else None,
+            mega_link=mega_link
+        )
 
         db.session.add(note)
         db.session.commit()
@@ -1405,7 +1398,7 @@ def upload_note():
             'success': True,
             'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if user.role == 'admin' else ' Waiting for admin approval.'),
             'note': note.to_dict(),
-            'mega_link': mega_link if 'mega_link' in locals() else None,
+            'mega_link': mega_link,
             'status': note.status
         }
         print(f"📤 Sending response: {response_data}")
