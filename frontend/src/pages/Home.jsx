@@ -85,17 +85,16 @@ const Home = () => {
     }
   };
 
-// ✅ FIXED: Cloudinary PDF download
+// ✅ FIXED handleMaterialClick Function
 const handleMaterialClick = async (material) => {
   try {
     // ✅ Pehle Cloudinary URL check karo
     if (material.cloudinary_url) {
-      console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
+      console.log('📥 Opening from Cloudinary:', material.cloudinary_url);
       
-      // Show downloading state
       const downloadBtn = document.getElementById(`download-${material.id}`);
       if (downloadBtn) {
-        downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
+        downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Opening...';
         downloadBtn.disabled = true;
       }
 
@@ -106,53 +105,65 @@ const handleMaterialClick = async (material) => {
                     material.cloudinary_url.includes('pdf');
 
       if (isPDF) {
-        console.log('📄 PDF detected, using direct link method');
+        console.log('📄 PDF detected');
         
-        // ✅ METHOD 1: Direct link - Best for PDFs
-        // New tab mein kholo (user dekh sakta hai aur download bhi kar sakta hai)
-        window.open(material.cloudinary_url, '_blank');
+        // ✅ METHOD 1: Direct Cloudinary PDF URL with raw flag
+        // Cloudinary PDF ke liye 'fl_attachment' flag use karo
+        let pdfUrl = material.cloudinary_url;
         
-        // ✅ METHOD 2: Agar force download karna hai to (comment kiya hai)
-        // const link = document.createElement('a');
-        // link.href = material.cloudinary_url;
-        // link.download = material.file_name || `${material.title}.pdf`;
-        // link.target = '_blank';
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
+        // Agar URL mein 'upload' hai to 'fl_attachment' add karo
+        if (pdfUrl.includes('/upload/')) {
+          pdfUrl = pdfUrl.replace('/upload/', '/upload/fl_attachment/');
+        }
         
-        alert('✅ PDF opened in new tab. Use download button there if needed.');
+        console.log('📄 Modified PDF URL:', pdfUrl);
+        
+        // Try multiple methods
+        try {
+          // Method 1: iframe se try karo
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = pdfUrl;
+          document.body.appendChild(iframe);
+          
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 5000);
+          
+          // Method 2: New tab mein open karo
+          setTimeout(() => {
+            window.open(pdfUrl, '_blank');
+          }, 1000);
+          
+        } catch (iframeError) {
+          console.log('Iframe method failed, trying direct open');
+          window.open(pdfUrl, '_blank');
+        }
+        
       } else {
-        // ✅ Image ya other files ke liye blob method
-        console.log('🖼️ Image detected, using blob download');
+        // Image ke liye blob method
+        console.log('🖼️ Image detected');
         
-        // Add headers to avoid CORS issues
         const response = await fetch(material.cloudinary_url, {
           method: 'GET',
           mode: 'cors',
-          cache: 'no-cache',
           headers: {
             'Accept': 'image/*'
           }
         });
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = material.file_name || `${material.title}.jpg`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          // Fallback to direct open
+          window.open(material.cloudinary_url, '_blank');
         }
-        
-        const blob = await response.blob();
-        
-        // Get filename
-        let filename = material.file_name || `${material.title}.jpg`;
-        
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
       }
       
       // Update download count
@@ -164,11 +175,13 @@ const handleMaterialClick = async (material) => {
         )
       );
       
-      // Reset button
-      if (downloadBtn) {
-        downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
-        downloadBtn.disabled = false;
-      }
+      setTimeout(() => {
+        if (downloadBtn) {
+          downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
+          downloadBtn.disabled = false;
+        }
+      }, 3000);
+      
       return;
     }
     
@@ -183,16 +196,14 @@ const handleMaterialClick = async (material) => {
       return;
     }
     
-    // ... rest of your old code remains same
+    // ... rest of your old code
     
   } catch (error) {
-    console.error('❌ Download error:', error);
+    console.error('❌ Error:', error);
     
-    // ✅ Special handling for PDF CORS errors
-    if (error.message.includes('Failed to fetch') && material.cloudinary_url?.includes('.pdf')) {
-      console.log('📄 PDF CORS error detected, using fallback method');
+    // Fallback - direct URL open karo
+    if (material.cloudinary_url) {
       window.open(material.cloudinary_url, '_blank');
-      alert('✅ PDF opened in new tab. Right-click and save if needed.');
     } else {
       alert(`❌ Failed: ${error.message}`);
     }

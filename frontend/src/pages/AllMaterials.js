@@ -143,7 +143,7 @@ const AllMaterials = () => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = material.file_name || `${material.title}.pdf`;
+        link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
