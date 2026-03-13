@@ -1349,6 +1349,7 @@ def upload_note():
             public_id=public_id,
             resource_type='auto',  # Auto-detect PDF, image, etc.
             type='upload',
+            access_mode='public',
             overwrite=False,
             invalidate=True
         )
