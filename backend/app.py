@@ -1266,16 +1266,13 @@ def upload_note():
 
         user = db.session.get(User, int(user_id))
         if not user:
-            print("❌ User not found")
             return jsonify({'success': False, 'error': 'User not found'}), 404
 
         if 'file' not in request.files:
-            print("❌ No file in request")
             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
 
         file = request.files['file']
         if file.filename == '':
-            print("❌ Empty filename")
             return jsonify({'success': False, 'error': 'No file selected'}), 400
 
         title = request.form.get('title', '').strip()
@@ -1284,93 +1281,86 @@ def upload_note():
         subject_id = request.form.get('subject_id')
         note_type = request.form.get('type', 'notes')
 
-        print(f"\n📥 UPLOAD REQUEST:")
-        print(f"   Title: {title}")
-        print(f"   Course ID: {course_id}")
-        print(f"   Subject ID: {subject_id}")
-        print(f"   Type: {note_type}")
-
         if not title:
-            print("❌ No title")
             return jsonify({'success': False, 'error': 'Title is required'}), 400
+
         if not course_id:
-            print("❌ No course_id")
             return jsonify({'success': False, 'error': 'Course ID is required'}), 400
 
         if not allowed_file(file.filename):
-            print(f"❌ File type not allowed: {file.filename}")
             return jsonify({'success': False, 'error': 'File type not allowed'}), 400
 
-        try:
-            course = db.session.get(Course, int(course_id))
-            if not course:
-                print(f"❌ Course not found: {course_id}")
-                return jsonify({'success': False, 'error': f'Course with ID {course_id} not found'}), 404
-        except ValueError:
-            print(f"❌ Invalid course_id: {course_id}")
-            return jsonify({'success': False, 'error': 'Invalid course ID'}), 400
+        course = db.session.get(Course, int(course_id))
+        if not course:
+            return jsonify({'success': False, 'error': 'Course not found'}), 404
 
         print(f"✅ Course found: {course.name}")
 
         # ==================== CLOUDINARY UPLOAD ====================
         import cloudinary.uploader
         import time
-        
-        # File ko read karo
-        file.seek(0)
-        file_data = file.read()
-        
-        # Filename clean karo
+
+        # filename clean
         original_filename = secure_filename(file.filename)
-        file_ext = original_filename.rsplit('.', 1)[1].lower()
-        
-        # Create folder structure in Cloudinary
+
+        if '.' in original_filename:
+            file_ext = original_filename.rsplit('.', 1)[1].lower()
+        else:
+            file_ext = ""
+
+        # resource type detect
+        document_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt']
+
+        if file_ext in document_types:
+            resource_type = "raw"
+        else:
+            resource_type = "image"
+
+        # create folder
         course_folder = course.name.replace(' ', '_').replace('/', '_')
+
         subject_folder = "General"
         if subject_id:
             subject = db.session.get(Subject, int(subject_id))
             if subject:
                 subject_folder = subject.name.replace(' ', '_').replace('/', '_')
-        
-        # Cloudinary folder path
+
         cloudinary_folder = f"study_portal/{course_folder}/{subject_folder}/{note_type}"
-        
-        # Generate unique public ID
+
+        # unique id
         timestamp = int(time.time())
         unique_id = uuid.uuid4().hex[:8]
         public_id = f"{timestamp}_{unique_id}"
-        
+
         print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
-        
-        # Upload to Cloudinary
+        print(f"📄 Resource Type: {resource_type}")
+
+        # upload
         upload_result = cloudinary.uploader.upload(
-            file_data,
+            file,
             folder=cloudinary_folder,
             public_id=public_id,
-            resource_type='auto',  # Auto-detect PDF, image, etc.
-            type='upload',
-            access_mode="public",
-            overwrite=False,
-            invalidate=True
+            resource_type=resource_type,
+            type="upload",
+            overwrite=False
         )
-        
-        print(f"✅ Cloudinary upload successful!")
-        print(f"🔗 URL: {upload_result['secure_url']}")
-        
-        file_size = upload_result['bytes']
+
+        print("✅ Cloudinary upload successful!")
+
         cloudinary_url = upload_result['secure_url']
         cloudinary_public_id = upload_result['public_id']
-        
+        file_size = upload_result.get('bytes', 0)
+
         # ==================== DATABASE SAVE ====================
+
         is_admin = user.role == 'admin'
 
         note = Note(
             title=title,
             description=description,
-            file_name=original_filename,  # Original filename for display
+            file_name=original_filename,
             original_filename=original_filename,
-            # Store Cloudinary info instead of local path
-            file_path=cloudinary_url,  # Cloudinary URL
+            file_path=cloudinary_url,
             file_type=file_ext,
             file_size=file_size,
             note_type=note_type,
@@ -1380,33 +1370,28 @@ def upload_note():
             status='approved' if is_admin else 'pending',
             uploaded_at=datetime.now(timezone.utc),
             approved_at=datetime.now(timezone.utc) if is_admin else None,
-            # Add Cloudinary fields to your Note model
             cloudinary_url=cloudinary_url,
             cloudinary_public_id=cloudinary_public_id
         )
 
         db.session.add(note)
         db.session.commit()
+
         print(f"✅ Note saved with ID: {note.id}")
 
-        response_data = {
+        return jsonify({
             'success': True,
-            'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if is_admin else ' Waiting for admin approval.'),
+            'message': 'File uploaded successfully!',
             'note': note.to_dict(),
-            'file_url': cloudinary_url,  # Direct Cloudinary URL
+            'file_url': cloudinary_url,
             'status': note.status
-        }
-        print(f"📤 Sending response: {response_data}")
-
-        return jsonify(response_data), 201
+        }), 201
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ EXCEPTION: {str(e)}")
+        print(f"❌ Upload Error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-    
-    
 # @app.route('/api/upload', methods=['POST'])
 # @jwt_required()
 # def upload_note():
