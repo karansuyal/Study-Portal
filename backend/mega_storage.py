@@ -1,15 +1,15 @@
-# mega_storage.py - FINAL WORKING VERSION
+# mega_storage.py
 import os
+from mega import Mega
 import tempfile
 import time
 import uuid
-from mega import Mega
 
 class MegaStorage:
     def __init__(self):
-        """Initialize MEGA client"""
+        """Initialize MEGA client with proper error handling"""
         print("\n" + "="*60)
-        print("🚀 Initializing MegaStorage...")
+        print("🚀 MEGA STORAGE INITIALIZATION")
         print("="*60)
         
         self.mega = Mega()
@@ -17,152 +17,93 @@ class MegaStorage:
         self.password = os.environ.get('MEGA_PASSWORD')
         self.api = None
         
-        print(f"📧 Email: {self.email}")
-        print(f"🔑 Password: {'*'*8 if self.password else 'Not set'}")
+        print(f"📧 Email from env: {self.email}")
+        print(f"🔑 Password from env: {'*'*8 if self.password else 'NOT SET'}")
         
         if not self.email or not self.password:
-            print("❌ ERROR: MEGA credentials missing!")
+            print("❌ MEGA credentials not found in environment variables!")
+            print("Please set MEGA_EMAIL and MEGA_PASSWORD in Render dashboard")
             return
         
-        self.login()
+        self._login()
     
-    def login(self):
-        """Login to MEGA"""
-        try:
-            print("🔑 Logging in...")
-            self.api = self.mega.login(self.email, self.password)
-            print("✅ Login successful!")
-            return True
-        except Exception as e:
-            print(f"❌ Login failed: {e}")
-            self.api = None
-            return False
-    
-    def ensure_folder(self, folder_path):
-        """Ensure folder exists, create if not"""
-        if not self.api:
-            return None
-            
-        try:
-            folders = folder_path.split('/')
-            current = None
-            
-            for folder in folders:
-                if not folder:
-                    continue
-                    
-                # Check if folder exists
-                try:
-                    existing = self.api.find(folder)
-                    if existing:
-                        current = existing[0] if isinstance(existing, list) else existing
-                        continue
-                except:
-                    pass
+    def _login(self):
+        """Login to MEGA with retry"""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                print(f"🔑 Logging into MEGA (attempt {attempt+1}/{max_retries})...")
+                self.api = self.mega.login(self.email, self.password)
+                print(f"✅ Login successful!")
                 
-                # Create folder
-                if current:
-                    current = self.api.create_folder(folder, current)
-                else:
-                    current = self.api.create_folder(folder)
-                    
-                # Handle return format
-                if isinstance(current, list):
-                    current = current[0]
-                    
-            return current
-            
-        except Exception as e:
-            print(f"⚠️ Folder warning: {e}")
-            return None
+                # Get storage info
+                storage = self.api.get_storage_space()
+                print(f"💾 Total storage: {storage} bytes")
+                return True
+                
+            except Exception as e:
+                print(f"❌ Login failed: {e}")
+                if attempt < max_retries - 1:
+                    print(f"⏰ Retrying in 2 seconds...")
+                    time.sleep(2)
+        
+        self.api = None
+        return False
     
-    def upload_file(self, file_data, filename, folder_path=None):
-        """
-        Upload file to MEGA and return public link
-        file_data: bytes or file path
-        filename: name to save as
-        folder_path: optional folder structure
-        """
+    def upload_file(self, file_data, filename):
+        """Upload file to MEGA and return public link"""
         if not self.api:
             return {'success': False, 'error': 'Not logged in to MEGA'}
         
         temp_path = None
         try:
-            # Handle input type
-            if isinstance(file_data, bytes):
-                # Create temp file
-                temp_dir = tempfile.gettempdir()
-                temp_name = f"{uuid.uuid4().hex[:8]}_{filename}"
-                temp_path = os.path.join(temp_dir, temp_name)
-                
-                with open(temp_path, 'wb') as f:
-                    f.write(file_data)
-                print(f"📝 Temp file created: {temp_path}")
-                upload_path = temp_path
-            else:
-                upload_path = file_data
+            # Create temp file
+            temp_dir = tempfile.gettempdir()
+            temp_filename = f"{uuid.uuid4().hex}_{filename}"
+            temp_path = os.path.join(temp_dir, temp_filename)
             
-            # Determine upload destination
-            if folder_path:
-                print(f"📁 Target folder: {folder_path}")
-                folder_node = self.ensure_folder(folder_path)
-                if folder_node:
-                    # Upload to folder
-                    dest = folder_node if not isinstance(folder_node, list) else folder_node[0]
-                    uploaded = self.api.upload(upload_path, dest=dest)
-                else:
-                    # Fallback to root
-                    print("⚠️ Folder creation failed, uploading to root")
-                    uploaded = self.api.upload(upload_path)
-            else:
-                # Upload to root
-                uploaded = self.api.upload(upload_path)
+            # Save file data
+            with open(temp_path, 'wb') as f:
+                f.write(file_data)
+            
+            print(f"📤 Uploading: {filename}")
+            
+            # Upload to MEGA
+            self.api.upload(temp_path)
             
             # Wait for file to register
             time.sleep(2)
             
             # Get public link
-            public_link = None
-            for attempt in range(3):
-                try:
-                    file_node = self.api.find(filename)
-                    if file_node:
-                        if isinstance(file_node, list):
-                            file_node = file_node[0]
-                        public_link = self.api.get_link(file_node)
-                        break
-                except:
-                    time.sleep(1)
-            
-            if not public_link:
-                # Fallback - try to get from recent uploads
+            file_node = self.api.find(filename)
+            if not file_node:
+                # Try to find in recent files
                 files = self.api.get_files()
                 for file_id, info in files.items():
                     if info.get('a', {}).get('n') == filename:
-                        public_link = self.api.get_link(info)
+                        file_node = info
                         break
             
-            if not public_link:
-                public_link = "https://mega.nz/"
-                print("⚠️ Could not generate link")
+            if not file_node:
+                return {'success': False, 'error': 'File uploaded but link generation failed'}
+            
+            link = self.api.get_link(file_node)
             
             print(f"✅ Upload complete!")
-            print(f"🔗 Link: {public_link}")
+            print(f"🔗 Link: {link}")
             
             return {
                 'success': True,
-                'file_name': filename,
-                'download_link': public_link
+                'download_link': link,
+                'file_name': filename
             }
             
         except Exception as e:
             print(f"❌ Upload error: {e}")
-            import traceback
-            traceback.print_exc()
             return {'success': False, 'error': str(e)}
-            
+        
         finally:
-            # Cleanup temp file
+            # Clean up temp file
             if temp_path and os.path.exists(temp_path):
                 try:
                     os.remove(temp_path)
