@@ -1317,16 +1317,22 @@ def upload_note():
 
         print(f"✅ Course found: {course.name}")
 
-        
-        if mega_storage:
-            # Create MEGA folder path: BCA/Data_Structures/notes
-            folder_path = f"{course.name.upper()}/{subject_id}_{note_type}" if subject_id else f"{course.name.upper()}/{note_type}"
+        # ==================== MEGA UPLOAD ====================
+        if mega_storage and mega_storage.api:
+            # Create folder path
+            subject_name = "General"
+            if subject_id:
+                subject = db.session.get(Subject, int(subject_id))
+                if subject:
+                    subject_name = subject.name.replace(' ', '_')
+            
+            folder_path = f"{course.name}/{subject_name}/{note_type}"
             
             # Upload to MEGA
             file_data = file.read()
             result = mega_storage.upload_file(
                 file_data,
-                f"{uuid.uuid4().hex[:8]}_{file.filename}",
+                file.filename,  # Original filename
                 folder_path
             )
             
@@ -1334,10 +1340,30 @@ def upload_note():
                 return jsonify({'success': False, 'error': f'MEGA upload failed: {result["error"]}'}), 500
                 
             mega_link = result['download_link']
-            file_path = result.get('file_path', '')
+            file_name = result['file_name']
             print(f"✅ Uploaded to MEGA: {mega_link}")
+            
+            # Create note with MEGA link
+            note = Note(
+                title=title,
+                description=description,
+                file_name=file_name,
+                original_filename=file.filename,
+                file_path='',
+                file_type=file.filename.rsplit('.', 1)[1].lower(),
+                file_size=0,
+                note_type=note_type,
+                course_id=course.id,
+                subject_id=subject_id if subject_id else None,
+                user_id=user.id,
+                status='approved' if user.role == 'admin' else 'pending',
+                uploaded_at=datetime.now(timezone.utc),
+                approved_at=datetime.now(timezone.utc) if user.role == 'admin' else None,
+                mega_link=mega_link
+            )
+            
         else:
-            # Fallback to local filesystem if MEGA not available
+            # Fallback to local filesystem
             print("⚠️ MEGA not available, using local filesystem")
             course_folder = course.name.replace(' ', '_')
             course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
@@ -1350,28 +1376,26 @@ def upload_note():
             file_path = os.path.join(course_upload_path, unique_filename)
             file.save(file_path)
             file_size = os.path.getsize(file_path)
-            mega_link = None
+            
+            note = Note(
+                title=title,
+                description=description,
+                file_name=unique_filename,
+                original_filename=original_filename,
+                file_path=file_path,
+                file_type=file_ext,
+                file_size=file_size,
+                note_type=note_type,
+                course_id=course.id,
+                subject_id=subject_id if subject_id else None,
+                user_id=user.id,
+                status='approved' if user.role == 'admin' else 'pending',
+                uploaded_at=datetime.now(timezone.utc),
+                approved_at=datetime.now(timezone.utc) if user.role == 'admin' else None,
+                mega_link=None
+            )
+            
             print(f"💾 File saved locally: {file_path}")
-
-        is_admin = user.role == 'admin'
-
-        note = Note(
-            title=title,
-            description=description,
-            file_name=unique_filename if not mega_storage else result['file_name'],
-            original_filename=file.filename,
-            file_path=file_path if not mega_storage else '',
-            file_type=file_ext if not mega_storage else file.filename.rsplit('.', 1)[1].lower(),
-            file_size=file_size if not mega_storage else 0,
-            note_type=note_type,
-            course_id=course.id,
-            subject_id=subject_id if subject_id else None,
-            user_id=user.id,
-            status='approved' if is_admin else 'pending',
-            uploaded_at=datetime.now(timezone.utc),
-            approved_at=datetime.now(timezone.utc) if is_admin else None,
-            mega_link=mega_link  # Naya field add karna hoga
-        )
 
         db.session.add(note)
         db.session.commit()
@@ -1379,9 +1403,9 @@ def upload_note():
 
         response_data = {
             'success': True,
-            'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if is_admin else ' Waiting for admin approval.'),
+            'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if user.role == 'admin' else ' Waiting for admin approval.'),
             'note': note.to_dict(),
-            'mega_link': mega_link,
+            'mega_link': mega_link if 'mega_link' in locals() else None,
             'status': note.status
         }
         print(f"📤 Sending response: {response_data}")
@@ -1393,7 +1417,6 @@ def upload_note():
         print(f"❌ EXCEPTION: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-    
 # # ==================== UPLOAD ROUTE ====================
 
 # @app.route('/api/upload', methods=['POST'])
