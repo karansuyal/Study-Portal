@@ -1348,12 +1348,11 @@ def upload_note():
             resource_type = "raw"
         else:
             resource_type = "image"
-            
         upload_result = cloudinary.uploader.upload(
-            file_data,
+            file,
             folder=cloudinary_folder,
             public_id=public_id,
-            resource_type='resource_type',  # Auto-detect PDF, image, etc.
+            resource_type='auto',  # Auto-detect PDF, image, etc.
             type='upload',
             access_mode='public',
             overwrite=False,
