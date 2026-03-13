@@ -20,7 +20,16 @@ const AllMaterials = () => {
       const data = await response.json();
       
       if (data.success) {
-        setMaterials(data.materials);
+        // ✅ Transform materials with Cloudinary URL
+        const transformedMaterials = data.materials.map(material => ({
+          ...material,
+          // Cloudinary URL direct use karo agar available ho
+          cloudinary_url: material.cloudinary_url || null,
+          // file_path mein agar Cloudinary URL ho to use karo
+          file_url: material.cloudinary_url || material.file_url
+        }));
+        
+        setMaterials(transformedMaterials);
         setError(null);
       } else {
         setError('Failed to load materials');
@@ -33,7 +42,38 @@ const AllMaterials = () => {
     }
   };
 
+  // ✅ FIXED VIEW FUNCTION - Cloudinary support
   const handleView = async (material) => {
+    // ✅ Pehle Cloudinary URL check karo
+    if (material.cloudinary_url) {
+      console.log('📄 Opening Cloudinary URL:', material.cloudinary_url);
+      
+      // Views increment
+      try {
+        const token = localStorage.getItem('study_portal_token');
+        await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+          method: 'GET',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        // Update local state
+        setMaterials(prevMaterials => 
+          prevMaterials.map(m => 
+            m.id === material.id 
+              ? { ...m, views: (m.views || 0) + 1 } 
+              : m
+          )
+        );
+      } catch (err) {
+        console.log('Views increment failed:', err);
+      }
+      
+      // Open in new tab
+      window.open(material.cloudinary_url, '_blank');
+      return;
+    }
+
+    // ✅ Fallback to old method
     if (!material.file_name) {
       alert('No file to view');
       return;
@@ -87,10 +127,43 @@ const AllMaterials = () => {
     }
   };
 
+  // ✅ FIXED DOWNLOAD FUNCTION - Cloudinary support
   const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: true }));
     
     try {
+      // ✅ Pehle Cloudinary URL check karo
+      if (material.cloudinary_url) {
+        console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
+        
+        // Method 1: Direct download via fetch
+        const response = await fetch(material.cloudinary_url);
+        const blob = await response.blob();
+        
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = material.file_name || `${material.title}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Update download count
+        setMaterials(prevMaterials => 
+          prevMaterials.map(m => 
+            m.id === material.id 
+              ? { ...m, downloads: (m.downloads || 0) + 1 } 
+              : m
+          )
+        );
+        
+        alert('✅ Download started from Cloudinary!');
+        setDownloading(prev => ({ ...prev, [material.id]: false }));
+        return;
+      }
+      
+      // ✅ Fallback to old API method
       const token = localStorage.getItem('study_portal_token');
       
       if (!token) {
@@ -226,10 +299,10 @@ const AllMaterials = () => {
           
           return (
             <div key={material.id} className="material-card">
-              {/* ✅ Title */}
+              {/* Title */}
               <h3 className="material-title">{material.title}</h3>
               
-              {/* ✅ Details Column - Course, Person, Date, aur BADGE date ke niche */}
+              {/* Details */}
               <div className="material-details">
                 <div className="detail-item">
                   <span className="detail-icon">📚</span>
@@ -246,7 +319,7 @@ const AllMaterials = () => {
                   </span>
                 </div>
                 
-                {/* ✅ BADGE - Date ke niche same column mein */}
+                {/* Badge */}
                 <div className="detail-item badge-detail-item">
                   <span className="detail-icon">{typeInfo.icon}</span>
                   <span 
@@ -261,7 +334,7 @@ const AllMaterials = () => {
                 </div>
               </div>
 
-              {/* ✅ Stats - Views aur Downloads ek line mein */}
+              {/* Stats */}
               <div className="material-stats">
                 <div className="stat-item">
                   <span className="stat-icon">👁️</span>
@@ -273,23 +346,35 @@ const AllMaterials = () => {
                 </div>
               </div>
 
-              {/* ✅ Actions */}
+              {/* Actions */}
               <div className="material-actions">
                 <button 
                   className="view-btn"
                   onClick={() => handleView(material)}
-                  disabled={!material.file_name}
+                  disabled={!material.file_name && !material.cloudinary_url}
                 >
                   👁️ View
                 </button>
                 <button 
                   className="download-btn"
                   onClick={() => handleDownload(material)}
-                  disabled={downloading[material.id] || !material.file_name}
+                  disabled={downloading[material.id] || (!material.file_name && !material.cloudinary_url)}
                 >
                   {downloading[material.id] ? '⏳' : '⬇️ Download'}
                 </button>
               </div>
+
+              {/* ✅ Show Cloudinary badge for debugging (optional) */}
+              {material.cloudinary_url && (
+                <div className="cloudinary-badge" style={{
+                  fontSize: '10px',
+                  color: '#6b7280',
+                  marginTop: '5px',
+                  textAlign: 'right'
+                }}>
+                  ☁️ Cloudinary
+                </div>
+              )}
             </div>
           );
         })}

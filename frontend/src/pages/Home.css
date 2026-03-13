@@ -1,4 +1,4 @@
-/* Home.css - Clean & Beautiful */
+/* Home.css - Clean & Beautiful - WITH OUTLINE FIX */
 
 /* Base Styles */
 :root {
@@ -575,7 +575,7 @@
   }
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - ORIGINAL DESIGN */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 32px;
@@ -695,5 +695,23 @@
   .download-btn {
     padding: 10px;
     font-size: 14px;
+  }
+}
+
+/* ========== DESKTOP OUTLINE FIX - SIRF YEH ADD KIYA HAI ========== */
+@media (min-width: 769px) {
+  .search-input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  .search-box:focus-within {
+    outline: none !important;
+    box-shadow: var(--shadow-hover) !important;
+  }
+
+  .search-button:focus {
+    outline: none !important;
+    box-shadow: var(--shadow-md) !important;
   }
 }

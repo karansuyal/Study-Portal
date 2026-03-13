@@ -1238,6 +1238,7 @@ def get_all_materials():
                 'views': note.views,
                 'uploaded_at': note.uploaded_at.isoformat() if note.uploaded_at else None,
                 'user_name': user.name if user else 'Unknown',
+                'cloudinary_url': note.cloudinary_url,
                 'download_url': f'/api/notes/{note.id}/download'
             })
 
@@ -1814,7 +1815,7 @@ def download_note(note_id):
         if note.cloudinary_url:
             note.downloads += 1
             db.session.commit()
-            
+            print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
             return redirect(note.cloudinary_url)
         # Debug - check file path
         print(f"🔍 Download - Note ID: {note_id}")
