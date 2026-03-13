@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 from flask_mail import Mail, Message
 import sendgrid 
 from sendgrid.helpers.mail import Mail, Email, To, Content
-from mega_storage import MegaStorage
 import uuid
 from datetime import datetime
 from flask import redirect 
@@ -264,19 +263,6 @@ class Note(db.Model):
             'cloudinary_url': self.cloudinary_url,  
             'cloudinary_public_id': self.cloudinary_public_id,
         }
-
-# ==================== MEGA STORAGE INIT ====================
-print("\n" + "="*60)
-print("📦 MEGA STORAGE INITIALIZATION")
-print("="*60)
-try:
-    mega_storage = MegaStorage()
-    print("✅ MEGA Storage initialized successfully!")
-except Exception as e:
-    print(f"❌ MEGA Storage initialization failed: {e}")
-    mega_storage = None
-print("="*60 + "\n")
-
 # ==================== EMAIL SERVICE ====================
 
 def send_verification_email(to_email, token, name):
