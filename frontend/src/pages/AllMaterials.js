@@ -20,7 +20,6 @@ const AllMaterials = () => {
       const data = await response.json();
       
       if (data.success) {
-        // Transform materials with Cloudinary URL
         const transformedMaterials = data.materials.map(material => ({
           ...material,
           cloudinary_url: material.cloudinary_url || null,
@@ -40,41 +39,113 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED VIEW FUNCTION - PDF open hoga, download nahi
-// ✅ BAS ITNA HI KAFI HAI
-const handleView = (material) => {
-  if (material.cloudinary_url) {
-    window.open(material.cloudinary_url, '_blank');
+  // ✅ FIXED VIEW FUNCTION - PDF Google Viewer mein open hoga, download nahi
+  const handleView = (material) => {
+    if (material.cloudinary_url) {
+      console.log('📄 Opening:', material.cloudinary_url);
+      
+      // Views increment in background
+      const token = localStorage.getItem('study_portal_token');
+      fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      }).catch(() => {});
+      
+      // Check if it's PDF
+      const isPDF = material.cloudinary_url.includes('.pdf') || 
+                    material.type === 'pdf' || 
+                    material.file_name?.endsWith('.pdf');
+      
+      if (isPDF) {
+        // ✅ PDF ke liye Google PDF Viewer (100% reliable)
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(material.cloudinary_url)}&embedded=true`;
+        window.open(viewerUrl, '_blank');
+      } else {
+        // ✅ Images ke liye direct open
+        window.open(material.cloudinary_url, '_blank');
+      }
+      
+      // Update view count
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => 
+          m.id === material.id 
+            ? { ...m, views: (m.views || 0) + 1 } 
+            : m
+        )
+      );
+      
+      return;
+    }
+
+    // Fallback for non-Cloudinary files
+    if (!material.file_name) {
+      alert('No file to view');
+      return;
+    }
+
+    const token = localStorage.getItem('study_portal_token');
     
-    // Views increment in background
-    fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`)
+    const possiblePaths = [
+      material.file_name,
+      `${material.course}/${material.file_name}`,
+      material.file_name.includes('/') ? material.file_name : `${material.course}/${material.file_name}`
+    ];
+
+    let fileFound = false;
+    
+    for (const path of possiblePaths) {
+      if (fileFound) break;
+      
+      const testUrl = `https://study-portal-ill8.onrender.com/api/files/${path}`;
+      
+      fetch(testUrl, {
+        method: 'HEAD',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      })
+      .then(response => {
+        if (response.ok) {
+          fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          });
+          
+          setMaterials(prevMaterials => 
+            prevMaterials.map(m => 
+              m.id === material.id 
+                ? { ...m, views: (m.views || 0) + 1 } 
+                : m
+            )
+          );
+          
+          window.open(testUrl, '_blank');
+          fileFound = true;
+        }
+      })
       .catch(() => {});
-  }
-};
-  // ✅ FIXED DOWNLOAD FUNCTION - Force download
+    }
+    
+    if (!fileFound) {
+      alert('❌ File not found. It may have been moved or deleted.');
+    }
+  };
+
+  // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
   const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: true }));
     
     try {
       if (material.cloudinary_url) {
-        // ✅ Cloudinary se force download with proper filename
+        // ✅ Correct fl_attachment URL for Cloudinary
         const downloadUrl = material.cloudinary_url.replace(
-          "/upload/",
-          "/upload/fl_attachment/"
+          "/image/upload/",
+          "/image/upload/fl_attachment/"
         );
 
         const link = document.createElement("a");
         link.href = downloadUrl;
-        link.download = material.original_filename || 
-                        material.file_name || 
-                        `${material.title}.pdf`;
-        link.target = "_blank";
-
+        link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
-        // Update download count
         setMaterials(prevMaterials => 
           prevMaterials.map(m => 
             m.id === material.id 
@@ -223,10 +294,8 @@ const handleView = (material) => {
           
           return (
             <div key={material.id} className="material-card">
-              {/* Title */}
               <h3 className="material-title">{material.title}</h3>
               
-              {/* Details */}
               <div className="material-details">
                 <div className="detail-item">
                   <span className="detail-icon">📚</span>
@@ -243,7 +312,6 @@ const handleView = (material) => {
                   </span>
                 </div>
                 
-                {/* Badge */}
                 <div className="detail-item badge-detail-item">
                   <span className="detail-icon">{typeInfo.icon}</span>
                   <span 
@@ -258,7 +326,6 @@ const handleView = (material) => {
                 </div>
               </div>
 
-              {/* Stats */}
               <div className="material-stats">
                 <div className="stat-item">
                   <span className="stat-icon">👁️</span>
@@ -270,7 +337,7 @@ const handleView = (material) => {
                 </div>
               </div>
 
-              {/* Actions */}
+              {/* ✅ Actions - View and Download */}
               <div className="material-actions">
                 <button 
                   className="view-btn"
@@ -288,7 +355,6 @@ const handleView = (material) => {
                 </button>
               </div>
 
-              {/* Cloudinary badge for debugging */}
               {material.cloudinary_url && (
                 <div className="cloudinary-badge" style={{
                   fontSize: '10px',
