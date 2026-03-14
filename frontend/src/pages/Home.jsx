@@ -162,7 +162,8 @@ const handleMaterialClick = async (material) => {
           window.URL.revokeObjectURL(url);
         } else {
           // Fallback to direct open
-          window.open(material.cloudinary_url, '_blank');
+          const viewUrl = material.cloudinary_url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
+window.open(viewUrl, "_blank");
         }
       }
       
@@ -203,7 +204,8 @@ const handleMaterialClick = async (material) => {
     
     // Fallback - direct URL open karo
     if (material.cloudinary_url) {
-      window.open(material.cloudinary_url, '_blank');
+      const viewUrl = material.cloudinary_url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
+window.open(viewUrl, "_blank");
     } else {
       alert(`❌ Failed: ${error.message}`);
     }

@@ -133,35 +133,32 @@ const AllMaterials = () => {
     
     try {
       // ✅ Pehle Cloudinary URL check karo
-      if (material.cloudinary_url) {
-        console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
-        
-        // Method 1: Direct download via fetch
-        const response = await fetch(material.cloudinary_url);
-        const blob = await response.blob();
-        
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        // Update download count
-        setMaterials(prevMaterials => 
-          prevMaterials.map(m => 
-            m.id === material.id 
-              ? { ...m, downloads: (m.downloads || 0) + 1 } 
-              : m
-          )
-        );
-        
-        alert('✅ Download started from Cloudinary!');
-        setDownloading(prev => ({ ...prev, [material.id]: false }));
-        return;
-      }
+   if (material.cloudinary_url) {
+
+  const downloadUrl = material.cloudinary_url.replace(
+    "/raw/upload/",
+    "/raw/upload/fl_attachment/"
+  );
+
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  setMaterials(prevMaterials => 
+    prevMaterials.map(m => 
+      m.id === material.id 
+        ? { ...m, downloads: (m.downloads || 0) + 1 } 
+        : m
+    )
+  );
+
+  setDownloading(prev => ({ ...prev, [material.id]: false }));
+  return;
+}
       
       // ✅ Fallback to old API method
       const token = localStorage.getItem('study_portal_token');
