@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllMaterials.css';
+import eventBus from '../utils/eventBus';
 
 const AllMaterials = () => {
   const [materials, setMaterials] = useState([]);
@@ -10,6 +11,17 @@ const AllMaterials = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Event listener for material updates
+    eventBus.on('materialUpdated', (updatedMaterial) => {
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => 
+          m.id === updatedMaterial.id 
+            ? { ...m, ...updatedMaterial }
+            : m
+        )
+      );
+    });
+    
     fetchAllMaterials();
   }, []);
 
@@ -39,7 +51,7 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED VIEW FUNCTION - PDF Google Viewer mein open hoga, download nahi
+  // ✅ FIXED VIEW FUNCTION with event emit
   const handleView = (material) => {
     if (material.cloudinary_url) {
       console.log('📄 Opening:', material.cloudinary_url);
@@ -56,22 +68,30 @@ const AllMaterials = () => {
                     material.file_name?.endsWith('.pdf');
       
       if (isPDF) {
-        // ✅ PDF ke liye Google PDF Viewer (100% reliable)
         const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(material.cloudinary_url)}&embedded=true`;
         window.open(viewerUrl, '_blank');
       } else {
-        // ✅ Images ke liye direct open
         window.open(material.cloudinary_url, '_blank');
       }
       
-      // Update view count
-      setMaterials(prevMaterials => 
-        prevMaterials.map(m => 
+      // Update view count and emit event
+      const updatedViews = (material.views || 0) + 1;
+      
+      setMaterials(prevMaterials => {
+        const newMaterials = prevMaterials.map(m => 
           m.id === material.id 
-            ? { ...m, views: (m.views || 0) + 1 } 
+            ? { ...m, views: updatedViews } 
             : m
-        )
-      );
+        );
+        
+        // ✅ EMIT EVENT for other components
+        eventBus.emit('materialUpdated', {
+          id: material.id,
+          views: updatedViews
+        });
+        
+        return [...newMaterials];
+      });
       
       return;
     }
@@ -107,13 +127,23 @@ const AllMaterials = () => {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
           });
           
-          setMaterials(prevMaterials => 
-            prevMaterials.map(m => 
+          const updatedViews = (material.views || 0) + 1;
+          
+          setMaterials(prevMaterials => {
+            const newMaterials = prevMaterials.map(m => 
               m.id === material.id 
-                ? { ...m, views: (m.views || 0) + 1 } 
+                ? { ...m, views: updatedViews } 
                 : m
-            )
-          );
+            );
+            
+            // ✅ EMIT EVENT for other components
+            eventBus.emit('materialUpdated', {
+              id: material.id,
+              views: updatedViews
+            });
+            
+            return [...newMaterials];
+          });
           
           window.open(testUrl, '_blank');
           fileFound = true;
@@ -127,13 +157,12 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
+  // ✅ FIXED DOWNLOAD FUNCTION with event emit
   const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: true }));
     
     try {
       if (material.cloudinary_url) {
-        // ✅ Correct fl_attachment URL for Cloudinary
         const downloadUrl = material.cloudinary_url.replace(
           "/image/upload/",
           "/image/upload/fl_attachment/"
@@ -146,13 +175,24 @@ const AllMaterials = () => {
         link.click();
         document.body.removeChild(link);
 
-        setMaterials(prevMaterials => 
-          prevMaterials.map(m => 
-            m.id === material.id 
-              ? { ...m, downloads: (m.downloads || 0) + 1 } 
-              : m
-          )
-        );
+        // Update downloads and emit event
+        const updatedDownloads = (material.downloads || 0) + 1;
+        
+        setMaterials(prevMaterials => {
+          const updatedMaterials = prevMaterials.map(item => 
+            item.id === material.id 
+              ? { ...item, downloads: updatedDownloads } 
+              : item
+          );
+          
+          // ✅ EMIT EVENT for other components
+          eventBus.emit('materialUpdated', {
+            id: material.id,
+            downloads: updatedDownloads
+          });
+          
+          return [...updatedMaterials];
+        });
 
         setDownloading(prev => ({ ...prev, [material.id]: false }));
         return;
@@ -209,13 +249,24 @@ const AllMaterials = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      setMaterials(prevMaterials => 
-        prevMaterials.map(m => 
-          m.id === material.id 
-            ? { ...m, downloads: (m.downloads || 0) + 1 } 
-            : m
-        )
-      );
+      // Update downloads and emit event
+      const updatedDownloads = (material.downloads || 0) + 1;
+      
+      setMaterials(prevMaterials => {
+        const updatedMaterials = prevMaterials.map(item => 
+          item.id === material.id 
+            ? { ...item, downloads: updatedDownloads } 
+            : item
+        );
+        
+        // ✅ EMIT EVENT for other components
+        eventBus.emit('materialUpdated', {
+          id: material.id,
+          downloads: updatedDownloads
+        });
+        
+        return [...updatedMaterials];
+      });
       
     } catch (error) {
       console.error('❌ Download error:', error);
@@ -337,7 +388,7 @@ const AllMaterials = () => {
                 </div>
               </div>
 
-              {/* ✅ Actions - View and Download */}
+              {/* Actions - View and Download */}
               <div className="material-actions">
                 <button 
                   className="view-btn"

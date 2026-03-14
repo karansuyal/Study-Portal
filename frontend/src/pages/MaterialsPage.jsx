@@ -10,6 +10,7 @@ import {
 import { coursesData, getSubjects } from '../data/coursesData';
 import api, { API_URL } from '../services/api';
 import './MaterialsPage.css';
+import eventBus from '../utils/eventBus';
 
 const MaterialsPage = () => {
   const { courseId, yearId, semId, subjectId } = useParams();
@@ -35,6 +36,19 @@ const MaterialsPage = () => {
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // ✅ Event listener for material updates
+  useEffect(() => {
+    eventBus.on('materialUpdated', (updatedMaterial) => {
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => 
+          m.id === updatedMaterial.id 
+            ? { ...m, ...updatedMaterial }
+            : m
+        )
+      );
+    });
   }, []);
 
   // ✅ RATING COMPONENT - FIXED
@@ -134,173 +148,172 @@ const MaterialsPage = () => {
     { id: 'assignment', name: 'Assignments', icon: <FaFilePdf />, color: '#EC4899' }
   ];
 
-  // ✅ FIXED DOWNLOAD FUNCTION - Cloudinary ke saath
-const handleDownload = async (material) => {
-  setDownloading(prev => ({ ...prev, [material.id]: true }));
-  
-  try {
-    
+  // ✅ FIXED VIEW FUNCTION with event emit
+  const handleView = (material) => {
     if (material.cloudinary_url) {
-      console.log('📥 Direct Cloudinary download:', material.cloudinary_url);
+      console.log('📄 Opening:', material.cloudinary_url);
       
-      const response = await fetch(material.cloudinary_url);
-      const blob = await response.blob();
+      // Views increment in background
+      const token = localStorage.getItem('study_portal_token');
+      fetch(`${API_URL}/notes/${material.id}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      }).catch(() => {});
       
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = material.original_filename || `${material.title}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Check if it's PDF
+      const isPDF = material.cloudinary_url.includes('.pdf') || 
+                    material.type === 'pdf' || 
+                    material.file_name?.endsWith('.pdf');
+      
+      if (isPDF) {
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(material.cloudinary_url)}&embedded=true`;
+        window.open(viewerUrl, '_blank');
+      } else {
+        window.open(material.cloudinary_url, '_blank');
+      }
+      
+      // Update view count and emit event
+      const updatedViews = (material.views || 0) + 1;
+      
+      setMaterials(prevMaterials => {
+        const newMaterials = prevMaterials.map(m => 
+          m.id === material.id 
+            ? { ...m, views: updatedViews } 
+            : m
+        );
+        
+        // ✅ EMIT EVENT for other components
+        eventBus.emit('materialUpdated', {
+          id: material.id,
+          views: updatedViews
+        });
+        
+        return [...newMaterials];
+      });
+      
+      return;
+    }
+  };
+
+  // ✅ FIXED DOWNLOAD FUNCTION with event emit
+  const handleDownload = async (material) => {
+    setDownloading(prev => ({ ...prev, [material.id]: true }));
+    
+    try {
+      if (material.cloudinary_url) {
+        console.log('📥 Direct Cloudinary download:', material.cloudinary_url);
+        
+        const downloadUrl = material.cloudinary_url.replace(
+          "/image/upload/",
+          "/image/upload/fl_attachment/"
+        );
+
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = material.original_filename || `${material.title}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Update download count and emit event
+        const updatedDownloads = (material.downloads || 0) + 1;
+        
+        setMaterials(prev => {
+          const newMaterials = prev.map(m =>
+            m.id === material.id
+              ? { ...m, downloads: updatedDownloads }
+              : m
+          );
+          
+          // ✅ EMIT EVENT for other components
+          eventBus.emit('materialUpdated', {
+            id: material.id,
+            downloads: updatedDownloads
+          });
+          
+          return [...newMaterials];
+        });
+        
+        showNotification('✅ Download Complete!', material.title, 'success');
+        setDownloading(prev => ({ ...prev, [material.id]: false }));
+        return;
+      }
+      
+      // ✅ Agar Cloudinary URL nahi hai to API route use karo
+      const token = localStorage.getItem('study_portal_token');
+      
+      if (!token) {
+        showNotification('Error', 'Please login again', 'error');
+        setDownloading(prev => ({ ...prev, [material.id]: false }));
+        return;
+      }
+      
+      console.log('📥 Downloading via API:', material.id);
+      
+      const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+      
+      // Check if redirected (302)
+      if (response.redirected) {
+        window.open(response.url, '_blank');
+      } else {
+        const blob = await response.blob();
+        
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = material.original_filename || `${material.title}.${material.fileType || 'pdf'}`;
+        
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (match && match[1]) {
+            filename = match[1].replace(/['"]/g, '');
+          }
+        }
+        
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+      
+      // Update download count and emit event
+      const updatedDownloads = (material.downloads || 0) + 1;
+      
+      setMaterials(prev => {
+        const newMaterials = prev.map(m =>
+          m.id === material.id
+            ? { ...m, downloads: updatedDownloads }
+            : m
+        );
+        
+        // ✅ EMIT EVENT for other components
+        eventBus.emit('materialUpdated', {
+          id: material.id,
+          downloads: updatedDownloads
+        });
+        
+        return [...newMaterials];
+      });
       
       showNotification('✅ Download Complete!', material.title, 'success');
       
-      // Update download count
-      setMaterials(prev =>
-        prev.map(m =>
-          m.id === material.id
-            ? { ...m, downloads: m.downloads + 1 }
-            : m
-        )
-      );
-      
+    } catch (error) {
+      console.error('❌ Download error:', error);
+      showNotification('Download Failed', error.message, 'error');
+    } finally {
       setDownloading(prev => ({ ...prev, [material.id]: false }));
-      return;
     }
-    
-    // ✅ Agar Cloudinary URL nahi hai to API route use karo
-    const token = localStorage.getItem('study_portal_token');
-    
-    if (!token) {
-      showNotification('Error', 'Please login again', 'error');
-      setDownloading(prev => ({ ...prev, [material.id]: false }));
-      return;
-    }
-    
-    console.log('📥 Downloading via API:', material.id);
-    
-    const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Download failed: ${response.status}`);
-    }
-    
-    // Check if redirected (302)
-    if (response.redirected) {
-      window.open(response.url, '_blank');
-    } else {
-      const blob = await response.blob();
-      
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = material.original_filename || `${material.title}.${material.fileType || 'pdf'}`;
-      
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (match && match[1]) {
-          filename = match[1].replace(/['"]/g, '');
-        }
-      }
-      
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    }
-    
-    showNotification('✅ Download Complete!', material.title, 'success');
-    
-    // Update download count
-    setMaterials(prev =>
-      prev.map(m =>
-        m.id === material.id
-          ? { ...m, downloads: m.downloads + 1 }
-          : m
-      )
-    );
-    
-  } catch (error) {
-    console.error('❌ Download error:', error);
-    showNotification('Download Failed', error.message, 'error');
-  } finally {
-    setDownloading(prev => ({ ...prev, [material.id]: false }));
-  }
-};
-
-  // ✅ DOWNLOAD FUNCTION - FIXED
-  // const handleDownload = async (material) => {
-  //   setDownloading(prev => ({ ...prev, [material.id]: true }));
-    
-  //   try {
-  //     const token = localStorage.getItem('study_portal_token');
-      
-  //     if (!token) {
-  //       showNotification('Error', 'Please login again', 'error');
-  //       return;
-  //     }
-      
-  //     console.log('📥 Downloading material:', material.id);
-      
-  //     const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`
-  //       }
-  //     });
-      
-  //     if (!response.ok) {
-  //       throw new Error(`Download failed: ${response.status}`);
-  //     }
-      
-  //     const blob = await response.blob();
-      
-  //     const contentDisposition = response.headers.get('Content-Disposition');
-  //     let filename = material.original_filename || `${material.title}.${material.fileType || 'pdf'}`;
-      
-  //     if (contentDisposition) {
-  //       const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-  //       if (match && match[1]) {
-  //         filename = match[1].replace(/['"]/g, '');
-  //       }
-  //     }
-      
-  //     const url = window.URL.createObjectURL(blob);
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.download = filename;
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //     window.URL.revokeObjectURL(url);
-      
-  //     showNotification('✅ Download Complete!', material.title, 'success');
-      
-  //     // Update download count
-  //     setMaterials(prev =>
-  //       prev.map(m =>
-  //         m.id === material.id
-  //           ? { ...m, downloads: m.downloads + 1 }
-  //           : m
-  //       )
-  //     );
-      
-  //   } catch (error) {
-  //     console.error('❌ Download error:', error);
-  //     showNotification('Download Failed', error.message, 'error');
-  //   } finally {
-  //     setDownloading(prev => ({ ...prev, [material.id]: false }));
-  //   }
-  // };
+  };
 
   // ✅ VIEWS INCREMENT - FIXED
   useEffect(() => {
@@ -339,7 +352,11 @@ const handleDownload = async (material) => {
     if (materials.length > 0) {
       incrementViews();
     }
-  }, [materials.length]); // Only run when materials first load
+  }, [materials.length]);
+
+  // Rest of your component (fetchMaterialsFromBackend, etc.) remains the same
+  // ... (your existing code for fetch, styles, return etc.)
+
 
   // ✅ PREVIEW FUNCTION - FIXED
   const handlePreview = (material) => {
