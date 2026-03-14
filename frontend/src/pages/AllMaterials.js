@@ -20,12 +20,10 @@ const AllMaterials = () => {
       const data = await response.json();
       
       if (data.success) {
-        // ✅ Transform materials with Cloudinary URL
+        // Transform materials with Cloudinary URL
         const transformedMaterials = data.materials.map(material => ({
           ...material,
-          // Cloudinary URL direct use karo agar available ho
           cloudinary_url: material.cloudinary_url || null,
-          // file_path mein agar Cloudinary URL ho to use karo
           file_url: material.cloudinary_url || material.file_url
         }));
         
@@ -42,38 +40,89 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED VIEW FUNCTION - Cloudinary support
-  const handleView = async (material) => {
-    // ✅ Pehle Cloudinary URL check karo
+  // ✅ FIXED VIEW FUNCTION - PDF open hoga, download nahi
+  const handleView = (material) => {
     if (material.cloudinary_url) {
-      console.log('📄 Opening Cloudinary URL:', material.cloudinary_url);
+      console.log('📄 Opening:', material.cloudinary_url);
       
-      // Views increment
-      try {
-        const token = localStorage.getItem('study_portal_token');
-        await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
-          method: 'GET',
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        });
-        
-        // Update local state
-        setMaterials(prevMaterials => 
-          prevMaterials.map(m => 
-            m.id === material.id 
-              ? { ...m, views: (m.views || 0) + 1 } 
-              : m
-          )
-        );
-      } catch (err) {
-        console.log('Views increment failed:', err);
+      // Views increment in background
+      const token = localStorage.getItem('study_portal_token');
+      fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+        method: 'GET',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      }).catch(err => console.log('Views increment failed:', err));
+      
+      // Check if it's PDF
+      const isPDF = material.cloudinary_url.includes('.pdf') || 
+                    material.type === 'pdf' || 
+                    material.file_name?.endsWith('.pdf');
+      
+      if (isPDF) {
+        // ✅ PDF ke liye: Embed in new tab
+        const pdfWindow = window.open('', '_blank');
+        if (pdfWindow) {
+          pdfWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>${material.title || 'PDF Viewer'}</title>
+              <style>
+                body { margin: 0; height: 100vh; background: #f5f5f5; }
+                .container { 
+                  width: 100%; 
+                  height: 100%; 
+                  display: flex; 
+                  flex-direction: column; 
+                }
+                embed { 
+                  width: 100%; 
+                  height: 100%; 
+                  border: none; 
+                }
+                .fallback {
+                  display: none;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <embed 
+                  src="${material.cloudinary_url}" 
+                  type="application/pdf" 
+                  width="100%" 
+                  height="100%"
+                />
+                <div class="fallback">
+                  <p>Your browser doesn't support PDF embedding. 
+                  <a href="${material.cloudinary_url}" target="_blank">Click here to open</a></p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `);
+          pdfWindow.document.close();
+        } else {
+          // Popup blocker ho to direct open
+          window.open(material.cloudinary_url, '_blank');
+        }
+      } else {
+        // ✅ Images ke liye direct open
+        window.open(material.cloudinary_url, '_blank');
       }
       
-      // Open in new tab
-      window.open(material.cloudinary_url, '_blank');
+      // Update view count
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => 
+          m.id === material.id 
+            ? { ...m, views: (m.views || 0) + 1 } 
+            : m
+        )
+      );
+      
       return;
     }
 
-    // ✅ Fallback to old method
+    // Fallback for non-Cloudinary files
     if (!material.file_name) {
       alert('No file to view');
       return;
@@ -95,28 +144,28 @@ const AllMaterials = () => {
       const testUrl = `https://study-portal-ill8.onrender.com/api/files/${path}`;
       
       try {
-        const response = await fetch(testUrl, {
+        fetch(testUrl, {
           method: 'HEAD',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        });
-        
-        if (response.ok) {
-          await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
-            method: 'GET',
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-          });
-          
-          setMaterials(prevMaterials => 
-            prevMaterials.map(m => 
-              m.id === material.id 
-                ? { ...m, views: (m.views || 0) + 1 } 
-                : m
-            )
-          );
-          
-          window.open(testUrl, '_blank');
-          fileFound = true;
-        }
+        }).then(response => {
+          if (response.ok) {
+            fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+              method: 'GET',
+              headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
+            
+            setMaterials(prevMaterials => 
+              prevMaterials.map(m => 
+                m.id === material.id 
+                  ? { ...m, views: (m.views || 0) + 1 } 
+                  : m
+              )
+            );
+            
+            window.open(testUrl, '_blank');
+            fileFound = true;
+          }
+        }).catch(() => {});
       } catch (err) {
         console.log('❌ Failed:', testUrl);
       }
@@ -127,40 +176,43 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED DOWNLOAD FUNCTION - Cloudinary support
+  // ✅ FIXED DOWNLOAD FUNCTION - Force download
   const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: true }));
     
     try {
-      // ✅ Pehle Cloudinary URL check karo
-   if (material.cloudinary_url) {
+      if (material.cloudinary_url) {
+        // ✅ Cloudinary se force download with proper filename
+        const downloadUrl = material.cloudinary_url.replace(
+          "/upload/",
+          "/upload/fl_attachment/"
+        );
 
-  const downloadUrl = material.cloudinary_url.replace(
-    "/raw/upload/",
-    "/raw/upload/fl_attachment/"
-  );
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = material.original_filename || 
+                        material.file_name || 
+                        `${material.title}.pdf`;
+        link.target = "_blank";
 
-  const link = document.createElement("a");
-  link.href = downloadUrl;
-  link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+        // Update download count
+        setMaterials(prevMaterials => 
+          prevMaterials.map(m => 
+            m.id === material.id 
+              ? { ...m, downloads: (m.downloads || 0) + 1 } 
+              : m
+          )
+        );
 
-  setMaterials(prevMaterials => 
-    prevMaterials.map(m => 
-      m.id === material.id 
-        ? { ...m, downloads: (m.downloads || 0) + 1 } 
-        : m
-    )
-  );
-
-  setDownloading(prev => ({ ...prev, [material.id]: false }));
-  return;
-}
+        setDownloading(prev => ({ ...prev, [material.id]: false }));
+        return;
+      }
       
-      // ✅ Fallback to old API method
+      // Fallback to API method
       const token = localStorage.getItem('study_portal_token');
       
       if (!token) {
@@ -361,7 +413,7 @@ const AllMaterials = () => {
                 </button>
               </div>
 
-              {/* ✅ Show Cloudinary badge for debugging (optional) */}
+              {/* Cloudinary badge for debugging */}
               {material.cloudinary_url && (
                 <div className="cloudinary-badge" style={{
                   fontSize: '10px',
