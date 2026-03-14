@@ -41,50 +41,14 @@ const AllMaterials = () => {
   };
 
   // ✅ FIXED VIEW FUNCTION - PDF open hoga, download nahi
+// ✅ BAS ITNA HI KAFI HAI
 const handleView = (material) => {
   if (material.cloudinary_url) {
-    console.log('📄 Opening:', material.cloudinary_url);
+    window.open(material.cloudinary_url, '_blank');
     
-    // Views increment
-    const token = localStorage.getItem('study_portal_token');
-    fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
-      method: 'GET',
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-    }).catch(err => console.log('Views increment failed:', err));
-    
-    // Check if it's PDF
-    const isPDF = material.cloudinary_url.includes('.pdf') || 
-                  material.type === 'pdf' || 
-                  material.file_name?.endsWith('.pdf');
-    
-    if (isPDF) {
-      // ✅ SIMPLE SOLUTION: New tab mein open with content-disposition inline
-      // Cloudinary URL ko inline display ke liye modify karo
-      let viewUrl = material.cloudinary_url;
-      
-      // Agar URL mein 'upload' hai to 'fl_attachment' hatao
-      if (viewUrl.includes('/upload/')) {
-        viewUrl = viewUrl.replace('/upload/', '/upload/fl_attachment:false/');
-      }
-      
-      window.open(viewUrl, '_blank');
-    } else {
-      // Images ke liye direct open
-      window.open(material.cloudinary_url, '_blank');
-    }
-    
-    // Update view count based on component
-    if (typeof setLatestMaterials !== 'undefined') {
-      setLatestMaterials(prev => 
-        prev.map(m => 
-          m.id === material.id 
-            ? { ...m, views: (m.views || 0) + 1 } 
-            : m
-        )
-      );
-    }
-    
-    return;
+    // Views increment in background
+    fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`)
+      .catch(() => {});
   }
 };
   // ✅ FIXED DOWNLOAD FUNCTION - Force download
