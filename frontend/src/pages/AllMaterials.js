@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllMaterials.css';
-import eventBus from '../utils/eventBus';
+
 
 const AllMaterials = () => {
   const [materials, setMaterials] = useState([]);
@@ -11,17 +11,6 @@ const AllMaterials = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Event listener for material updates
-    eventBus.on('materialUpdated', (updatedMaterial) => {
-      setMaterials(prevMaterials => 
-        prevMaterials.map(m => 
-          m.id === updatedMaterial.id 
-            ? { ...m, ...updatedMaterial }
-            : m
-        )
-      );
-    });
-    
     fetchAllMaterials();
   }, []);
 
@@ -51,7 +40,7 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED VIEW FUNCTION with event emit
+  // ✅ FIXED VIEW FUNCTION - PDF Google Viewer mein open hoga, download nahi
   const handleView = (material) => {
     if (material.cloudinary_url) {
       console.log('📄 Opening:', material.cloudinary_url);
@@ -68,30 +57,22 @@ const AllMaterials = () => {
                     material.file_name?.endsWith('.pdf');
       
       if (isPDF) {
+        // ✅ PDF ke liye Google PDF Viewer (100% reliable)
         const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(material.cloudinary_url)}&embedded=true`;
         window.open(viewerUrl, '_blank');
       } else {
+        // ✅ Images ke liye direct open
         window.open(material.cloudinary_url, '_blank');
       }
       
-      // Update view count and emit event
-      const updatedViews = (material.views || 0) + 1;
-      
-      setMaterials(prevMaterials => {
-        const newMaterials = prevMaterials.map(m => 
+      // Update view count
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => 
           m.id === material.id 
-            ? { ...m, views: updatedViews } 
+            ? { ...m, views: (m.views || 0) + 1 } 
             : m
-        );
-        
-        // ✅ EMIT EVENT for other components
-        eventBus.emit('materialUpdated', {
-          id: material.id,
-          views: updatedViews
-        });
-        
-        return [...newMaterials];
-      });
+        )
+      );
       
       return;
     }
@@ -127,23 +108,13 @@ const AllMaterials = () => {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
           });
           
-          const updatedViews = (material.views || 0) + 1;
-          
-          setMaterials(prevMaterials => {
-            const newMaterials = prevMaterials.map(m => 
+          setMaterials(prevMaterials => 
+            prevMaterials.map(m => 
               m.id === material.id 
-                ? { ...m, views: updatedViews } 
+                ? { ...m, views: (m.views || 0) + 1 } 
                 : m
-            );
-            
-            // ✅ EMIT EVENT for other components
-            eventBus.emit('materialUpdated', {
-              id: material.id,
-              views: updatedViews
-            });
-            
-            return [...newMaterials];
-          });
+            )
+          );
           
           window.open(testUrl, '_blank');
           fileFound = true;
@@ -157,133 +128,117 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED DOWNLOAD FUNCTION with event emit
-  const handleDownload = async (material) => {
-    setDownloading(prev => ({ ...prev, [material.id]: true }));
-    
-    try {
-      if (material.cloudinary_url) {
-        const downloadUrl = material.cloudinary_url.replace(
-          "/image/upload/",
-          "/image/upload/fl_attachment/"
-        );
+  // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
+const handleDownload = async (material) => {
+  setDownloading(prev => ({ ...prev, [material.id]: true }));
+  
+  try {
+    if (material.cloudinary_url) {
+      // ✅ Correct fl_attachment URL for Cloudinary
+      const downloadUrl = material.cloudinary_url.replace(
+        "/image/upload/",
+        "/image/upload/fl_attachment/"
+      );
 
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Update downloads and emit event
-        const updatedDownloads = (material.downloads || 0) + 1;
-        
-        setMaterials(prevMaterials => {
-          const updatedMaterials = prevMaterials.map(item => 
-            item.id === material.id 
-              ? { ...item, downloads: updatedDownloads } 
-              : item
-          );
-          
-          // ✅ EMIT EVENT for other components
-          eventBus.emit('materialUpdated', {
-            id: material.id,
-            downloads: updatedDownloads
-          });
-          
-          return [...updatedMaterials];
-        });
-
-        setDownloading(prev => ({ ...prev, [material.id]: false }));
-        return;
-      }
-      
-      // Fallback to API method
-      const token = localStorage.getItem('study_portal_token');
-      
-      if (!token) {
-        const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
-        if (shouldLogin) {
-          navigate('/login');
-        }
-        return;
-      }
-      
-      const downloadUrl = `https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`;
-      
-      const response = await fetch(downloadUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        }
-      });
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Session expired. Please login again.');
-        } else if (response.status === 404) {
-          throw new Error('File not found on server');
-        } else {
-          throw new Error(`Download failed (${response.status})`);
-        }
-      }
-      
-      const blob = await response.blob();
-      
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = material.file_name || `${material.title}.pdf`;
-      
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (match && match[1]) {
-          filename = match[1].replace(/['"]/g, '');
-        }
-      }
-      
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      // Update downloads and emit event
-      const updatedDownloads = (material.downloads || 0) + 1;
-      
+
+      // ✅ FIXED: Proper state update with new array reference
       setMaterials(prevMaterials => {
+        // Create a new array with updated downloads count
         const updatedMaterials = prevMaterials.map(item => 
           item.id === material.id 
-            ? { ...item, downloads: updatedDownloads } 
+            ? { ...item, downloads: (item.downloads || 0) + 1 } 
             : item
         );
-        
-        // ✅ EMIT EVENT for other components
-        eventBus.emit('materialUpdated', {
-          id: material.id,
-          downloads: updatedDownloads
-        });
-        
-        return [...updatedMaterials];
+        return [...updatedMaterials]; // Return new array reference
       });
-      
-    } catch (error) {
-      console.error('❌ Download error:', error);
-      
-      if (error.message.includes('401')) {
-        alert('⚠️ Session expired. Please login again.');
-        localStorage.removeItem('study_portal_token');
-        navigate('/login');
-      } else if (error.message.includes('404')) {
-        alert('❌ File not found on server. It may have been deleted.');
-      } else {
-        alert(`❌ Download failed: ${error.message}`);
-      }
-    } finally {
+
       setDownloading(prev => ({ ...prev, [material.id]: false }));
+      return;
     }
-  };
+    
+    // Fallback to API method
+    const token = localStorage.getItem('study_portal_token');
+    
+    if (!token) {
+      const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
+      if (shouldLogin) {
+        navigate('/login');
+      }
+      return;
+    }
+    
+    const downloadUrl = `https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`;
+    
+    const response = await fetch(downloadUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Session expired. Please login again.');
+      } else if (response.status === 404) {
+        throw new Error('File not found on server');
+      } else {
+        throw new Error(`Download failed (${response.status})`);
+      }
+    }
+    
+    const blob = await response.blob();
+    
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = material.file_name || `${material.title}.pdf`;
+    
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (match && match[1]) {
+        filename = match[1].replace(/['"]/g, '');
+      }
+    }
+    
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    // ✅ FIXED: Same fix for API fallback
+    setMaterials(prevMaterials => {
+      const updatedMaterials = prevMaterials.map(item => 
+        item.id === material.id 
+          ? { ...item, downloads: (item.downloads || 0) + 1 } 
+          : item
+      );
+      return [...updatedMaterials];
+    });
+    
+  } catch (error) {
+    console.error('❌ Download error:', error);
+    
+    if (error.message.includes('401')) {
+      alert('⚠️ Session expired. Please login again.');
+      localStorage.removeItem('study_portal_token');
+      navigate('/login');
+    } else if (error.message.includes('404')) {
+      alert('❌ File not found on server. It may have been deleted.');
+    } else {
+      alert(`❌ Download failed: ${error.message}`);
+    }
+  } finally {
+    setDownloading(prev => ({ ...prev, [material.id]: false }));
+  }
+};
 
   const getMaterialTypeInfo = (type) => {
     switch (type?.toLowerCase()) {
@@ -388,7 +343,7 @@ const AllMaterials = () => {
                 </div>
               </div>
 
-              {/* Actions - View and Download */}
+              {/* ✅ Actions - View and Download */}
               <div className="material-actions">
                 <button 
                   className="view-btn"
