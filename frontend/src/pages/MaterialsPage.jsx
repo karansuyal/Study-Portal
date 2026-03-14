@@ -357,7 +357,6 @@ const MaterialsPage = () => {
   // Rest of your component (fetchMaterialsFromBackend, etc.) remains the same
   // ... (your existing code for fetch, styles, return etc.)
 
-
   // ✅ PREVIEW FUNCTION - FIXED
   const handlePreview = (material) => {
     const previewModal = document.createElement('div');
