@@ -41,76 +41,35 @@ const AllMaterials = () => {
   };
 
   // ✅ FIXED VIEW FUNCTION - PDF open hoga, download nahi
-  const handleView = (material) => {
-    if (material.cloudinary_url) {
-      console.log('📄 Opening:', material.cloudinary_url);
-      
-      // Views increment in background
-      const token = localStorage.getItem('study_portal_token');
-      fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
-        method: 'GET',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-      }).catch(err => console.log('Views increment failed:', err));
-      
-      // Check if it's PDF
-      const isPDF = material.cloudinary_url.includes('.pdf') || 
-                    material.type === 'pdf' || 
-                    material.file_name?.endsWith('.pdf');
-      
-      if (isPDF) {
-        // ✅ PDF ke liye: Embed in new tab
-        const pdfWindow = window.open('', '_blank');
-        if (pdfWindow) {
-          pdfWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>${material.title || 'PDF Viewer'}</title>
-              <style>
-                body { margin: 0; height: 100vh; background: #f5f5f5; }
-                .container { 
-                  width: 100%; 
-                  height: 100%; 
-                  display: flex; 
-                  flex-direction: column; 
-                }
-                embed { 
-                  width: 100%; 
-                  height: 100%; 
-                  border: none; 
-                }
-                .fallback {
-                  display: none;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <embed 
-                  src="${material.cloudinary_url}" 
-                  type="application/pdf" 
-                  width="100%" 
-                  height="100%"
-                />
-                <div class="fallback">
-                  <p>Your browser doesn't support PDF embedding. 
-                  <a href="${material.cloudinary_url}" target="_blank">Click here to open</a></p>
-                </div>
-              </div>
-            </body>
-            </html>
-          `);
-          pdfWindow.document.close();
-        } else {
-          // Popup blocker ho to direct open
-          window.open(material.cloudinary_url, '_blank');
-        }
-      } else {
-        // ✅ Images ke liye direct open
-        window.open(material.cloudinary_url, '_blank');
-      }
-      
-      // Update view count
+const handleView = (material) => {
+  if (material.cloudinary_url) {
+    console.log('📄 Opening:', material.cloudinary_url);
+    
+    // Views increment in background
+    const token = localStorage.getItem('study_portal_token');
+    fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+      method: 'GET',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    }).catch(err => console.log('Views increment failed:', err));
+    
+    // Check if it's PDF
+    const isPDF = material.cloudinary_url.includes('.pdf') || 
+                  material.type === 'pdf' || 
+                  material.file_name?.endsWith('.pdf');
+    
+    if (isPDF) {
+      // ✅ FIXED: Google PDF Viewer - Works on all browsers
+      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(material.cloudinary_url)}&embedded=true`;
+      window.open(viewerUrl, '_blank');
+    } else {
+      // ✅ Images ke liye direct open
+      window.open(material.cloudinary_url, '_blank');
+    }
+    
+    // Update view count
+    // Note: Assuming this is in AllMaterials component, use setMaterials
+    // If in Home component, use setLatestMaterials
+    if (typeof setMaterials !== 'undefined') {
       setMaterials(prevMaterials => 
         prevMaterials.map(m => 
           m.id === material.id 
@@ -118,63 +77,81 @@ const AllMaterials = () => {
             : m
         )
       );
-      
-      return;
+    } else if (typeof setLatestMaterials !== 'undefined') {
+      setLatestMaterials(prevMaterials => 
+        prevMaterials.map(m => 
+          m.id === material.id 
+            ? { ...m, views: (m.views || 0) + 1 } 
+            : m
+        )
+      );
     }
-
-    // Fallback for non-Cloudinary files
-    if (!material.file_name) {
-      alert('No file to view');
-      return;
-    }
-
-    const token = localStorage.getItem('study_portal_token');
     
-    const possiblePaths = [
-      material.file_name,
-      `${material.course}/${material.file_name}`,
-      material.file_name.includes('/') ? material.file_name : `${material.course}/${material.file_name}`
-    ];
+    return;
+  }
 
-    let fileFound = false;
+  // Fallback for non-Cloudinary files
+  if (!material.file_name) {
+    alert('No file to view');
+    return;
+  }
+
+  const token = localStorage.getItem('study_portal_token');
+  
+  const possiblePaths = [
+    material.file_name,
+    `${material.course}/${material.file_name}`,
+    material.file_name.includes('/') ? material.file_name : `${material.course}/${material.file_name}`
+  ];
+
+  let fileFound = false;
+  
+  for (const path of possiblePaths) {
+    if (fileFound) break;
     
-    for (const path of possiblePaths) {
-      if (fileFound) break;
-      
-      const testUrl = `https://study-portal-ill8.onrender.com/api/files/${path}`;
-      
-      try {
-        fetch(testUrl, {
-          method: 'HEAD',
+    const testUrl = `https://study-portal-ill8.onrender.com/api/files/${path}`;
+    
+    fetch(testUrl, {
+      method: 'HEAD',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
+    .then(response => {
+      if (response.ok) {
+        fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
+          method: 'GET',
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        }).then(response => {
-          if (response.ok) {
-            fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
-              method: 'GET',
-              headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-            });
-            
-            setMaterials(prevMaterials => 
-              prevMaterials.map(m => 
-                m.id === material.id 
-                  ? { ...m, views: (m.views || 0) + 1 } 
-                  : m
-              )
-            );
-            
-            window.open(testUrl, '_blank');
-            fileFound = true;
-          }
-        }).catch(() => {});
-      } catch (err) {
-        console.log('❌ Failed:', testUrl);
+        });
+        
+        // Update view count based on component
+        if (typeof setMaterials !== 'undefined') {
+          setMaterials(prevMaterials => 
+            prevMaterials.map(m => 
+              m.id === material.id 
+                ? { ...m, views: (m.views || 0) + 1 } 
+                : m
+            )
+          );
+        } else if (typeof setLatestMaterials !== 'undefined') {
+          setLatestMaterials(prevMaterials => 
+            prevMaterials.map(m => 
+              m.id === material.id 
+                ? { ...m, views: (m.views || 0) + 1 } 
+                : m
+            )
+          );
+        }
+        
+        window.open(testUrl, '_blank');
+        fileFound = true;
       }
-    }
-    
-    if (!fileFound) {
-      alert('❌ File not found. It may have been moved or deleted.');
-    }
-  };
+    })
+    .catch(() => {});
+  }
+  
+  if (!fileFound) {
+    alert('❌ File not found. It may have been moved or deleted.');
+  }
+};
 
   // ✅ FIXED DOWNLOAD FUNCTION - Force download
   const handleDownload = async (material) => {
