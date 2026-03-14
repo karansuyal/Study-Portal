@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllMaterials.css';
 
-
 const AllMaterials = () => {
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,7 +128,7 @@ const AllMaterials = () => {
   };
 
   // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
-const handleDownload = async (material) => {
+  const handleDownload = async (material) => {
   setDownloading(prev => ({ ...prev, [material.id]: true }));
   
   try {
