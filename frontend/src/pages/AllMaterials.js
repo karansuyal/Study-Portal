@@ -45,7 +45,7 @@ const handleView = (material) => {
   if (material.cloudinary_url) {
     console.log('📄 Opening:', material.cloudinary_url);
     
-    // Views increment in background
+    // Views increment
     const token = localStorage.getItem('study_portal_token');
     fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
       method: 'GET',
@@ -58,28 +58,25 @@ const handleView = (material) => {
                   material.file_name?.endsWith('.pdf');
     
     if (isPDF) {
-      // ✅ FIXED: Google PDF Viewer - Works on all browsers
-      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(material.cloudinary_url)}&embedded=true`;
-      window.open(viewerUrl, '_blank');
+      // ✅ SIMPLE SOLUTION: New tab mein open with content-disposition inline
+      // Cloudinary URL ko inline display ke liye modify karo
+      let viewUrl = material.cloudinary_url;
+      
+      // Agar URL mein 'upload' hai to 'fl_attachment' hatao
+      if (viewUrl.includes('/upload/')) {
+        viewUrl = viewUrl.replace('/upload/', '/upload/fl_attachment:false/');
+      }
+      
+      window.open(viewUrl, '_blank');
     } else {
-      // ✅ Images ke liye direct open
+      // Images ke liye direct open
       window.open(material.cloudinary_url, '_blank');
     }
     
-    // Update view count
-    // Note: Assuming this is in AllMaterials component, use setMaterials
-    // If in Home component, use setLatestMaterials
-    if (typeof setMaterials !== 'undefined') {
-      setMaterials(prevMaterials => 
-        prevMaterials.map(m => 
-          m.id === material.id 
-            ? { ...m, views: (m.views || 0) + 1 } 
-            : m
-        )
-      );
-    } else if (typeof setLatestMaterials !== 'undefined') {
-      setLatestMaterials(prevMaterials => 
-        prevMaterials.map(m => 
+    // Update view count based on component
+    if (typeof setLatestMaterials !== 'undefined') {
+      setLatestMaterials(prev => 
+        prev.map(m => 
           m.id === material.id 
             ? { ...m, views: (m.views || 0) + 1 } 
             : m
@@ -89,70 +86,7 @@ const handleView = (material) => {
     
     return;
   }
-
-  // Fallback for non-Cloudinary files
-  if (!material.file_name) {
-    alert('No file to view');
-    return;
-  }
-
-  const token = localStorage.getItem('study_portal_token');
-  
-  const possiblePaths = [
-    material.file_name,
-    `${material.course}/${material.file_name}`,
-    material.file_name.includes('/') ? material.file_name : `${material.course}/${material.file_name}`
-  ];
-
-  let fileFound = false;
-  
-  for (const path of possiblePaths) {
-    if (fileFound) break;
-    
-    const testUrl = `https://study-portal-ill8.onrender.com/api/files/${path}`;
-    
-    fetch(testUrl, {
-      method: 'HEAD',
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-    })
-    .then(response => {
-      if (response.ok) {
-        fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`, {
-          method: 'GET',
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        });
-        
-        // Update view count based on component
-        if (typeof setMaterials !== 'undefined') {
-          setMaterials(prevMaterials => 
-            prevMaterials.map(m => 
-              m.id === material.id 
-                ? { ...m, views: (m.views || 0) + 1 } 
-                : m
-            )
-          );
-        } else if (typeof setLatestMaterials !== 'undefined') {
-          setLatestMaterials(prevMaterials => 
-            prevMaterials.map(m => 
-              m.id === material.id 
-                ? { ...m, views: (m.views || 0) + 1 } 
-                : m
-            )
-          );
-        }
-        
-        window.open(testUrl, '_blank');
-        fileFound = true;
-      }
-    })
-    .catch(() => {});
-  }
-  
-  if (!fileFound) {
-    alert('❌ File not found. It may have been moved or deleted.');
-  }
 };
-
   // ✅ FIXED DOWNLOAD FUNCTION - Force download
   const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: true }));
