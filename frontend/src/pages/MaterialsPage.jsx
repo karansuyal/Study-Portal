@@ -135,11 +135,11 @@ const MaterialsPage = () => {
   ];
 
   // ✅ FIXED DOWNLOAD FUNCTION - Cloudinary ke saath
+// ✅ FIXED DOWNLOAD FUNCTION - Cloudinary ke saath
 const handleDownload = async (material) => {
   setDownloading(prev => ({ ...prev, [material.id]: true }));
   
   try {
-    
     if (material.cloudinary_url) {
       console.log('📥 Direct Cloudinary download:', material.cloudinary_url);
       
@@ -148,8 +148,15 @@ const handleDownload = async (material) => {
       
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
+      
+      // ✅ Better filename handling
+      let fileName = material.original_filename || material.file_name || material.title || 'document';
+      if (!fileName.includes('.')) {
+        fileName += material.cloudinary_url.includes('.pdf') ? '.pdf' : '.jpg';
+      }
+      
       link.href = url;
-      link.download = material.original_filename || `${material.title}.pdf`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -157,14 +164,15 @@ const handleDownload = async (material) => {
       
       showNotification('✅ Download Complete!', material.title, 'success');
       
-      // Update download count
-      setMaterials(prev =>
-        prev.map(m =>
-          m.id === material.id
-            ? { ...m, downloads: m.downloads + 1 }
-            : m
-        )
-      );
+      // ✅ FIXED: Proper state update with new array reference
+      setMaterials(prev => {
+        const updatedMaterials = prev.map(item => 
+          item.id === material.id 
+            ? { ...item, downloads: (item.downloads || 0) + 1 } 
+            : item
+        );
+        return [...updatedMaterials]; // Return new array reference
+      });
       
       setDownloading(prev => ({ ...prev, [material.id]: false }));
       return;
@@ -220,14 +228,15 @@ const handleDownload = async (material) => {
     
     showNotification('✅ Download Complete!', material.title, 'success');
     
-    // Update download count
-    setMaterials(prev =>
-      prev.map(m =>
-        m.id === material.id
-          ? { ...m, downloads: m.downloads + 1 }
-          : m
-      )
-    );
+    // ✅ FIXED: Same fix for API fallback
+    setMaterials(prev => {
+      const updatedMaterials = prev.map(item => 
+        item.id === material.id 
+          ? { ...item, downloads: (item.downloads || 0) + 1 } 
+          : item
+      );
+      return [...updatedMaterials];
+    });
     
   } catch (error) {
     console.error('❌ Download error:', error);
@@ -236,7 +245,6 @@ const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: false }));
   }
 };
-
   // ✅ VIEWS INCREMENT - FIXED
   useEffect(() => {
     const incrementViews = async () => {
