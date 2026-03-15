@@ -135,11 +135,11 @@ const MaterialsPage = () => {
   ];
 
   // ✅ FIXED DOWNLOAD FUNCTION - Cloudinary ke saath
+// ✅ FIXED DOWNLOAD FUNCTION - With backend count increment
 const handleDownload = async (material) => {
   setDownloading(prev => ({ ...prev, [material.id]: true }));
   
   try {
-    
     if (material.cloudinary_url) {
       console.log('📥 Direct Cloudinary download:', material.cloudinary_url);
       
@@ -157,7 +157,19 @@ const handleDownload = async (material) => {
       
       showNotification('✅ Download Complete!', material.title, 'success');
       
-      // Update download count
+      // ✅ BACKEND CALL - Increment download count
+      try {
+        const token = localStorage.getItem('study_portal_token');
+        await fetch(`${API_URL}/notes/${material.id}/download`, {
+          method: 'POST',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        console.log('✅ Download count incremented in backend');
+      } catch (err) {
+        console.log('Backend count increment failed:', err);
+      }
+      
+      // Update download count in UI
       setMaterials(prev =>
         prev.map(m =>
           m.id === material.id
@@ -220,7 +232,18 @@ const handleDownload = async (material) => {
     
     showNotification('✅ Download Complete!', material.title, 'success');
     
-    // Update download count
+    // ✅ BACKEND CALL - Increment download count
+    try {
+      await fetch(`${API_URL}/notes/${material.id}/download`, {
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      console.log('✅ Download count incremented in backend');
+    } catch (err) {
+      console.log('Backend count increment failed:', err);
+    }
+    
+    // Update download count in UI
     setMaterials(prev =>
       prev.map(m =>
         m.id === material.id
@@ -236,7 +259,6 @@ const handleDownload = async (material) => {
     setDownloading(prev => ({ ...prev, [material.id]: false }));
   }
 };
-
   // ✅ VIEWS INCREMENT - FIXED
   useEffect(() => {
     const incrementViews = async () => {
