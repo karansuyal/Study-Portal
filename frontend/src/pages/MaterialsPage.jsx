@@ -135,57 +135,103 @@ const MaterialsPage = () => {
   ];
 
   // ✅ FIXED DOWNLOAD FUNCTION - Cloudinary ke saath
-// ✅ MaterialsPage.jsx mein bhi yahi function
 const handleDownload = async (material) => {
   setDownloading(prev => ({ ...prev, [material.id]: true }));
   
   try {
+    
     if (material.cloudinary_url) {
-      const downloadUrl = material.cloudinary_url.replace(
-        "/image/upload/",
-        "/image/upload/fl_attachment/"
-      );
-
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
+      console.log('📥 Direct Cloudinary download:', material.cloudinary_url);
+      
+      const response = await fetch(material.cloudinary_url);
+      const blob = await response.blob();
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = material.original_filename || `${material.title}.pdf`;
+      document.body.appendChild(link);
       link.click();
-
-      // Local update
-      setMaterials(prev => {
-        const updated = prev.map(item => 
-          item.id === material.id 
-            ? { ...item, downloads: (item.downloads || 0) + 1 } 
-            : item
-        );
-        return [...updated];
-      });
-
-      // API sync
-      try {
-        const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`);
-        const data = await response.json();
-        if (data.success && data.note) {
-          setMaterials(prev => {
-            const updated = prev.map(item => 
-              item.id === material.id 
-                ? { ...item, downloads: data.note.downloads } 
-                : item
-            );
-            return [...updated];
-          });
-        }
-      } catch (error) {
-        console.log('⚠️ Could not fetch latest count');
-      }
-
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      showNotification('✅ Download Complete!', material.title, 'success');
+      
+      // Update download count
+      setMaterials(prev =>
+        prev.map(m =>
+          m.id === material.id
+            ? { ...m, downloads: m.downloads + 1 }
+            : m
+        )
+      );
+      
       setDownloading(prev => ({ ...prev, [material.id]: false }));
       return;
     }
     
-    // ... rest of API fallback code
+    // ✅ Agar Cloudinary URL nahi hai to API route use karo
+    const token = localStorage.getItem('study_portal_token');
+    
+    if (!token) {
+      showNotification('Error', 'Please login again', 'error');
+      setDownloading(prev => ({ ...prev, [material.id]: false }));
+      return;
+    }
+    
+    console.log('📥 Downloading via API:', material.id);
+    
+    const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Download failed: ${response.status}`);
+    }
+    
+    // Check if redirected (302)
+    if (response.redirected) {
+      window.open(response.url, '_blank');
+    } else {
+      const blob = await response.blob();
+      
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = material.original_filename || `${material.title}.${material.fileType || 'pdf'}`;
+      
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (match && match[1]) {
+          filename = match[1].replace(/['"]/g, '');
+        }
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+    
+    showNotification('✅ Download Complete!', material.title, 'success');
+    
+    // Update download count
+    setMaterials(prev =>
+      prev.map(m =>
+        m.id === material.id
+          ? { ...m, downloads: m.downloads + 1 }
+          : m
+      )
+    );
+    
   } catch (error) {
     console.error('❌ Download error:', error);
+    showNotification('Download Failed', error.message, 'error');
   } finally {
     setDownloading(prev => ({ ...prev, [material.id]: false }));
   }
