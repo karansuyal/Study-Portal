@@ -62,7 +62,7 @@ if database_url and database_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'postgresql://postgres:postgres@localhost:5432/noteshub'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png'}
 
 # Initialize extensions
@@ -1334,23 +1334,15 @@ def upload_note():
 
         print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
         print(f"📄 Resource Type: {resource_type}")
-        print(f"📦 File size: {file.content_length if hasattr(file, 'content_length') else 'Unknown'} bytes")
-
-        # ✅ Yeh line important hai - Cloudinary upload options
-        upload_options = {
-            'folder': cloudinary_folder,
-            'public_id': public_id,
-            'resource_type': resource_type,
-            'type': "upload",
-            'overwrite': False,
-            'chunk_size': 20000000,  # 20MB chunks for large files
-            'timeout': 300  # 2 minutes timeout for large files
-        }
 
         # upload
         upload_result = cloudinary.uploader.upload(
             file,
-            **upload_options
+            folder=cloudinary_folder,
+            public_id=public_id,
+            resource_type=resource_type,
+            type="upload",
+            overwrite=False
         )
 
         print("✅ Cloudinary upload successful!")
@@ -1400,7 +1392,6 @@ def upload_note():
         print(f"❌ Upload Error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-    
 # @app.route('/api/upload', methods=['POST'])
 # @jwt_required()
 # def upload_note():
