@@ -1343,8 +1343,8 @@ def upload_note():
             'resource_type': resource_type,
             'type': "upload",
             'overwrite': False,
-            'chunk_size': 6000000,  # 6MB chunks for large files
-            'timeout': 120  # 2 minutes timeout for large files
+            'chunk_size': 20000000,  # 20MB chunks for large files
+            'timeout': 300  # 2 minutes timeout for large files
         }
 
         # upload
