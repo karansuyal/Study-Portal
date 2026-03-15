@@ -84,103 +84,62 @@ const Home = () => {
   };
 
   // ✅ FIXED: Simple download function that works for both PDF and images
-  const handleMaterialClick = async (material) => {
-    const downloadBtn = document.getElementById(`download-${material.id}`);
-    if (downloadBtn) {
-      downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
-      downloadBtn.disabled = true;
-    }
+  // ✅ FIXED: Download function with backend count increment
+const handleMaterialClick = async (material) => {
+  const downloadBtn = document.getElementById(`download-${material.id}`);
+  if (downloadBtn) {
+    downloadBtn.innerHTML = isMobile ? '⏳' : '⏳ Downloading...';
+    downloadBtn.disabled = true;
+  }
 
-    try {
-      // ✅ Direct Cloudinary download (same as MaterialsPage)
-      if (material.cloudinary_url) {
-        console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
-        
-        const response = await fetch(material.cloudinary_url);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const blob = await response.blob();
-        
-        // Get filename from URL or use title
-        let filename = material.file_name || 
-                      material.title || 
-                      'download.pdf';
-        
-        // Add extension if missing
-        if (!filename.includes('.')) {
-          const isPDF = material.cloudinary_url.includes('.pdf') || 
-                        material.type === 'pdf' || 
-                        material.file_name?.endsWith('.pdf');
-          filename += isPDF ? '.pdf' : '.jpg';
-        }
-        
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        // Update download count
-        setLatestMaterials(prev =>
-          prev.map(m =>
-            m.id === material.id
-              ? { ...m, downloads: (m.downloads || 0) + 1 }
-              : m
-          )
-        );
-        
-        if (downloadBtn) {
-          downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
-          downloadBtn.disabled = false;
-        }
-        return;
-      }
-
-      // ✅ Fallback to API method (if no cloudinary_url)
-      const token = localStorage.getItem('study_portal_token');
+  try {
+    // ✅ Direct Cloudinary download
+    if (material.cloudinary_url) {
+      console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
       
-      if (!token) {
-        const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
-        if (shouldLogin) {
-          navigate('/login');
-        }
-        return;
-      }
-      
-      const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await fetch(material.cloudinary_url);
       
       if (!response.ok) {
-        throw new Error(`Download failed: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const blob = await response.blob();
       
-      // Get filename from Content-Disposition or use default
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = material.file_name || `${material.title}.pdf`;
+      // Get filename from URL or use title
+      let filename = material.file_name || 
+                    material.title || 
+                    'download.pdf';
       
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (match && match[1]) {
-          filename = match[1].replace(/['"]/g, '');
-        }
+      // Add extension if missing
+      if (!filename.includes('.')) {
+        const isPDF = material.cloudinary_url.includes('.pdf') || 
+                      material.type === 'pdf' || 
+                      material.file_name?.endsWith('.pdf');
+        filename += isPDF ? '.pdf' : '.jpg';
       }
       
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
       
-      // Update download count
+      // ✅ BACKEND CALL - Increment download count
+      try {
+        const token = localStorage.getItem('study_portal_token');
+        await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+          method: 'POST',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        console.log('✅ Download count incremented in backend');
+      } catch (err) {
+        console.log("Backend download count update failed, but continuing...");
+      }
+      
+      // Update download count in UI
       setLatestMaterials(prev =>
         prev.map(m =>
           m.id === material.id
@@ -189,16 +148,81 @@ const Home = () => {
         )
       );
       
-    } catch (error) {
-      console.error('❌ Download error:', error);
-      alert(`Download failed: ${error.message}`);
-    } finally {
       if (downloadBtn) {
         downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
         downloadBtn.disabled = false;
       }
+      return;
     }
-  };
+
+    // ✅ Fallback to API method (if no cloudinary_url)
+    const token = localStorage.getItem('study_portal_token');
+    
+    if (!token) {
+      const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
+      if (shouldLogin) {
+        navigate('/login');
+      }
+      return;
+    }
+    
+    const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Download failed: ${response.status}`);
+    }
+    
+    const blob = await response.blob();
+    
+    // Get filename from Content-Disposition or use default
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = material.file_name || `${material.title}.pdf`;
+    
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (match && match[1]) {
+        filename = match[1].replace(/['"]/g, '');
+      }
+    }
+    
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    
+    // ✅ BACKEND CALL - Increment download count
+    try {
+      await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      console.log('✅ Download count incremented in backend');
+    } catch (err) {
+      console.log("Backend download count update failed, but continuing...");
+    }
+    
+    // Update download count in UI
+    setLatestMaterials(prev =>
+      prev.map(m =>
+        m.id === material.id
+          ? { ...m, downloads: (m.downloads || 0) + 1 }
+          : m
+      )
+    );
+    
+  } catch (error) {
+    console.error('❌ Download error:', error);
+    alert(`Download failed: ${error.message}`);
+  } finally {
+    if (downloadBtn) {
+      downloadBtn.innerHTML = isMobile ? '⬇️' : '⬇️ Download';
+      downloadBtn.disabled = false;
+    }
+  }
+};
 
   const checkBackend = async () => {
     try {
