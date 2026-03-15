@@ -128,40 +128,53 @@ const AllMaterials = () => {
   };
 
   // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
-  const handleDownload = async (material) => {
+  // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
+const handleDownload = async (material) => {
   setDownloading(prev => ({ ...prev, [material.id]: true }));
   
   try {
     if (material.cloudinary_url) {
+      console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
+      
       // ✅ Correct fl_attachment URL for Cloudinary
       const downloadUrl = material.cloudinary_url.replace(
         "/image/upload/",
         "/image/upload/fl_attachment/"
       );
 
+      // ✅ Better filename handling
+      let fileName = material.original_filename || material.file_name || material.title || 'document';
+      
+      // Add extension if missing
+      if (!fileName.includes('.')) {
+        const isPDF = material.cloudinary_url.includes('.pdf') || 
+                      material.type === 'pdf' || 
+                      material.file_name?.endsWith('.pdf');
+        fileName += isPDF ? '.pdf' : '.jpg';
+      }
+
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      // ✅ FIXED: Proper state update with new array reference
+      // ✅ Update download count
       setMaterials(prevMaterials => {
-        // Create a new array with updated downloads count
         const updatedMaterials = prevMaterials.map(item => 
           item.id === material.id 
             ? { ...item, downloads: (item.downloads || 0) + 1 } 
             : item
         );
-        return [...updatedMaterials]; // Return new array reference
+        return [...updatedMaterials];
       });
 
       setDownloading(prev => ({ ...prev, [material.id]: false }));
       return;
     }
     
-    // Fallback to API method
+    // Fallback to API method (same as before)
     const token = localStorage.getItem('study_portal_token');
     
     if (!token) {
@@ -212,7 +225,7 @@ const AllMaterials = () => {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
     
-    // ✅ FIXED: Same fix for API fallback
+    // Update download count
     setMaterials(prevMaterials => {
       const updatedMaterials = prevMaterials.map(item => 
         item.id === material.id 
