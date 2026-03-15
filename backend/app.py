@@ -1801,8 +1801,9 @@ def download_note(note_id):
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
         if note.cloudinary_url:
-            note.downloads += 1
-            db.session.commit()
+            # ✅ DON'T increment here - frontabhi POST se increment karega
+            # note.downloads += 1  <-- YEH LINE HATAA DO
+            # db.session.commit()  <-- YEH LINE HATAA DO
             print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
             return redirect(note.cloudinary_url)
         
@@ -1834,8 +1835,9 @@ def download_note(note_id):
             if not found:
                 return jsonify({'success': False, 'error': 'File not found on server'}), 404
 
-        note.downloads += 1
-        db.session.commit()
+        # ✅ DON'T increment here - frontend POST se increment karega
+        # note.downloads += 1  <-- YEH LINE HATAA DO
+        # db.session.commit()  <-- YEH LINE HATAA DO
 
         mime_types = {
             'pdf': 'application/pdf',
@@ -1862,6 +1864,54 @@ def download_note(note_id):
         print(f"❌ Download error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+# ==================== DOWNLOAD COUNT INCREMENT ENDPOINT ====================
+
+@app.route('/api/notes/<int:note_id>/download', methods=['POST', 'OPTIONS'])
+def increment_download_count(note_id):
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = jsonify({'success': True})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response, 200
+        
+    try:
+        print(f"\n📥 DOWNLOAD COUNT INCREMENT for note ID: {note_id}")
+        
+        note = db.session.get(Note, note_id)
+        if not note:
+            print(f"❌ Note {note_id} not found!")
+            return jsonify({'success': False, 'error': 'Note not found'}), 404
+
+        print(f"📊 Current downloads before increment: {note.downloads}")
+
+        note.downloads += 1
+        db.session.commit()
+
+        print(f"✅ Downloads after increment: {note.downloads}")
+        print(f"{'='*50}\n")
+
+        return jsonify({
+            'success': True,
+            'message': 'Download count incremented',
+            'downloads': note.downloads
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error in download increment: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# Alternative endpoint name bhi add karo (kyunki frontend dono try kar raha hai)
+@app.route('/api/materials/<int:note_id>/download', methods=['POST', 'OPTIONS'])
+def increment_download_count_alt(note_id):
+    # Same as above, just redirect
+    return increment_download_count(note_id)
     
     
 @app.route('/api/debug/files', methods=['GET', 'OPTIONS'])
