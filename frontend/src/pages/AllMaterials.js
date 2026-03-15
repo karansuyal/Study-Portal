@@ -129,129 +129,95 @@ const AllMaterials = () => {
 
   // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
   // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
+// ✅ PERFECT FIXED DOWNLOAD FUNCTION
 const handleDownload = async (material) => {
   setDownloading(prev => ({ ...prev, [material.id]: true }));
   
   try {
     if (material.cloudinary_url) {
-      console.log('📥 Downloading from Cloudinary:', material.cloudinary_url);
-      
-      // ✅ Correct fl_attachment URL for Cloudinary
+      // Cloudinary download URL
       const downloadUrl = material.cloudinary_url.replace(
         "/image/upload/",
         "/image/upload/fl_attachment/"
       );
 
-      // ✅ Better filename handling
-      let fileName = material.original_filename || material.file_name || material.title || 'document';
-      
-      // Add extension if missing
-      if (!fileName.includes('.')) {
-        const isPDF = material.cloudinary_url.includes('.pdf') || 
-                      material.type === 'pdf' || 
-                      material.file_name?.endsWith('.pdf');
-        fileName += isPDF ? '.pdf' : '.jpg';
-      }
-
+      // Download file
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = fileName;
+      link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      // ✅ Update download count
-      setMaterials(prevMaterials => {
-        const updatedMaterials = prevMaterials.map(item => 
+      // ✅ STEP 1: Local state update (immediate)
+      setMaterials(prev => {
+        const updated = prev.map(item => 
           item.id === material.id 
             ? { ...item, downloads: (item.downloads || 0) + 1 } 
             : item
         );
-        return [...updatedMaterials];
+        return [...updated];
       });
+
+      // ✅ STEP 2: API se fresh data fetch karo (ensure backend sync)
+      try {
+        const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}`);
+        const data = await response.json();
+        
+        if (data.success && data.note) {
+          setMaterials(prev => {
+            const updated = prev.map(item => 
+              item.id === material.id 
+                ? { ...item, downloads: data.note.downloads } 
+                : item
+            );
+            return [...updated];
+          });
+          console.log(`✅ Download count synced: ${data.note.downloads}`);
+        }
+      } catch (error) {
+        console.log('⚠️ Could not fetch latest count, using local update');
+      }
 
       setDownloading(prev => ({ ...prev, [material.id]: false }));
       return;
     }
     
-    // Fallback to API method (same as before)
+    // Fallback to API method
     const token = localStorage.getItem('study_portal_token');
     
     if (!token) {
-      const shouldLogin = window.confirm('Please login first to download materials. Go to login page?');
-      if (shouldLogin) {
-        navigate('/login');
-      }
+      const shouldLogin = window.confirm('Please login first to download materials.');
+      if (shouldLogin) navigate('/login');
       return;
     }
     
-    const downloadUrl = `https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`;
-    
-    const response = await fetch(downloadUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      }
+    const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Session expired. Please login again.');
-      } else if (response.status === 404) {
-        throw new Error('File not found on server');
-      } else {
-        throw new Error(`Download failed (${response.status})`);
-      }
-    }
+    if (!response.ok) throw new Error(`Download failed: ${response.status}`);
     
     const blob = await response.blob();
-    
-    const contentDisposition = response.headers.get('Content-Disposition');
-    let filename = material.file_name || `${material.title}.pdf`;
-    
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      if (match && match[1]) {
-        filename = match[1].replace(/['"]/g, '');
-      }
-    }
-    
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
+    link.download = material.file_name || `${material.title}.pdf`;
     link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
     
-    // Update download count
-   // ✅ Update download in backend
-await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
-  method: "POST"
-});
-
-// update UI instantly
-setMaterials(prevMaterials =>
-  prevMaterials.map(item =>
-    item.id === material.id
-      ? { ...item, downloads: (item.downloads || 0) + 1 }
-      : item
-  )
-);
+    // Same update logic for API fallback
+    setMaterials(prev => {
+      const updated = prev.map(item => 
+        item.id === material.id 
+          ? { ...item, downloads: (item.downloads || 0) + 1 } 
+          : item
+      );
+      return [...updated];
+    });
     
   } catch (error) {
     console.error('❌ Download error:', error);
-    
-    if (error.message.includes('401')) {
-      alert('⚠️ Session expired. Please login again.');
-      localStorage.removeItem('study_portal_token');
-      navigate('/login');
-    } else if (error.message.includes('404')) {
-      alert('❌ File not found on server. It may have been deleted.');
-    } else {
-      alert(`❌ Download failed: ${error.message}`);
-    }
+    alert(`Download failed: ${error.message}`);
   } finally {
     setDownloading(prev => ({ ...prev, [material.id]: false }));
   }
