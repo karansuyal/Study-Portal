@@ -127,35 +127,77 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
-  // ✅ FIXED DOWNLOAD FUNCTION - Force download with proper filename
-const handleDownload = async (material) => {
-  setDownloading(prev => ({ ...prev, [material.id]: true }));
-  
-  try {
-    if (material.cloudinary_url) {
-      const downloadUrl = material.cloudinary_url.replace(
-        "/image/upload/",
-        "/image/upload/fl_attachment/"
-      );
+  // ✅ FIXED DOWNLOAD FUNCTION - Download count properly update hoga
+  const handleDownload = async (material) => {
+    setDownloading(prev => ({ ...prev, [material.id]: true }));
+    
+    try {
+      if (material.cloudinary_url) {
+        // Cloudinary download URL
+        let downloadUrl = material.cloudinary_url;
+        
+        // Add fl_attachment for force download
+        if (downloadUrl.includes('/image/upload/')) {
+          downloadUrl = downloadUrl.replace('/image/upload/', '/image/upload/fl_attachment/');
+        } else if (downloadUrl.includes('/raw/upload/')) {
+          downloadUrl = downloadUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/');
+        } else if (downloadUrl.includes('/video/upload/')) {
+          downloadUrl = downloadUrl.replace('/video/upload/', '/video/upload/fl_attachment/');
+        }
 
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+        // Create download link
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-      // ✅ Backend me download count update karo
-      try {
-        await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
-          method: "POST"
-        });
-      } catch (err) {
-        console.log("Download count update failed");
+        // ✅ BACKEND CALL - Download count increment with proper endpoint
+        try {
+          const token = localStorage.getItem('study_portal_token');
+          const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+            method: "POST",
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          });
+          
+          if (response.ok) {
+            // ✅ Local UI update only if backend call succeeds
+            setMaterials(prev =>
+              prev.map(item =>
+                item.id === material.id
+                  ? { ...item, downloads: (item.downloads || 0) + 1 }
+                  : item
+              )
+            );
+          } else {
+            console.log("Download count update failed, but file downloaded");
+          }
+        } catch (err) {
+          console.log("Download count update error:", err);
+        }
+
+        return;
       }
 
-      // ✅ Local UI update
+      // Non-Cloudinary download
+      const token = localStorage.getItem('study_portal_token');
+      const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+
+      if (!response.ok) throw new Error(`Download failed`);
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = material.file_name || `${material.title}.pdf`;
+      link.click();
+
+      // ✅ Local UI update for non-Cloudinary files
       setMaterials(prev =>
         prev.map(item =>
           item.id === material.id
@@ -164,41 +206,13 @@ const handleDownload = async (material) => {
         )
       );
 
-      return;
+    } catch (error) {
+      console.error('❌ Download error:', error);
+      alert(`Download failed: ${error.message}`);
+    } finally {
+      setDownloading(prev => ({ ...prev, [material.id]: false }));
     }
-
-    const token = localStorage.getItem('study_portal_token');
-
-    const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-    });
-
-    if (!response.ok) throw new Error(`Download failed`);
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = material.file_name || `${material.title}.pdf`;
-    link.click();
-
-    // ✅ Local UI update
-    setMaterials(prev =>
-      prev.map(item =>
-        item.id === material.id
-          ? { ...item, downloads: (item.downloads || 0) + 1 }
-          : item
-      )
-    );
-
-  } catch (error) {
-    console.error('❌ Download error:', error);
-    alert(`Download failed`);
-  } finally {
-    setDownloading(prev => ({ ...prev, [material.id]: false }));
-  }
-};
+  };
 
   const getMaterialTypeInfo = (type) => {
     switch (type?.toLowerCase()) {
