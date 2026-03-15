@@ -226,14 +226,19 @@ const handleDownload = async (material) => {
     window.URL.revokeObjectURL(url);
     
     // Update download count
-    setMaterials(prevMaterials => {
-      const updatedMaterials = prevMaterials.map(item => 
-        item.id === material.id 
-          ? { ...item, downloads: (item.downloads || 0) + 1 } 
-          : item
-      );
-      return [...updatedMaterials];
-    });
+   // ✅ Update download in backend
+await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+  method: "POST"
+});
+
+// update UI instantly
+setMaterials(prevMaterials =>
+  prevMaterials.map(item =>
+    item.id === material.id
+      ? { ...item, downloads: (item.downloads || 0) + 1 }
+      : item
+  )
+);
     
   } catch (error) {
     console.error('❌ Download error:', error);
