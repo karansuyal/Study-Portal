@@ -54,25 +54,23 @@ const AllMaterials = () => {
     }
   };
 
-  // ✅ Material Card Component - ALAG SE BANAYA
+  // Material Card Component
   const MaterialCard = ({ material }) => {
     const [downloading, setDownloading] = useState(false);
     const typeInfo = getMaterialTypeInfo(material.type);
     
-    // ✅ useNoteStats hook - UNIVERSAL COUNTERS
+    // useNoteStats hook - UNIVERSAL COUNTERS
     const stats = useNoteStats(material.id, {
       views: material.views || 0,
       downloads: material.downloads || 0
     });
 
     const handleView = () => {
-      // ✅ Universal view increment
       stats.incrementView();
       
       if (material.cloudinary_url) {
         console.log('📄 Opening:', material.cloudinary_url);
         
-        // Check if it's PDF
         const isPDF = material.cloudinary_url.includes('.pdf') || 
                       material.type === 'pdf' || 
                       material.file_name?.endsWith('.pdf');
@@ -86,7 +84,6 @@ const AllMaterials = () => {
         return;
       }
 
-      // Fallback for non-Cloudinary files
       if (!material.file_name) {
         alert('No file to view');
         return;
@@ -113,11 +110,9 @@ const AllMaterials = () => {
       setDownloading(true);
       
       try {
-        // ✅ Universal download increment
         stats.incrementDownload();
         
         if (material.cloudinary_url) {
-          // Cloudinary download
           let downloadUrl = material.cloudinary_url;
           
           if (downloadUrl.includes('/image/upload/')) {
@@ -128,8 +123,7 @@ const AllMaterials = () => {
             downloadUrl = downloadUrl.replace('/video/upload/', '/video/upload/fl_attachment/');
           }
 
-<<<<<<< HEAD
-           const response = await fetch(downloadUrl);
+          const response = await fetch(downloadUrl);
           const blob = await response.blob();
           
           const url = window.URL.createObjectURL(blob);
@@ -143,30 +137,8 @@ const AllMaterials = () => {
           
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
-=======
-         const response = await fetch(downloadUrl);
-          const blob = await response.blob();
-
-        const url = window.URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = material.original_filename || material.file_name || `${material.title}.pdf`;
-
-        document.body.appendChild(link);
-        link.click();
-
-<<<<<<< HEAD
-document.body.removeChild(link);
-window.URL.revokeObjectURL(url);
->>>>>>> 77f8199 (Fix MegaStorage login check)
-=======
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
->>>>>>> 6934a71 (Initial frontend code with Cloudinary integration)
           
         } else {
-          // Non-Cloudinary download
           const token = localStorage.getItem('study_portal_token');
           const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
@@ -228,11 +200,11 @@ window.URL.revokeObjectURL(url);
         <div className="material-stats">
           <div className="stat-item">
             <span className="stat-icon">👁️</span>
-            <span className="stat-number">{stats.views}</span>  {/* ✅ UPDATED */}
+            <span className="stat-number">{stats.views}</span>
           </div>
           <div className="stat-item">
             <span className="stat-icon">⬇️</span>
-            <span className="stat-number">{stats.downloads}</span>  {/* ✅ UPDATED */}
+            <span className="stat-number">{stats.downloads}</span>
           </div>
         </div>
 
@@ -267,7 +239,6 @@ window.URL.revokeObjectURL(url);
     );
   };
 
-  // Loading State
   if (loading) {
     return (
       <div className="loading-container">
@@ -277,7 +248,6 @@ window.URL.revokeObjectURL(url);
     );
   }
 
-  // Error State
   if (error) {
     return (
       <div className="error-container">
@@ -291,7 +261,6 @@ window.URL.revokeObjectURL(url);
     );
   }
 
-  // Empty State
   if (materials.length === 0) {
     return (
       <div className="empty-state">
@@ -302,7 +271,6 @@ window.URL.revokeObjectURL(url);
     );
   }
 
-  // Main Render
   return (
     <div className="all-materials-container">
       <div className="all-materials-header">
@@ -312,7 +280,7 @@ window.URL.revokeObjectURL(url);
 
       <div className="materials-grid">
         {materials.map((material) => (
-          <MaterialCard key={material.id} material={material} /> 
+          <MaterialCard key={material.id} material={material} />
         ))}
       </div>
     </div>
@@ -320,7 +288,6 @@ window.URL.revokeObjectURL(url);
 };
 
 export default AllMaterials;
-
 
 
 
