@@ -11,3 +11,4 @@ Werkzeug==2.3.7
 requests==2.31.0
 uuid==1.30
 gunicorn==21.2.0
+resend==2.21.0
