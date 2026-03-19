@@ -26,18 +26,18 @@ export const coursesData = {
          
       2: [
   // THEORY SUBJECTS FIRST (Semester 1 - Actual)
-  { id: 101, name: 'Professional Communication', code: 'THU201', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
-  { id: 102, name: 'Engineering Chemistry', code: 'TCH201', credits: 4, materials: 18, rating: 4.3, type: 'Theory' },
-  { id: 103, name: 'Engineering Mathematics-II', code: 'TMA201', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
-  { id: 104, name: 'Basic Electronics Engineering', code: 'TEC201', credits: 3, materials: 20, rating: 4.2, type: 'Theory' },
-  { id: 105, name: 'Environmental Science', code: 'TE2101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' },
-  { id: 106, name: 'Fundamental of Computer & Introduction to Programming', code: 'TCS201', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+  { id: 111, name: 'Professional Communication', code: 'THU201', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+  { id: 112, name: 'Engineering Chemistry', code: 'TCH201', credits: 4, materials: 18, rating: 4.3, type: 'Theory' },
+  { id: 113, name: 'Engineering Mathematics-II', code: 'TMA201', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
+  { id: 114, name: 'Basic Electronics Engineering', code: 'TEC201', credits: 3, materials: 20, rating: 4.2, type: 'Theory' },
+  { id: 115, name: 'Environmental Science', code: 'TE2101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' },
+  { id: 116, name: 'Fundamental of Computer & Introduction to Programming', code: 'TCS201', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
   
   // LAB SUBJECTS LAST (Semester 1 - Actual)
-  { id: 107, name: 'Basic Electronics Engineering Lab', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Lab' },
-  { id: 108, name: 'Chemistry Lab', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Lab' },
-  { id: 109, name: 'Engineering Graphics and Design Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
-  { id: 110, name: 'C Programming Language', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
+  { id: 117, name: 'Basic Electronics Engineering Lab', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Lab' },
+  { id: 118, name: 'Chemistry Lab', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Lab' },
+  { id: 119, name: 'Engineering Graphics and Design Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
+  { id: 120, name: 'C Programming Language', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
   
 ],
         }
