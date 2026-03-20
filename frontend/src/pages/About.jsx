@@ -283,50 +283,47 @@ const About = () => {
       </section>
 
       {/* CTA Section */}
-      <section style={styles.cta}>
-        <h2 style={{ 
-          marginBottom: '1rem', 
-          color: '#1f2937',
-          fontSize: isMobile ? '1.5rem' : '2rem'
-        }}>
-          Ready to join our learning community?
-        </h2>
-        <p style={{ 
-          color: '#6b7280', 
-          marginBottom: '1.5rem', 
-          maxWidth: '600px', 
-          margin: '0 auto 1.5rem',
-          fontSize: isMobile ? '0.9rem' : '1rem'
-        }}>
-          Start uploading your notes, download study materials, and help other students succeed.
-        </p>
-        <div style={styles.ctaButtons}>
-          <Link to="/upload" style={{
-            ...styles.ctaButton,
-            background: '#4f46e5'
-          }}>
-            📤 Upload Notes
-          </Link>
-          <Link to="/Home" style={{
-            ...styles.ctaButton,
-            background: '#10b981'
-          }}>
-            GitHub
-          </Link>
-          <Link to="https://github.com/karansuyal/Study-Portal" style={{
-            ...styles.ctaButton,
-            background: '#f59e0b'
-          }}>
-            👤 Join Now
-            </Link>
-          <Link to="/Login" style={{
-            ...styles.ctaButton,
-            background: '#10b981'
-          }}>
-          </Link>
-        </div>
-      </section>
-
+<section style={styles.cta}>
+  <h2 style={{ 
+    marginBottom: '1rem', 
+    color: '#1f2937',
+    fontSize: isMobile ? '1.5rem' : '2rem'
+  }}>
+    Ready to join our learning community?
+  </h2>
+  <p style={{ 
+    color: '#6b7280', 
+    marginBottom: '1.5rem', 
+    maxWidth: '600px', 
+    margin: '0 auto 1.5rem',
+    fontSize: isMobile ? '0.9rem' : '1rem'
+  }}>
+    Start uploading your notes, download study materials, and help other students succeed.
+  </p>
+  <div style={styles.ctaButtons}>
+    <a href="/upload" style={{
+      ...styles.ctaButton,
+      background: '#4f46e5',
+      textDecoration: 'none'
+    }}>
+      📤 Upload Notes
+    </a>
+    <a href="https://github.com/karansuyal/Study-Portal" target="_blank" rel="noopener noreferrer" style={{
+      ...styles.ctaButton,
+      background: '#333',
+      textDecoration: 'none'
+    }}>
+      <i className="fab fa-github"></i> GitHub
+    </a>
+    <a href="/register" style={{
+      ...styles.ctaButton,
+      background: '#10b981',
+      textDecoration: 'none'
+    }}>
+      👤 Join Now
+    </a>
+  </div>
+  </section>
       {/* Footer Note */}
       <div style={styles.footerNote}>
         <p>
