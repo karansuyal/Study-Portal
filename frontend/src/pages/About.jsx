@@ -313,11 +313,16 @@ const About = () => {
           }}>
             GitHub
           </Link>
-          <Link to="@karansuyal" style={{
+          <Link to="https://github.com/karansuyal/Study-Portal" style={{
             ...styles.ctaButton,
             background: '#f59e0b'
           }}>
             👤 Join Now
+            </Link>
+          <Link to="/Login" style={{
+            ...styles.ctaButton,
+            background: '#10b981'
+          }}>
           </Link>
         </div>
       </section>
