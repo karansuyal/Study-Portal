@@ -1,8 +1,10 @@
 # 📚 Study Portal - Notes, PYQs & Study Materials
 
+Link : https://study-portal-app.vercel.app/
+
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://study-portal-app.vercel.app)
 [![Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://study-portal-ill8.onrender.com)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
 
 A full-stack study materials platform where students can upload, view, and download notes, previous year questions, syllabus, and lab manuals. Features include user authentication, admin panel, universal counters (views/downloads/ratings), and Cloudinary integration for file storage.
 
