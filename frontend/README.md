@@ -1,70 +1,68 @@
-# Getting Started with Create React App
+# 📚 Study Portal - Notes, PYQs & Study Materials
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://study-portal-app.vercel.app)
+[![Render](https://img.shields.io/badge/Deployed%20on-Render-blue)](https://study-portal-ill8.onrender.com)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-## Available Scripts
+A full-stack study materials platform where students can upload, view, and download notes, previous year questions, syllabus, and lab manuals. Features include user authentication, admin panel, universal counters (views/downloads/ratings), and Cloudinary integration for file storage.
 
-In the project directory, you can run:
+## ✨ Features
 
-### `npm start`
+### 👤 User Features
+- 🔐 User Registration & Login with Email Verification
+- 📄 Browse and Search Study Materials
+- 👁️ View and Download Materials
+- ⭐ Rate Materials
+- 📱 Fully Responsive Design (Mobile Friendly)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 👑 Admin Features
+- 📊 Dashboard with Analytics
+- 📤 Direct Upload (Auto-Approved)
+- ✅ Approve/Reject User Uploads
+- 👥 User Management (View, Edit, Delete)
+- 🗑️ Bulk Delete Options (by semester/subject/date)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 🚀 Technical Features
+- 🌐 **Universal Counters** - Views, Downloads, Ratings sync across all pages
+- ☁️ **Cloudinary Integration** - Fast, optimized file delivery
+- 📧 **Email Service** - Verification and Password Reset via Resend
+- 🗄️ **PostgreSQL Database** - Hosted on Render
+- 🔄 **Real-time Updates** - No refresh needed
 
-### `npm test`
+## 🛠️ Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Frontend
+- React 18
+- React Router v6
+- React Icons
+- Axios
+- CSS3 (Custom)
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Backend
+- Flask 2.3.3
+- Flask-SQLAlchemy
+- Flask-JWT-Extended
+- PostgreSQL
+- Cloudinary SDK
+- Resend (Email API)
 
 ### Deployment
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Database:** Render PostgreSQL
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📋 Prerequisites
 
-### `npm run build` fails to minify
+- Node.js (v16+)
+- Python (v3.10+)
+- PostgreSQL (for local development)
+- Cloudinary Account
+- Resend Account (for emails)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🚀 Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/karansuyal/Study-Portal.git
+cd Study-Portal
