@@ -2121,7 +2121,7 @@ def debug_files():
 @app.route('/')
 def home():
     return jsonify({
-        'message': 'Notes Hub API',
+        'message': 'Study Portal API',
         'version': '2.0',
         'database': 'PostgreSQL',
         'status': 'running',

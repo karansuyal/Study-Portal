@@ -5,7 +5,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 import os
-from dotenv import load_dotenv  # ✅ Correct import
+from dotenv import load_dotenv 
 
 # Load environment variables
 load_dotenv()
