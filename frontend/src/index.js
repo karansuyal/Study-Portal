@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />  {/* ✅ Sirf ek baar App render karo */}
+    <App />  {}
   </React.StrictMode>
 );
 

@@ -1,4 +1,4 @@
-/* src/index.css - ULTIMATE EDITION */
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 * {
@@ -16,7 +16,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-  padding-top: 70px !important; /* Increased for better navbar spacing */
+  padding-top: 70px !important; 
   transition: all 0.3s ease;
 }
 
@@ -35,7 +35,7 @@ code {
   color: #d63384;
 }
 
-/* Spinner animation - FIXED (removed duplicate) */
+/* Spinner animation */
 .spinner {
   width: 50px;
   height: 50px;

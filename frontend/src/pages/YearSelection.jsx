@@ -37,7 +37,7 @@ const YearSelection = () => {
       }
 
       // IMPORTANT: Filter years based on course duration
-      // Only show years that exist for this course
+      
       const validYears = yearsData.filter(year => {
         const yearNum = typeof year === 'object' ? (year.id || year.year_id) : year;
         return yearNum <= courseData.duration;
@@ -120,7 +120,7 @@ const YearSelection = () => {
         </div>
       </div>
 
-      {/* Years Grid - Ab upar se shuru */}
+      {/* Years Grid  */}
       <div style={styles.yearsGrid}>
         {years.map((year) => (
           <div

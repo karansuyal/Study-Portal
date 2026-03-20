@@ -68,7 +68,7 @@ const SearchResults = () => {
         path: '/course/1',
         duration: '4 Years',
         subjects: 'Computer Science, Electronics, Mechanical',
-        // ✅ FIXED: B.Tech ke saare variations include kiye
+        
         keywords: [
           'b.tech', 'btech', 'bt', 'tech', 'bachelor', 
           'technology', 'engineering', 'engineer', 'be', 'b.e',
@@ -85,7 +85,6 @@ const SearchResults = () => {
         path: '/course/4',
         duration: '2 Years',
         subjects: 'Leadership, Strategy, Operations',
-        // ✅ Search keywords for MBA
         keywords: ['mba', 'master', 'business', 'administration', 'postgraduate']
       },
       { 
@@ -103,29 +102,29 @@ const SearchResults = () => {
       }
     ];
 
-    // ✅ IMPROVED SEARCH: Multiple fields me search karo
+    
     const searchLower = searchQuery.toLowerCase().trim();
     
     const filteredResults = courses.filter(course => {
-      // Basic fields me search
+  
       const titleMatch = course.title.toLowerCase().includes(searchLower);
       const fullTitleMatch = course.fullTitle.toLowerCase().includes(searchLower);
       const descMatch = course.description.toLowerCase().includes(searchLower);
       const subjectsMatch = course.subjects.toLowerCase().includes(searchLower);
       
-      // ✅ Keywords me search (B.Tech ke liye special)
+      
       const keywordMatch = course.keywords.some(keyword => 
         keyword.toLowerCase().includes(searchLower) || 
         searchLower.includes(keyword.toLowerCase())
       );
       
-      // ✅ Special case for B.Tech variations
+      
       const btechVariations = [
         'b.tech', 'btech', 'b tech', 'bt', 'b.tech', 'b. tech',
         'bachelor of technology', 'be', 'b.e', 'b.e.', 'engineering'
       ];
       
-      // Agar B.Tech course hai to special handling
+      
       if (course.title === 'B.Tech') {
         const btechMatch = btechVariations.some(variant => 
           searchLower.includes(variant) || variant.includes(searchLower)
@@ -133,7 +132,7 @@ const SearchResults = () => {
         return btechMatch || titleMatch || fullTitleMatch || descMatch || subjectsMatch || keywordMatch;
       }
       
-      // Normal search for other courses
+      
       return titleMatch || fullTitleMatch || descMatch || subjectsMatch || keywordMatch;
     });
 

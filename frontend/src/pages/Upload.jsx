@@ -83,13 +83,13 @@ const Upload = () => {
   // ✅ FIXED: Correct course ID mapping based on your database
   const getCourseIdFromName = (courseName) => {
     const courseMap = {
-      'B.Tech': 1,    // BTECH ka actual ID
-      'BCA': 2,       // BCA ka actual ID
-      'BBA': 3,       // BBA ka actual ID
-      'MBA': 4,       // MBA ka actual ID
-      'MCA': 5        // MCA ka actual ID
+      'B.Tech': 1,    
+      'BCA': 2,       
+      'BBA': 3,       
+      'MBA': 4,       
+      'MCA': 5        
     };
-    return courseMap[courseName] || 1;  // Default to BTECH
+    return courseMap[courseName] || 1;  
   };
 
   // ✅ FIXED: Get course name for folder creation
@@ -197,7 +197,7 @@ const Upload = () => {
         semester: semesterOptions[0]  // first valid semester
       }));
     }
-  }, [formData.year]);  // जब year change हो
+  }, [formData.year]);  
 
   const fetchCoursesFromBackend = async () => {
     try {

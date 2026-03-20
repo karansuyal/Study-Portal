@@ -1,6 +1,5 @@
 /* Home.css - Clean & Beautiful - WITH OUTLINE FIX */
 
-/* Base Styles */
 :root {
   --primary-color: #667eea;
   --secondary-color: #764ba2;
@@ -698,7 +697,7 @@
   }
 }
 
-/* ========== DESKTOP OUTLINE FIX - SIRF YEH ADD KIYA HAI ========== */
+
 @media (min-width: 769px) {
   .search-input:focus {
     outline: none !important;

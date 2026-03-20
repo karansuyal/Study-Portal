@@ -6,7 +6,7 @@ function UsersPage() {
   const [email, setEmail] = useState("");
 
   const fetchUsers = async () => {
-    const res = await fetch("https://study-portal-ill8.onrender.com/users"); // Flask backend
+    const res = await fetch("https://study-portal-ill8.onrender.com/users"); 
     const data = await res.json();
     setUsers(data);
   };

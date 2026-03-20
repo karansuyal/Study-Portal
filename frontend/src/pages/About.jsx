@@ -15,7 +15,7 @@ const About = () => {
 
   const isMobile = windowWidth <= 768;
 
-  // 🔥 TERI ORIGINAL STYLES - BAS MOBILE KE LIYE RESPONSIVE BANAYA
+  
   const styles = {
     container: {
       maxWidth: '1200px',
@@ -283,7 +283,7 @@ const About = () => {
       </section>
 
       {/* CTA Section */}
-<section style={styles.cta}>
+  <section style={styles.cta}>
   <h2 style={{ 
     marginBottom: '1rem', 
     color: '#1f2937',

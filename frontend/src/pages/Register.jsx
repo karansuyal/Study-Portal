@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Register.css'; // CSS file import karo
+import './Register.css'; 
 
 const Register = () => {
   const [formData, setFormData] = useState({

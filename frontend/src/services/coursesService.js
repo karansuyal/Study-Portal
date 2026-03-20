@@ -1,7 +1,6 @@
 // src/services/coursesService.js
-// Mock data for now
 export const getCourses = async () => {
-  // Simulate API call
+  
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([

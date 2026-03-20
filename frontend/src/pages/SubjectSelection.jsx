@@ -11,7 +11,7 @@ const SubjectSelection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Mock courses data
+
   const coursesData = {
     1: { name: "B.Tech", icon: "💻" },
     2: { name: "BCA", icon: "📱" },
