@@ -311,9 +311,9 @@ const About = () => {
             ...styles.ctaButton,
             background: '#10b981'
           }}>
-            📚 Browse Courses
+            GitHub
           </Link>
-          <Link to="/register" style={{
+          <Link to="@karansuyal" style={{
             ...styles.ctaButton,
             background: '#f59e0b'
           }}>
