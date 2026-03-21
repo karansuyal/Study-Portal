@@ -58,7 +58,7 @@ print("="*60)
 print("📧 Using SendGrid for emails")
 print("="*60 + "\n")
 
-# ✅ POSTGRESQL CONNECTION WITH RENDER FIX
+# ✅ POSTGRESQL CONNECTION WITH RENDER 
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
@@ -280,9 +280,6 @@ def send_verification_email(to_email, token, name):
         
         SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
         
-        import sendgrid
-        from sendgrid.helpers.mail import Mail, Email, To, Content
-        
         # Email content
         html_content = f"""
         <!DOCTYPE html>
@@ -359,492 +356,6 @@ def send_verification_email(to_email, token, name):
         print(f"❌ Email sending failed: {str(e)}")
         traceback.print_exc()
         return False
-
-# # ==================== EMAIL SERVICE (BREVO) ====================
-
-# def send_verification_email(to_email, token, name):
-#     """
-#     Send verification email using Brevo API
-#     """
-#     try:
-#         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
-        
-#         # Email content - HTML format
-#         html_content = f"""
-#         <!DOCTYPE html>
-#         <html>
-#         <head>
-#             <meta charset="UTF-8">
-#             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#         </head>
-#         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-#             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-#                  <tr>
-#                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-#                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-#                     </td>
-#                 </tr>
-#                 <tr>
-#                     <td style="padding: 40px 30px;">
-#                         <h2 style="color: #333; margin-top: 0;">Welcome, {name}! 👋</h2>
-#                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
-#                             Thank you for registering at Study Portal. Please verify your email address by clicking the button below:
-#                         </p>
-
-#                         <div style="text-align: center; margin: 35px 0;">
-#                             <a href="{verification_link}"
-#                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-#                                 ✅ Verify Email
-#                             </a>
-#                         </div>
-
-#                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
-#                             Or copy and paste this link in your browser:<br>
-#                             <span style="color: #667eea; word-break: break-all;">{verification_link}</span>
-#                         </p>
-
-#                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-#                         <p style="color: #999; font-size: 12px; margin: 0;">
-#                             ⏰ This link will expire in 24 hours.<br>
-#                             If you didn't create an account, please ignore this email.
-#                         </p>
-#                     </td>
-#                 </tr>
-#                 <tr>
-#                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-#                         <p style="color: #999; font-size: 12px; margin: 0;">
-#                             © 2026 Study Portal. All rights reserved.
-#                         </p>
-#                     </td>
-#                 </tr>
-#             </table>
-#         </body>
-#         </html>
-#         """
-        
-#         text_content = f"""
-#         Welcome to Study Portal, {name}!
-        
-#         Thank you for registering. Please verify your email address by clicking the link below:
-        
-#         {verification_link}
-        
-#         This link will expire in 24 hours.
-        
-#         If you didn't create an account, please ignore this email.
-        
-#         © 2026 Study Portal. All rights reserved.
-#         """
-        
-#         # Configure Brevo API
-#         configuration = sib_api_v3_sdk.Configuration()
-#         configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
-        
-#         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        
-#         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-#             to=[{"email": to_email}],
-#             sender={"email": os.environ.get('BREVO_SENDER_EMAIL', 'studyportal02@gmail.com')},
-#             subject="Verify Your Study Portal Account",
-#             html_content=html_content,
-#             text_content=text_content
-#         )
-        
-#         api_instance.send_transac_email(send_smtp_email)
-        
-#         print(f"✅ Verification email sent to {to_email}")
-#         return True
-        
-#     except ApiException as e:
-#         print(f"❌ Email sending failed: {e}")
-#         traceback.print_exc()
-#         return False
-#     except Exception as e:
-#         print(f"❌ Email sending failed: {str(e)}")
-#         traceback.print_exc()
-#         return False
-
-
-# def send_password_reset_email(to_email, token, name):
-#     """
-#     Send password reset email using Brevo API
-#     """
-#     try:
-#         reset_link = f"https://study-portal-qitc.vercel.app/reset-password?token={token}"
-        
-#         html_content = f"""
-#         <!DOCTYPE html>
-#         <html>
-#         <head>
-#             <meta charset="UTF-8">
-#             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#         </head>
-#         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-#             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-#                  <tr>
-#                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-#                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-#                     </td>
-#                 </tr>
-#                 <tr>
-#                     <td style="padding: 40px 30px;">
-#                         <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
-#                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
-#                             Hello {name}, we received a request to reset your password. Click the button below to set a new password:
-#                         </p>
-
-#                         <div style="text-align: center; margin: 35px 0;">
-#                             <a href="{reset_link}"
-#                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-#                                 🔑 Reset Password
-#                             </a>
-#                         </div>
-
-#                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
-#                             Or copy and paste this link in your browser:<br>
-#                             <span style="color: #667eea; word-break: break-all;">{reset_link}</span>
-#                         </p>
-
-#                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-#                         <p style="color: #999; font-size: 12px; margin: 0;">
-#                             ⏰ This link will expire in 1 hour.<br>
-#                             If you didn't request this, please ignore this email.
-#                         </p>
-#                     </td>
-#                 </tr>
-#                 <tr>
-#                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-#                         <p style="color: #999; font-size: 12px; margin: 0;">
-#                             © 2026 Study Portal. All rights reserved.
-#                         </p>
-#                     </td>
-#                 </tr>
-#             </table>
-#         </body>
-#         </html>
-#         """
-        
-#         text_content = f"""
-#         Password Reset Request
-        
-#         Hello {name}, we received a request to reset your password.
-        
-#         Click the link below to reset your password:
-#         {reset_link}
-        
-#         This link will expire in 1 hour.
-        
-#         If you didn't request this, please ignore this email.
-#         """
-        
-#         # Configure Brevo API
-#         configuration = sib_api_v3_sdk.Configuration()
-#         configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
-        
-#         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        
-#         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-#             to=[{"email": to_email}],
-#             sender={"email": os.environ.get('BREVO_SENDER_EMAIL', 'studyportal02@gmail.com')},
-#             subject="Password Reset Request - Study Portal",
-#             html_content=html_content,
-#             text_content=text_content
-#         )
-        
-#         api_instance.send_transac_email(send_smtp_email)
-        
-#         print(f"✅ Password reset email sent to {to_email}")
-#         return True
-        
-#     except ApiException as e:
-#         print(f"❌ Password reset email failed: {e}")
-#         traceback.print_exc()
-#         return False
-#     except Exception as e:
-#         print(f"❌ Password reset email failed: {str(e)}")
-#         traceback.print_exc()
-#         return False
-    
-        
-# # ==================== EMAIL SERVICE ====================
-
-# # def send_verification_email(to_email, token, name):
-# #     """
-# #     Send verification email using Resend API
-# #     """
-# #     try:
-# #         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
-        
-# #         # Email content - HTML format (same rahega)
-# #         html_content = f"""
-# #         <!DOCTYPE html>
-# #         <html>
-# #         <head>
-# #             <meta charset="UTF-8">
-# #             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-# #         </head>
-# #         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-# #             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-# #                 <tr>
-# #                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-# #                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-# #                     </td>
-# #                 </tr>
-# #                 <tr>
-# #                     <td style="padding: 40px 30px;">
-# #                         <h2 style="color: #333; margin-top: 0;">Welcome, {name}! 👋</h2>
-# #                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
-# #                             Thank you for registering at Study Portal. Please verify your email address by clicking the button below:
-# #                         </p>
-
-# #                         <div style="text-align: center; margin: 35px 0;">
-# #                             <a href="{verification_link}"
-# #                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-# #                                 ✅ Verify Email
-# #                             </a>
-# #                         </div>
-
-# #                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
-# #                             Or copy and paste this link in your browser:<br>
-# #                             <span style="color: #667eea; word-break: break-all;">{verification_link}</span>
-# #                         </p>
-
-# #                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-# #                         <p style="color: #999; font-size: 12px; margin: 0;">
-# #                             ⏰ This link will expire in 24 hours.<br>
-# #                             If you didn't create an account, please ignore this email.
-# #                         </p>
-# #                     </td>
-# #                 </tr>
-# #                 <tr>
-# #                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-# #                         <p style="color: #999; font-size: 12px; margin: 0;">
-# #                             © 2026 Study Portal. All rights reserved.
-# #                         </p>
-# #                     </td>
-# #                 </tr>
-# #             </table>
-# #         </body>
-# #         </html>
-# #         """
-        
-# #         # Plain text version (fallback for email clients)
-# #         text_content = f"""
-# #         Welcome to Study Portal, {name}!
-        
-# #         Thank you for registering. Please verify your email address by clicking the link below:
-        
-# #         {verification_link}
-        
-# #         This link will expire in 24 hours.
-        
-# #         If you didn't create an account, please ignore this email.
-        
-# #         © 2026 Study Portal. All rights reserved.
-# #         """
-        
-# #         # Resend API parameters 
-# #         params = {
-# #             "from": os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev'),
-# #             "to": [to_email],
-# #             "subject": "Verify Your Study Portal Account",
-# #             "html": html_content,
-# #             "text": text_content,
-# #         }
-        
-# #         # Send email using Resend
-# #         email = resend.Emails.send(params)
-        
-# #         print(f"✅ Verification email sent to {to_email} | Email ID: {email['id']}")
-# #         return True
-        
-# #     except Exception as e:
-# #         print(f"❌ Email sending failed: {str(e)}")
-# #         traceback.print_exc()
-# #         return False
-
-
-# # def send_password_reset_email(to_email, token, name):
-# #     """
-# #     Send password reset email using Resend API
-# #     """
-# #     try:
-# #         reset_link = f"https://study-portal-qitc.vercel.app/reset-password?token={token}"
-        
-# #         html_content = f"""
-# #         <!DOCTYPE html>
-# #         <html>
-# #         <head>
-# #             <meta charset="UTF-8">
-# #             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-# #         </head>
-# #         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-# #             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-# #                 <tr>
-# #                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-# #                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-# #                     </td>
-# #                 </tr>
-# #                 <tr>
-# #                     <td style="padding: 40px 30px;">
-# #                         <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
-# #                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
-# #                             Hello {name}, we received a request to reset your password. Click the button below to set a new password:
-# #                         </p>
-
-# #                         <div style="text-align: center; margin: 35px 0;">
-# #                             <a href="{reset_link}"
-# #                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-# #                                 🔑 Reset Password
-# #                             </a>
-# #                         </div>
-
-# #                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
-# #                             Or copy and paste this link in your browser:<br>
-# #                             <span style="color: #667eea; word-break: break-all;">{reset_link}</span>
-# #                         </p>
-
-# #                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-# #                         <p style="color: #999; font-size: 12px; margin: 0;">
-# #                             ⏰ This link will expire in 1 hour.<br>
-# #                             If you didn't request this, please ignore this email.
-# #                         </p>
-# #                     </td>
-# #                 </tr>
-# #                 <tr>
-# #                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-# #                         <p style="color: #999; font-size: 12px; margin: 0;">
-# #                             © 2026 Study Portal. All rights reserved.
-# #                         </p>
-# #                     </td>
-# #                 </tr>
-# #             </table>
-# #         </body>
-# #         </html>
-# #         """
-        
-# #         text_content = f"""
-# #         Password Reset Request
-        
-# #         Hello {name}, we received a request to reset your password.
-        
-# #         Click the link below to reset your password:
-# #         {reset_link}
-        
-# #         This link will expire in 1 hour.
-        
-# #         If you didn't request this, please ignore this email.
-# #         """
-        
-# #         params = {
-# #             "from": os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev'),
-# #             "to": [to_email],
-# #             "subject": "Password Reset Request - Study Portal",
-# #             "html": html_content,
-# #             "text": text_content,
-# #         }
-        
-# #         email = resend.Emails.send(params)
-# #         print(f"✅ Password reset email sent to {to_email} | Email ID: {email['id']}")
-# #         return True
-        
-# #     except Exception as e:
-# #         print(f"❌ Password reset email failed: {str(e)}")
-# #         traceback.print_exc()
-# #         return False
-
-
-
-# def send_verification_email(to_email, token, name):
-#     try:
-#         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
-
-#         sender_email = "studyportal02@gmail.com"
-#         sender_password = "wbdihqpmkrchyhix"
-#         print(f"📧 Sending email from: {sender_email}")
-
-#         import smtplib
-#         from email.mime.text import MIMEText
-#         from email.mime.multipart import MIMEMultipart
-
-#         msg = MIMEMultipart()
-#         msg['From'] = sender_email
-#         msg['To'] = to_email
-#         msg['Subject'] = "Verify Your Study Portal Account"
-
-#         html = f"""
-#         <!DOCTYPE html>
-#         <html>
-#         <head>
-#             <meta charset="UTF-8">
-#             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#         </head>
-#         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-#             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-#                 <tr>
-#                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-#                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-#                     </td>
-#                 </tr>
-#                 <tr>
-#                     <td style="padding: 40px 30px;">
-#                         <h2 style="color: #333; margin-top: 0;">Welcome, {name}! 👋</h2>
-#                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
-#                             Thank you for registering at Study Portal. Please verify your email address by clicking the button below:
-#                         </p>
-
-#                         <div style="text-align: center; margin: 35px 0;">
-#                             <a href="{verification_link}"
-#                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-#                                 ✅ Verify Email
-#                             </a>
-#                         </div>
-
-#                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
-#                             Or copy and paste this link in your browser:<br>
-#                             <span style="color: #667eea; word-break: break-all;">{verification_link}</span>
-#                         </p>
-
-#                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-#                         <p style="color: #999; font-size: 12px; margin: 0;">
-#                             ⏰ This link will expire in 24 hours.<br>
-#                             If you didn't create an account, please ignore this email.
-#                         </p>
-#                     </td>
-#                 </tr>
-#                 <tr>
-#                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-#                         <p style="color: #999; font-size: 12px; margin: 0;">
-#                             © 2026 Study Portal. All rights reserved.
-#                         </p>
-#                     </td>
-#                 </tr>
-#             </table>
-#         </body>
-#         </html>
-#         """
-
-#         msg.attach(MIMEText(html, 'html'))
-
-#         print(f"📧 Sending email to {to_email}...")
-#         server = smtplib.SMTP('smtp.gmail.com', 587)
-#         server.starttls()
-#         server.login(sender_email, sender_password)
-#         server.send_message(msg)
-#         server.quit()
-
-#         print(f"✅ Email sent successfully to {to_email}")
-#         return True
-
-#     except Exception as e:
-#         print(f"❌ Email sending failed: {str(e)}")
-#         traceback.print_exc()
-#         return False
 
 
 # ==================== DATABASE INIT ====================
@@ -1796,114 +1307,6 @@ def upload_note():
         print(f"❌ Upload Error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-# @app.route('/api/upload', methods=['POST'])
-# @jwt_required()
-# def upload_note():
-#     try:
-#         user_id = get_jwt_identity()
-#         print(f"👤 User ID from token: {user_id}")
-
-#         user = db.session.get(User, int(user_id))
-#         if not user:
-#             print("❌ User not found")
-#             return jsonify({'success': False, 'error': 'User not found'}), 404
-
-#         if 'file' not in request.files:
-#             print("❌ No file in request")
-#             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
-
-#         file = request.files['file']
-#         if file.filename == '':
-#             print("❌ Empty filename")
-#             return jsonify({'success': False, 'error': 'No file selected'}), 400
-
-#         title = request.form.get('title', '').strip()
-#         description = request.form.get('description', '').strip()
-#         course_id = request.form.get('course_id')
-#         subject_id = request.form.get('subject_id')
-#         note_type = request.form.get('type', 'notes')
-
-#         print(f"\n📥 UPLOAD REQUEST:")
-#         print(f"   Title: {title}")
-#         print(f"   Course ID: {course_id}")
-#         print(f"   Subject ID: {subject_id}")
-#         print(f"   Type: {note_type}")
-
-#         if not title:
-#             print("❌ No title")
-#             return jsonify({'success': False, 'error': 'Title is required'}), 400
-#         if not course_id:
-#             print("❌ No course_id")
-#             return jsonify({'success': False, 'error': 'Course ID is required'}), 400
-
-#         if not allowed_file(file.filename):
-#             print(f"❌ File type not allowed: {file.filename}")
-#             return jsonify({'success': False, 'error': 'File type not allowed'}), 400
-
-#         try:
-#             course = db.session.get(Course, int(course_id))
-#             if not course:
-#                 print(f"❌ Course not found: {course_id}")
-#                 return jsonify({'success': False, 'error': f'Course with ID {course_id} not found'}), 404
-#         except ValueError:
-#             print(f"❌ Invalid course_id: {course_id}")
-#             return jsonify({'success': False, 'error': 'Invalid course ID'}), 400
-
-#         print(f"✅ Course found: {course.name}")
-
-#         course_folder = course.name.replace(' ', '_')
-#         course_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
-#         os.makedirs(course_upload_path, exist_ok=True)
-#         print(f"📁 Folder created: {course_upload_path}")
-
-#         original_filename = secure_filename(file.filename)
-#         file_ext = original_filename.rsplit('.', 1)[1].lower()
-#         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-#         unique_filename = f"{note_type}_{timestamp}_{uuid.uuid4().hex[:6]}.{file_ext}"
-#         file_path = os.path.join(course_upload_path, unique_filename)
-#         file.save(file_path)
-#         file_size = os.path.getsize(file_path)
-#         print(f"💾 File saved: {file_path}")
-
-#         is_admin = user.role == 'admin'
-
-#         note = Note(
-#             title=title,
-#             description=description,
-#             file_name=unique_filename,
-#             original_filename=original_filename,
-#             file_path=file_path,
-#             file_type=file_ext,
-#             file_size=file_size,
-#             note_type=note_type,
-#             course_id=course.id,
-#             subject_id=subject_id if subject_id else None,
-#             user_id=user.id,
-#             status='approved' if is_admin else 'pending',
-#             uploaded_at=datetime.now(timezone.utc),
-#             approved_at=datetime.now(timezone.utc) if is_admin else None
-#         )
-
-#         db.session.add(note)
-#         db.session.commit()
-#         print(f"✅ Note saved with ID: {note.id}")
-
-#         response_data = {
-#             'success': True,
-#             'message': 'File uploaded successfully!' + (' Auto-approved for admin.' if is_admin else ' Waiting for admin approval.'),
-#             'note': note.to_dict(),
-#             'file_url': f'/api/files/{course_folder}/{unique_filename}',
-#             'status': note.status
-#         }
-#         print(f"📤 Sending response: {response_data}")
-
-#         return jsonify(response_data), 201
-
-#     except Exception as e:
-#         db.session.rollback()
-#         print(f"❌ EXCEPTION: {str(e)}")
-#         traceback.print_exc()
-#         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== USER MANAGEMENT ROUTES ====================
@@ -1977,7 +1380,7 @@ def get_user_details(user_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-# Yeh routes add karne hain
+
 @app.route('/api/admin/notes/<int:note_id>/approve', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def approve_note(note_id):
@@ -2205,9 +1608,6 @@ def download_note(note_id):
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
         if note.cloudinary_url:
-            # ✅ DON'T increment here - frontabhi POST se increment karega
-            # note.downloads += 1  <-- YEH LINE HATAA DO
-            # db.session.commit()  <-- YEH LINE HATAA DO
             print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
             return redirect(note.cloudinary_url)
         
@@ -2222,8 +1622,8 @@ def download_note(note_id):
             course = note.course_ref.name.replace(' ', '_')
             
             alt_paths = [
-                os.path.join(app.config['UPLOAD_FOLDER'], filename),  # Direct
-                os.path.join(app.config['UPLOAD_FOLDER'], course, filename),  # Course folder
+                os.path.join(app.config['UPLOAD_FOLDER'], filename),  
+                os.path.join(app.config['UPLOAD_FOLDER'], course, filename),  
             ]
             
             found = False
@@ -2239,9 +1639,6 @@ def download_note(note_id):
             if not found:
                 return jsonify({'success': False, 'error': 'File not found on server'}), 404
 
-        # ✅ DON'T increment here - frontend POST se increment karega
-        # note.downloads += 1  <-- YEH LINE HATAA DO
-        # db.session.commit()  <-- YEH LINE HATAA DO
 
         mime_types = {
             'pdf': 'application/pdf',
@@ -2332,10 +1729,9 @@ def increment_download_count(note_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-# Alternative endpoint name bhi add karo (kyunki frontend dono try kar raha hai)
+
 @app.route('/api/materials/<int:note_id>/download', methods=['POST', 'OPTIONS'])
 def increment_download_count_alt(note_id):
-    # Same as above, just redirect
     return increment_download_count(note_id)
     
     
@@ -2363,7 +1759,7 @@ def debug_files():
         if not user or user.role != 'admin':
             return jsonify({'success': False, 'error': 'Admin access required'}), 403
             
-        # Saare notes ke file paths check karo
+        
         notes = Note.query.all()
         result = []
         
@@ -2379,14 +1775,14 @@ def debug_files():
                 'upload_folder': app.config['UPLOAD_FOLDER']
             }
             
-            # Alternative paths check karo
+            
             if note.file_name:
-                # Direct uploads folder mein
+               
                 alt_path1 = os.path.join(app.config['UPLOAD_FOLDER'], note.file_name)
                 file_info['alt_path1'] = alt_path1
                 file_info['alt_path1_exists'] = os.path.exists(alt_path1)
                 
-                # Course folder mein
+                
                 if note.course_ref:
                     course_folder = note.course_ref.name.replace(' ', '_')
                     alt_path2 = os.path.join(app.config['UPLOAD_FOLDER'], course_folder, note.file_name)
@@ -2395,7 +1791,7 @@ def debug_files():
             
             result.append(file_info)
         
-        # Upload folder ka structure bhi dekho
+        
         folder_structure = []
         for root, dirs, files in os.walk(app.config['UPLOAD_FOLDER']):
             for file in files:
