@@ -272,19 +272,18 @@ class Note(db.Model):
         
         
         
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
-
-# ==================== EMAIL SERVICE (BREVO) ====================
+# ==================== EMAIL SERVICE ====================
 
 def send_verification_email(to_email, token, name):
-    """
-    Send verification email using Brevo API
-    """
     try:
         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
         
-        # Email content - HTML format
+        SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+        
+        import sendgrid
+        from sendgrid.helpers.mail import Mail, Email, To, Content
+        
+        # Email content
         html_content = f"""
         <!DOCTYPE html>
         <html>
@@ -294,7 +293,7 @@ def send_verification_email(to_email, token, name):
         </head>
         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                 <tr>
+                <tr>
                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
                     </td>
@@ -338,161 +337,39 @@ def send_verification_email(to_email, token, name):
         </html>
         """
         
-        text_content = f"""
-        Welcome to Study Portal, {name}!
+        # Send email via SendGrid
+        sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        from_email = Email("studyportal02@gmail.com")  # Verified sender
+        to_email = To(to_email)
+        subject = "Verify Your Study Portal Account"
+        content = Content("text/html", html_content)
         
-        Thank you for registering. Please verify your email address by clicking the link below:
+        mail = Mail(from_email, to_email, subject, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
         
-        {verification_link}
-        
-        This link will expire in 24 hours.
-        
-        If you didn't create an account, please ignore this email.
-        
-        © 2026 Study Portal. All rights reserved.
-        """
-        
-        # Configure Brevo API
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
-        
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=[{"email": to_email}],
-            sender={"email": os.environ.get('BREVO_SENDER_EMAIL', 'studyportal02@gmail.com')},
-            subject="Verify Your Study Portal Account",
-            html_content=html_content,
-            text_content=text_content
-        )
-        
-        api_instance.send_transac_email(send_smtp_email)
-        
-        print(f"✅ Verification email sent to {to_email}")
-        return True
-        
-    except ApiException as e:
-        print(f"❌ Email sending failed: {e}")
-        traceback.print_exc()
-        return False
+        print(f"📧 SendGrid response: {response.status_code}")
+        if response.status_code == 202:
+            print(f"✅ Email sent successfully to {to_email}")
+            return True
+        else:
+            print(f"❌ SendGrid error: {response.status_code}")
+            return False
+            
     except Exception as e:
         print(f"❌ Email sending failed: {str(e)}")
         traceback.print_exc()
         return False
 
-
-def send_password_reset_email(to_email, token, name):
-    """
-    Send password reset email using Brevo API
-    """
-    try:
-        reset_link = f"https://study-portal-qitc.vercel.app/reset-password?token={token}"
-        
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                 <tr>
-                    <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 40px 30px;">
-                        <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
-                        <p style="color: #666; line-height: 1.6; font-size: 16px;">
-                            Hello {name}, we received a request to reset your password. Click the button below to set a new password:
-                        </p>
-
-                        <div style="text-align: center; margin: 35px 0;">
-                            <a href="{reset_link}"
-                               style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-                                🔑 Reset Password
-                            </a>
-                        </div>
-
-                        <p style="color: #666; line-height: 1.6; font-size: 14px;">
-                            Or copy and paste this link in your browser:<br>
-                            <span style="color: #667eea; word-break: break-all;">{reset_link}</span>
-                        </p>
-
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-                        <p style="color: #999; font-size: 12px; margin: 0;">
-                            ⏰ This link will expire in 1 hour.<br>
-                            If you didn't request this, please ignore this email.
-                        </p>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-                        <p style="color: #999; font-size: 12px; margin: 0;">
-                            © 2026 Study Portal. All rights reserved.
-                        </p>
-                    </td>
-                </tr>
-            </table>
-        </body>
-        </html>
-        """
-        
-        text_content = f"""
-        Password Reset Request
-        
-        Hello {name}, we received a request to reset your password.
-        
-        Click the link below to reset your password:
-        {reset_link}
-        
-        This link will expire in 1 hour.
-        
-        If you didn't request this, please ignore this email.
-        """
-        
-        # Configure Brevo API
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
-        
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=[{"email": to_email}],
-            sender={"email": os.environ.get('BREVO_SENDER_EMAIL', 'studyportal02@gmail.com')},
-            subject="Password Reset Request - Study Portal",
-            html_content=html_content,
-            text_content=text_content
-        )
-        
-        api_instance.send_transac_email(send_smtp_email)
-        
-        print(f"✅ Password reset email sent to {to_email}")
-        return True
-        
-    except ApiException as e:
-        print(f"❌ Password reset email failed: {e}")
-        traceback.print_exc()
-        return False
-    except Exception as e:
-        print(f"❌ Password reset email failed: {str(e)}")
-        traceback.print_exc()
-        return False
-    
-        
-# ==================== EMAIL SERVICE ====================
+# # ==================== EMAIL SERVICE (BREVO) ====================
 
 # def send_verification_email(to_email, token, name):
 #     """
-#     Send verification email using Resend API
+#     Send verification email using Brevo API
 #     """
 #     try:
 #         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
         
-#         # Email content - HTML format (same rahega)
+#         # Email content - HTML format
 #         html_content = f"""
 #         <!DOCTYPE html>
 #         <html>
@@ -502,7 +379,7 @@ def send_password_reset_email(to_email, token, name):
 #         </head>
 #         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
 #             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-#                 <tr>
+#                  <tr>
 #                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
 #                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
 #                     </td>
@@ -546,7 +423,6 @@ def send_password_reset_email(to_email, token, name):
 #         </html>
 #         """
         
-#         # Plain text version (fallback for email clients)
 #         text_content = f"""
 #         Welcome to Study Portal, {name}!
         
@@ -561,21 +437,29 @@ def send_password_reset_email(to_email, token, name):
 #         © 2026 Study Portal. All rights reserved.
 #         """
         
-#         # Resend API parameters 
-#         params = {
-#             "from": os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev'),
-#             "to": [to_email],
-#             "subject": "Verify Your Study Portal Account",
-#             "html": html_content,
-#             "text": text_content,
-#         }
+#         # Configure Brevo API
+#         configuration = sib_api_v3_sdk.Configuration()
+#         configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
         
-#         # Send email using Resend
-#         email = resend.Emails.send(params)
+#         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         
-#         print(f"✅ Verification email sent to {to_email} | Email ID: {email['id']}")
+#         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+#             to=[{"email": to_email}],
+#             sender={"email": os.environ.get('BREVO_SENDER_EMAIL', 'studyportal02@gmail.com')},
+#             subject="Verify Your Study Portal Account",
+#             html_content=html_content,
+#             text_content=text_content
+#         )
+        
+#         api_instance.send_transac_email(send_smtp_email)
+        
+#         print(f"✅ Verification email sent to {to_email}")
 #         return True
         
+#     except ApiException as e:
+#         print(f"❌ Email sending failed: {e}")
+#         traceback.print_exc()
+#         return False
 #     except Exception as e:
 #         print(f"❌ Email sending failed: {str(e)}")
 #         traceback.print_exc()
@@ -584,7 +468,7 @@ def send_password_reset_email(to_email, token, name):
 
 # def send_password_reset_email(to_email, token, name):
 #     """
-#     Send password reset email using Resend API
+#     Send password reset email using Brevo API
 #     """
 #     try:
 #         reset_link = f"https://study-portal-qitc.vercel.app/reset-password?token={token}"
@@ -598,7 +482,7 @@ def send_password_reset_email(to_email, token, name):
 #         </head>
 #         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
 #             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-#                 <tr>
+#                  <tr>
 #                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
 #                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
 #                     </td>
@@ -655,22 +539,223 @@ def send_password_reset_email(to_email, token, name):
 #         If you didn't request this, please ignore this email.
 #         """
         
-#         params = {
-#             "from": os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev'),
-#             "to": [to_email],
-#             "subject": "Password Reset Request - Study Portal",
-#             "html": html_content,
-#             "text": text_content,
-#         }
+#         # Configure Brevo API
+#         configuration = sib_api_v3_sdk.Configuration()
+#         configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
         
-#         email = resend.Emails.send(params)
-#         print(f"✅ Password reset email sent to {to_email} | Email ID: {email['id']}")
+#         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        
+#         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+#             to=[{"email": to_email}],
+#             sender={"email": os.environ.get('BREVO_SENDER_EMAIL', 'studyportal02@gmail.com')},
+#             subject="Password Reset Request - Study Portal",
+#             html_content=html_content,
+#             text_content=text_content
+#         )
+        
+#         api_instance.send_transac_email(send_smtp_email)
+        
+#         print(f"✅ Password reset email sent to {to_email}")
 #         return True
         
+#     except ApiException as e:
+#         print(f"❌ Password reset email failed: {e}")
+#         traceback.print_exc()
+#         return False
 #     except Exception as e:
 #         print(f"❌ Password reset email failed: {str(e)}")
 #         traceback.print_exc()
 #         return False
+    
+        
+# # ==================== EMAIL SERVICE ====================
+
+# # def send_verification_email(to_email, token, name):
+# #     """
+# #     Send verification email using Resend API
+# #     """
+# #     try:
+# #         verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
+        
+# #         # Email content - HTML format (same rahega)
+# #         html_content = f"""
+# #         <!DOCTYPE html>
+# #         <html>
+# #         <head>
+# #             <meta charset="UTF-8">
+# #             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+# #         </head>
+# #         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+# #             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+# #                 <tr>
+# #                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
+# #                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
+# #                     </td>
+# #                 </tr>
+# #                 <tr>
+# #                     <td style="padding: 40px 30px;">
+# #                         <h2 style="color: #333; margin-top: 0;">Welcome, {name}! 👋</h2>
+# #                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
+# #                             Thank you for registering at Study Portal. Please verify your email address by clicking the button below:
+# #                         </p>
+
+# #                         <div style="text-align: center; margin: 35px 0;">
+# #                             <a href="{verification_link}"
+# #                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+# #                                 ✅ Verify Email
+# #                             </a>
+# #                         </div>
+
+# #                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
+# #                             Or copy and paste this link in your browser:<br>
+# #                             <span style="color: #667eea; word-break: break-all;">{verification_link}</span>
+# #                         </p>
+
+# #                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+# #                         <p style="color: #999; font-size: 12px; margin: 0;">
+# #                             ⏰ This link will expire in 24 hours.<br>
+# #                             If you didn't create an account, please ignore this email.
+# #                         </p>
+# #                     </td>
+# #                 </tr>
+# #                 <tr>
+# #                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
+# #                         <p style="color: #999; font-size: 12px; margin: 0;">
+# #                             © 2026 Study Portal. All rights reserved.
+# #                         </p>
+# #                     </td>
+# #                 </tr>
+# #             </table>
+# #         </body>
+# #         </html>
+# #         """
+        
+# #         # Plain text version (fallback for email clients)
+# #         text_content = f"""
+# #         Welcome to Study Portal, {name}!
+        
+# #         Thank you for registering. Please verify your email address by clicking the link below:
+        
+# #         {verification_link}
+        
+# #         This link will expire in 24 hours.
+        
+# #         If you didn't create an account, please ignore this email.
+        
+# #         © 2026 Study Portal. All rights reserved.
+# #         """
+        
+# #         # Resend API parameters 
+# #         params = {
+# #             "from": os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev'),
+# #             "to": [to_email],
+# #             "subject": "Verify Your Study Portal Account",
+# #             "html": html_content,
+# #             "text": text_content,
+# #         }
+        
+# #         # Send email using Resend
+# #         email = resend.Emails.send(params)
+        
+# #         print(f"✅ Verification email sent to {to_email} | Email ID: {email['id']}")
+# #         return True
+        
+# #     except Exception as e:
+# #         print(f"❌ Email sending failed: {str(e)}")
+# #         traceback.print_exc()
+# #         return False
+
+
+# # def send_password_reset_email(to_email, token, name):
+# #     """
+# #     Send password reset email using Resend API
+# #     """
+# #     try:
+# #         reset_link = f"https://study-portal-qitc.vercel.app/reset-password?token={token}"
+        
+# #         html_content = f"""
+# #         <!DOCTYPE html>
+# #         <html>
+# #         <head>
+# #             <meta charset="UTF-8">
+# #             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+# #         </head>
+# #         <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+# #             <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+# #                 <tr>
+# #                     <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
+# #                         <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
+# #                     </td>
+# #                 </tr>
+# #                 <tr>
+# #                     <td style="padding: 40px 30px;">
+# #                         <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
+# #                         <p style="color: #666; line-height: 1.6; font-size: 16px;">
+# #                             Hello {name}, we received a request to reset your password. Click the button below to set a new password:
+# #                         </p>
+
+# #                         <div style="text-align: center; margin: 35px 0;">
+# #                             <a href="{reset_link}"
+# #                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+# #                                 🔑 Reset Password
+# #                             </a>
+# #                         </div>
+
+# #                         <p style="color: #666; line-height: 1.6; font-size: 14px;">
+# #                             Or copy and paste this link in your browser:<br>
+# #                             <span style="color: #667eea; word-break: break-all;">{reset_link}</span>
+# #                         </p>
+
+# #                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+# #                         <p style="color: #999; font-size: 12px; margin: 0;">
+# #                             ⏰ This link will expire in 1 hour.<br>
+# #                             If you didn't request this, please ignore this email.
+# #                         </p>
+# #                     </td>
+# #                 </tr>
+# #                 <tr>
+# #                     <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
+# #                         <p style="color: #999; font-size: 12px; margin: 0;">
+# #                             © 2026 Study Portal. All rights reserved.
+# #                         </p>
+# #                     </td>
+# #                 </tr>
+# #             </table>
+# #         </body>
+# #         </html>
+# #         """
+        
+# #         text_content = f"""
+# #         Password Reset Request
+        
+# #         Hello {name}, we received a request to reset your password.
+        
+# #         Click the link below to reset your password:
+# #         {reset_link}
+        
+# #         This link will expire in 1 hour.
+        
+# #         If you didn't request this, please ignore this email.
+# #         """
+        
+# #         params = {
+# #             "from": os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev'),
+# #             "to": [to_email],
+# #             "subject": "Password Reset Request - Study Portal",
+# #             "html": html_content,
+# #             "text": text_content,
+# #         }
+        
+# #         email = resend.Emails.send(params)
+# #         print(f"✅ Password reset email sent to {to_email} | Email ID: {email['id']}")
+# #         return True
+        
+# #     except Exception as e:
+# #         print(f"❌ Password reset email failed: {str(e)}")
+# #         traceback.print_exc()
+# #         return False
 
 
 
