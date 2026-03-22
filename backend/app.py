@@ -1281,8 +1281,24 @@ def upload_note():
                 tmp.write(file.read())
                 tmp_path = tmp.name
             
+               # Get subject name
+            subject_name = "General"
+            if subject_id:
+                subject = db.session.get(Subject, int(subject_id))
+                if subject:
+                 subject_name = subject.name
+    
+            # Get semester from request or from subject
+                 semester = request.form.get('semester', '1')
             # Upload to Google Drive
-            upload_to_drive(tmp_path, original_filename)
+                 upload_to_drive(
+                    tmp_path, 
+                     original_filename,
+                    course=course.name,           
+                    semester=semester,            
+                    subject=subject_name,         
+                    note_type=note_type           
+                  )
             
             # Clean up
             os.remove(tmp_path)
