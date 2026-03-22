@@ -8,6 +8,9 @@
 .env.production.local
 .env.*.local
 
+# Google Drive
+credentials.json
+token.pickle
 # ============================================
 # DEPENDENCIES
 # ============================================
