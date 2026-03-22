@@ -1174,7 +1174,6 @@ def get_all_materials():
     
     
 # ==================== UPLOAD ROUTE ====================
-# ==================== UPLOAD ROUTE ====================
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
 def upload_note():
@@ -1232,35 +1231,25 @@ def upload_note():
         unique_id = uuid.uuid4().hex[:8]
         base_filename = f"{timestamp}_{unique_id}_{original_filename}"
 
-        # ==================== GET SEMESTER ====================
-        # Try to get semester from form data first
-        semester = request.form.get('semester', '')
-        
-        # If not in form, get from subject
-        if not semester and subject_id:
-            try:
-                subject = db.session.get(Subject, int(subject_id))
-                if subject and subject.semester:
-                    semester = str(subject.semester)
-                    print(f"📚 Semester from subject: {semester}")
-            except Exception as e:
-                print(f"⚠️ Error getting semester from subject: {e}")
-        
-        # Default if still not found
-        if not semester:
-            semester = '1'
-            print(f"📚 Using default semester: {semester}")
-
         # ==================== GET SUBJECT NAME ====================
         subject_name = "General"
         if subject_id:
-            try:
-                subject = db.session.get(Subject, int(subject_id))
-                if subject:
-                    subject_name = subject.name
-                    print(f"📚 Subject: {subject_name}")
-            except Exception as e:
-                print(f"⚠️ Error getting subject: {e}")
+            subject = db.session.get(Subject, int(subject_id))
+            if subject:
+                subject_name = subject.name
+                print(f"📚 Subject: {subject_name} (ID: {subject_id})")
+            else:
+                print(f"⚠️ Subject not found for ID: {subject_id}")
+
+        # ==================== GET SEMESTER ====================
+        semester = request.form.get('semester', '')
+        if not semester and subject_id:
+            subject = db.session.get(Subject, int(subject_id))
+            if subject and subject.semester:
+                semester = str(subject.semester)
+        if not semester:
+            semester = '1'
+        print(f"📚 Semester: {semester}")
 
         # ==================== CREATE CLOUDINARY FOLDER STRUCTURE ====================
         course_folder = course.name.replace(' ', '_').replace('/', '_')
@@ -1270,12 +1259,12 @@ def upload_note():
         # New structure: study_portal/{course}/Semester_{semester}/{subject}/{note_type}
         cloudinary_folder = f"study_portal/{course_folder}/{semester_folder}/{subject_folder}/{note_type}"
 
+        resource_type = "raw" if file_ext in ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'] else "image"
+
         print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
-        print(f"📄 Resource Type: {'raw' if file_ext in ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'] else 'image'}")
+        print(f"📄 Resource Type: {resource_type}")
 
         # ==================== CLOUDINARY UPLOAD ====================
-        resource_type = "raw" if file_ext in ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'] else "image"
-        
         upload_result = cloudinary.uploader.upload(
             file,
             folder=cloudinary_folder,
@@ -1303,10 +1292,18 @@ def upload_note():
                 tmp.write(file.read())
                 tmp_path = tmp.name
             
-            # Upload to Google Drive with same structure
+            # ==================== FIX: Use TITLE as filename ====================
+            # Clean title for filename (remove invalid characters)
+            safe_title = title.replace('/', '_').replace('\\', '_').replace(':', '_').replace('*', '_').replace('?', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_')
+            drive_filename = f"{safe_title}.pdf"
+            
+            print(f"📤 Google Drive filename: {drive_filename}")
+            print(f"📁 Path: {course.name}/Semester_{semester}/{subject_name}/{note_type}")
+            
+            # Upload to Google Drive with structured folders
             upload_to_drive(
                 tmp_path, 
-                original_filename,
+                drive_filename,
                 course=course.name,           
                 semester=semester,            
                 subject=subject_name,         
@@ -1315,7 +1312,7 @@ def upload_note():
             
             # Clean up temp file
             os.remove(tmp_path)
-            print(f"📤 Google Drive backup complete")
+            print(f"✅ Google Drive backup complete")
             
         except ImportError:
             print("⚠️ Google Drive module not found, skipping backup")
@@ -1349,6 +1346,7 @@ def upload_note():
 
         print(f"✅ Note saved with ID: {note.id}")
         print(f"📁 Cloudinary path: {cloudinary_folder}/{base_filename}")
+        print(f"📤 Google Drive file: {drive_filename}")
 
         return jsonify({
             'success': True,
