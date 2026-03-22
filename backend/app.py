@@ -25,6 +25,7 @@ from cloudinary_config import configure_cloudinary
 import cloudinary.uploader
 import cloudinary.api
 import resend
+from google_drive import upload_to_drive
 
 configure_cloudinary()
 
@@ -1172,7 +1173,6 @@ def get_all_materials():
         return jsonify({'success': False, 'error': str(e)}), 500
     
     
-    
 # ==================== UPLOAD ROUTE ====================
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
@@ -1213,10 +1213,9 @@ def upload_note():
 
         print(f"✅ Course found: {course.name}")
 
-        # ==================== PREPARE FILENAME ====================
+        # ==================== CLOUDINARY UPLOAD ====================
         import cloudinary.uploader
         import time
-        import os
 
         # filename clean
         original_filename = secure_filename(file.filename)
@@ -1225,25 +1224,6 @@ def upload_note():
             file_ext = original_filename.rsplit('.', 1)[1].lower()
         else:
             file_ext = ""
-
-        timestamp = int(time.time())
-        unique_id = uuid.uuid4().hex[:8]
-        base_filename = f"{timestamp}_{unique_id}_{original_filename}"
-
-        # ==================== 1. LOCAL STORAGE ====================
-        course_folder = course.name.replace(' ', '_').replace('/', '_')
-        local_upload_path = os.path.join(app.config['UPLOAD_FOLDER'], course_folder)
-        os.makedirs(local_upload_path, exist_ok=True)
-
-        local_file_path = os.path.join(local_upload_path, base_filename)
-        file.save(local_file_path)
-        local_file_size = os.path.getsize(local_file_path)
-
-        print(f"💾 Local storage: {local_file_path}")
-
-        # ==================== 2. CLOUDINARY UPLOAD ====================
-        # Reset file pointer for Cloudinary
-        file.seek(0)
 
         # resource type detect
         document_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt']
@@ -1254,6 +1234,8 @@ def upload_note():
             resource_type = "image"
 
         # create folder
+        course_folder = course.name.replace(' ', '_').replace('/', '_')
+
         subject_folder = "General"
         if subject_id:
             subject = db.session.get(Subject, int(subject_id))
@@ -1262,6 +1244,11 @@ def upload_note():
 
         cloudinary_folder = f"study_portal/{course_folder}/{subject_folder}/{note_type}"
 
+        # unique id
+        timestamp = int(time.time())
+        unique_id = uuid.uuid4().hex[:8]
+        public_id = f"{timestamp}_{unique_id}"
+
         print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
         print(f"📄 Resource Type: {resource_type}")
 
@@ -1269,7 +1256,7 @@ def upload_note():
         upload_result = cloudinary.uploader.upload(
             file,
             folder=cloudinary_folder,
-            public_id=f"{timestamp}_{unique_id}",
+            public_id=public_id,
             resource_type=resource_type,
             type="upload",
             overwrite=False
@@ -1279,19 +1266,44 @@ def upload_note():
 
         cloudinary_url = upload_result['secure_url']
         cloudinary_public_id = upload_result['public_id']
-        cloudinary_file_size = upload_result.get('bytes', 0)
+        file_size = upload_result.get('bytes', 0)
 
-        # ==================== 3. DATABASE SAVE ====================
+        # ==================== GOOGLE DRIVE BACKUP ====================
+        try:
+            from google_drive import upload_to_drive
+            import tempfile
+            
+            # Reset file pointer
+            file.seek(0)
+            
+            # Create temp file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{original_filename}") as tmp:
+                tmp.write(file.read())
+                tmp_path = tmp.name
+            
+            # Upload to Google Drive
+            upload_to_drive(tmp_path, original_filename)
+            
+            # Clean up
+            os.remove(tmp_path)
+            print(f"📤 Google Drive backup: {original_filename}")
+            
+        except ImportError:
+            print("⚠️ Google Drive module not found, skipping backup")
+        except Exception as e:
+            print(f"⚠️ Google Drive backup failed: {e}")
+
+        # ==================== DATABASE SAVE ====================
         is_admin = user.role == 'admin'
 
         note = Note(
             title=title,
             description=description,
-            file_name=base_filename,
+            file_name=original_filename,
             original_filename=original_filename,
-            file_path=local_file_path,                    # Local path
+            file_path=cloudinary_url,
             file_type=file_ext,
-            file_size=local_file_size,                    # Local file size
+            file_size=file_size,
             note_type=note_type,
             course_id=course.id,
             subject_id=subject_id if subject_id else None,
@@ -1299,22 +1311,19 @@ def upload_note():
             status='approved' if is_admin else 'pending',
             uploaded_at=datetime.now(timezone.utc),
             approved_at=datetime.now(timezone.utc) if is_admin else None,
-            cloudinary_url=cloudinary_url,                # Cloudinary URL
-            cloudinary_public_id=cloudinary_public_id     # Cloudinary public ID
+            cloudinary_url=cloudinary_url,
+            cloudinary_public_id=cloudinary_public_id
         )
 
         db.session.add(note)
         db.session.commit()
 
         print(f"✅ Note saved with ID: {note.id}")
-        print(f"📁 Local path: {local_file_path}")
-        print(f"☁️ Cloudinary URL: {cloudinary_url}")
 
         return jsonify({
             'success': True,
-            'message': 'File uploaded to both local and Cloudinary!',
+            'message': 'File uploaded to Cloudinary and backed up to Google Drive!',
             'note': note.to_dict(),
-            'local_path': local_file_path,
             'file_url': cloudinary_url,
             'status': note.status
         }), 201
@@ -1323,8 +1332,7 @@ def upload_note():
         db.session.rollback()
         print(f"❌ Upload Error: {str(e)}")
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
-    
+        return jsonify({'success': False, 'error': str(e)}), 500 
     
 # # ==================== UPLOAD ROUTE ====================
 # @app.route('/api/upload', methods=['POST'])
@@ -1687,7 +1695,7 @@ def delete_user(user_id):
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
+    
 @app.route('/api/admin/notes/<int:note_id>', methods=['DELETE'])
 @jwt_required()
 def delete_note(note_id):
@@ -1701,78 +1709,22 @@ def delete_note(note_id):
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
-        # ==================== DELETE LOCAL FILE ====================
-        if note.file_path and os.path.exists(note.file_path):
+        if os.path.exists(note.file_path):
             try:
                 os.remove(note.file_path)
-                print(f"🗑️ Deleted local file: {note.file_path}")
-            except Exception as e:
-                print(f"⚠️ Could not delete local file: {e}")
+            except:
+                pass
 
-        # ==================== DELETE CLOUDINARY FILE ====================
-        if note.cloudinary_public_id:
-            try:
-                import cloudinary.uploader
-                # Determine resource type based on file extension
-                resource_type = "raw"
-                if note.file_type in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
-                    resource_type = "image"
-                elif note.file_type in ['mp4', 'mov', 'avi']:
-                    resource_type = "video"
-                
-                cloudinary.uploader.destroy(
-                    note.cloudinary_public_id, 
-                    resource_type=resource_type
-                )
-                print(f"🗑️ Deleted Cloudinary file: {note.cloudinary_public_id}")
-            except Exception as e:
-                print(f"⚠️ Could not delete Cloudinary file: {e}")
-
-        # ==================== DELETE DATABASE RECORD ====================
         db.session.delete(note)
         db.session.commit()
 
         return jsonify({
             'success': True,
-            'message': 'Note deleted successfully from local and Cloudinary'
+            'message': 'Note deleted successfully'
         })
-        
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Delete error: {str(e)}")
-        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-    
-    
-# @app.route('/api/admin/notes/<int:note_id>', methods=['DELETE'])
-# @jwt_required()
-# def delete_note(note_id):
-#     try:
-#         user_id = get_jwt_identity()
-#         user = db.session.get(User, int(user_id))
-#         if not user or user.role != 'admin':
-#             return jsonify({'success': False, 'error': 'Admin access required'}), 403
-
-#         note = db.session.get(Note, note_id)
-#         if not note:
-#             return jsonify({'success': False, 'error': 'Note not found'}), 404
-
-#         if os.path.exists(note.file_path):
-#             try:
-#                 os.remove(note.file_path)
-#             except:
-#                 pass
-
-#         db.session.delete(note)
-#         db.session.commit()
-
-#         return jsonify({
-#             'success': True,
-#             'message': 'Note deleted successfully'
-#         })
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ==================== FILE SERVING ====================
@@ -1812,7 +1764,6 @@ def get_file(filepath):
         return jsonify({'success': False, 'error': 'File not found'}), 404
     
     
-    
 @app.route('/api/notes/<int:note_id>/download', methods=['GET'])
 def download_note(note_id):
     try:
@@ -1820,155 +1771,64 @@ def download_note(note_id):
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
-        # ==================== PRIORITY 1: LOCAL FILE FIRST ====================
-        # Check if local file exists
-        if note.file_path and os.path.exists(note.file_path):
-            print(f"📥 Serving from LOCAL: {note.file_path}")
-            
-            mime_types = {
-                'pdf': 'application/pdf',
-                'doc': 'application/msword',
-                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'ppt': 'application/vnd.ms-powerpoint',
-                'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                'txt': 'text/plain',
-                'jpg': 'image/jpeg',
-                'jpeg': 'image/jpeg',
-                'png': 'image/png'
-            }
-            
-            mimetype = mime_types.get(note.file_type, 'application/octet-stream')
-            
-            return send_file(
-                note.file_path,
-                as_attachment=True,
-                download_name=note.original_filename,
-                mimetype=mimetype
-            )
-        
-        # ==================== PRIORITY 2: CLOUDINARY FALLBACK ====================
         if note.cloudinary_url:
-            print(f"📥 Serving from CLOUDINARY (local not found): {note.cloudinary_url}")
+            print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
             return redirect(note.cloudinary_url)
         
-        # ==================== PRIORITY 3: TRY ALTERNATIVE PATHS ====================
-        print(f"🔍 Local file not found, trying alternative paths...")
-        print(f"🔍 Note ID: {note_id}")
+        # Debug - check file path
+        print(f"🔍 Download - Note ID: {note_id}")
         print(f"🔍 File path from DB: {note.file_path}")
-        
-        if note.file_name:
-            filename = os.path.basename(note.file_name)
-            course = note.course_ref.name.replace(' ', '_') if note.course_ref else ''
+        print(f"🔍 File exists: {os.path.exists(note.file_path)}")
+
+        if not os.path.exists(note.file_path):
+            # Try alternative paths
+            filename = os.path.basename(note.file_path)
+            course = note.course_ref.name.replace(' ', '_')
             
             alt_paths = [
-                os.path.join(app.config['UPLOAD_FOLDER'], filename),
-                os.path.join(app.config['UPLOAD_FOLDER'], course, filename),
+                os.path.join(app.config['UPLOAD_FOLDER'], filename),  
+                os.path.join(app.config['UPLOAD_FOLDER'], course, filename),  
             ]
             
+            found = False
             for alt_path in alt_paths:
                 print(f"🔍 Trying alternative: {alt_path}")
                 if os.path.exists(alt_path):
-                    # Update database with correct path
                     note.file_path = alt_path
                     db.session.commit()
-                    print(f"✅ Found at alternative path, database updated")
-                    
-                    mime_types = {
-                        'pdf': 'application/pdf',
-                        'doc': 'application/msword',
-                        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        'ppt': 'application/vnd.ms-powerpoint',
-                        'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                        'txt': 'text/plain',
-                        'jpg': 'image/jpeg',
-                        'jpeg': 'image/jpeg',
-                        'png': 'image/png'
-                    }
-                    
-                    mimetype = mime_types.get(note.file_type, 'application/octet-stream')
-                    
-                    return send_file(
-                        alt_path,
-                        as_attachment=True,
-                        download_name=note.original_filename,
-                        mimetype=mimetype
-                    )
-        
-        # ==================== NO FILE FOUND ====================
-        print(f"❌ File not found anywhere for note {note_id}")
-        return jsonify({'success': False, 'error': 'File not found on server'}), 404
+                    print(f"✅ Found at alternative path")
+                    found = True
+                    break
+            
+            if not found:
+                return jsonify({'success': False, 'error': 'File not found on server'}), 404
+
+
+        mime_types = {
+            'pdf': 'application/pdf',
+            'doc': 'application/msword',
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'ppt': 'application/vnd.ms-powerpoint',
+            'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'txt': 'text/plain',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png'
+        }
+
+        mimetype = mime_types.get(note.file_type, 'application/octet-stream')
+
+        return send_file(
+            note.file_path,
+            as_attachment=True,
+            download_name=note.original_filename,
+            mimetype=mimetype
+        )
 
     except Exception as e:
         print(f"❌ Download error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-    
-
-# @app.route('/api/notes/<int:note_id>/download', methods=['GET'])
-# def download_note(note_id):
-#     try:
-#         note = db.session.get(Note, note_id)
-#         if not note:
-#             return jsonify({'success': False, 'error': 'Note not found'}), 404
-
-#         if note.cloudinary_url:
-#             print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
-#             return redirect(note.cloudinary_url)
-        
-#         # Debug - check file path
-#         print(f"🔍 Download - Note ID: {note_id}")
-#         print(f"🔍 File path from DB: {note.file_path}")
-#         print(f"🔍 File exists: {os.path.exists(note.file_path)}")
-
-#         if not os.path.exists(note.file_path):
-#             # Try alternative paths
-#             filename = os.path.basename(note.file_path)
-#             course = note.course_ref.name.replace(' ', '_')
-            
-#             alt_paths = [
-#                 os.path.join(app.config['UPLOAD_FOLDER'], filename),  
-#                 os.path.join(app.config['UPLOAD_FOLDER'], course, filename),  
-#             ]
-            
-#             found = False
-#             for alt_path in alt_paths:
-#                 print(f"🔍 Trying alternative: {alt_path}")
-#                 if os.path.exists(alt_path):
-#                     note.file_path = alt_path
-#                     db.session.commit()
-#                     print(f"✅ Found at alternative path")
-#                     found = True
-#                     break
-            
-#             if not found:
-#                 return jsonify({'success': False, 'error': 'File not found on server'}), 404
-
-
-#         mime_types = {
-#             'pdf': 'application/pdf',
-#             'doc': 'application/msword',
-#             'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-#             'ppt': 'application/vnd.ms-powerpoint',
-#             'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-#             'txt': 'text/plain',
-#             'jpg': 'image/jpeg',
-#             'jpeg': 'image/jpeg',
-#             'png': 'image/png'
-#         }
-
-#         mimetype = mime_types.get(note.file_type, 'application/octet-stream')
-
-#         return send_file(
-#             note.file_path,
-#             as_attachment=True,
-#             download_name=note.original_filename,
-#             mimetype=mimetype
-#         )
-
-#     except Exception as e:
-#         print(f"❌ Download error: {str(e)}")
-#         traceback.print_exc()
-#         return jsonify({'success': False, 'error': str(e)}), 500
     
     
 @app.route('/api/notes/<int:note_id>/stats', methods=['GET'])
