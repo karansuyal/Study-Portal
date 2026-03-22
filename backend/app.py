@@ -1174,6 +1174,7 @@ def get_all_materials():
     
     
 # ==================== UPLOAD ROUTE ====================
+# ==================== UPLOAD ROUTE ====================
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
 def upload_note():
@@ -1281,28 +1282,45 @@ def upload_note():
                 tmp.write(file.read())
                 tmp_path = tmp.name
             
-               # Get subject name
+            # Get subject name
             subject_name = "General"
-            if subject_id:
-                subject = db.session.get(Subject, int(subject_id))
-                if subject:
-                 subject_name = subject.name
-    
-            # Get semester from request or from subject
-                 semester = request.form.get('semester', '1')
-            # Upload to Google Drive
-                 upload_to_drive(
-                    tmp_path, 
-                     original_filename,
-                    course=course.name,           
-                    semester=semester,            
-                    subject=subject_name,         
-                    note_type=note_type           
-                  )
+            semester = request.form.get('semester', '1')  # Default semester
             
-            # Clean up
+            if subject_id:
+                try:
+                    subject = db.session.get(Subject, int(subject_id))
+                    if subject:
+                        subject_name = subject.name
+                        # Also get semester from subject if available
+                        if subject.semester:
+                            semester = str(subject.semester)
+                        print(f"📚 Subject: {subject_name} (ID: {subject_id}, Semester: {semester})")
+                    else:
+                        print(f"⚠️ Subject not found for ID: {subject_id}")
+                except Exception as e:
+                    print(f"⚠️ Error fetching subject: {e}")
+            
+            # Debug info
+            print(f"📤 Google Drive upload params:")
+            print(f"   Course: {course.name}")
+            print(f"   Semester: {semester}")
+            print(f"   Subject: {subject_name}")
+            print(f"   Type: {note_type}")
+            print(f"   File: {original_filename}")
+            
+            # Upload to Google Drive with structured folders
+            upload_to_drive(
+                tmp_path, 
+                original_filename,
+                course=course.name,           
+                semester=semester,            
+                subject=subject_name,         
+                note_type=note_type           
+            )
+            
+            # Clean up temp file
             os.remove(tmp_path)
-            print(f"📤 Google Drive backup: {original_filename}")
+            print(f"📤 Google Drive backup complete: {original_filename}")
             
         except ImportError:
             print("⚠️ Google Drive module not found, skipping backup")
@@ -1348,7 +1366,7 @@ def upload_note():
         db.session.rollback()
         print(f"❌ Upload Error: {str(e)}")
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500 
+        return jsonify({'success': False, 'error': str(e)}), 500
     
 # # ==================== UPLOAD ROUTE ====================
 # @app.route('/api/upload', methods=['POST'])
