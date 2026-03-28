@@ -1,6 +1,7 @@
 // // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
 import BreadcrumbNav from './components/BreadcrumbNav';
 import Footer from './components/Footer';
@@ -33,6 +34,7 @@ import ResetPassword from './pages/ResetPassword';
 function App() {
   return (
     <Router>
+      <Analytics />
       <AuthProvider>  {}
         <CounterProvider>  {}
           <ScrollToTop />
