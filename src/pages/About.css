@@ -1,0 +1,51 @@
+/* About.css - Extra polish for better mobile experience */
+
+@media (max-width: 768px) {
+  .about-container {
+    padding: 0 10px;
+  }
+
+  /* Smooth transitions */
+  .feature-card,
+  .stat-card,
+  .team-card {
+    transition: transform 0.2s ease;
+  }
+
+  .feature-card:active,
+  .stat-card:active,
+  .team-card:active {
+    transform: scale(0.98);
+  }
+
+  /* Better touch targets */
+  .cta-button,
+  a[href^="mailto"] {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Prevent text overflow */
+  h1, h2, h3, p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Smooth scrolling */
+  .about-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Landscape mode fix */
+@media (max-height: 600px) and (orientation: landscape) {
+  .hero-section {
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
