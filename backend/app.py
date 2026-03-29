@@ -576,7 +576,7 @@ def register():
 
 def send_password_reset_email(to_email, token, name):
     try:
-        reset_link = f"https://study-portal-qitc.vercel.app/reset-password?token={token}"
+        reset_link = f"https://study-portal-app.vercel.app/reset-password?token={token}"
         
         print(f"📧 Preparing password reset email for: {to_email}")
         print(f"🔗 Reset link: {reset_link}")
@@ -677,7 +677,7 @@ def forgot_password():
     # Handle preflight OPTIONS request
     if request.method == 'OPTIONS':
         response = jsonify({'success': True})
-        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-qitc.vercel.app')
+        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-app.vercel.app')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -725,7 +725,7 @@ def reset_password():
     # Handle preflight OPTIONS request
     if request.method == 'OPTIONS':
         response = jsonify({'success': True})
-        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-qitc.vercel.app')
+        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-app.vercel.app')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
