@@ -113,11 +113,9 @@ const Navbar = () => {
     }
   };
 
-  // ✅ FIXED: Proper search function - SIRF 5 COURSES
   const performSearch = () => {
     setLoading(true);
     
-    // Sirf 5 courses
     const allCourses = [
       { id: 1, name: 'B.Tech', fullName: 'Bachelor of Technology', icon: '💻', category: 'Engineering' },
       { id: 2, name: 'BCA', fullName: 'Bachelor of Computer Applications', icon: '📱', category: 'Computer Applications' },
@@ -128,35 +126,28 @@ const Navbar = () => {
 
     const query = searchQuery.toLowerCase().trim();
     
-    // Improved search - name, fullName, category, and variations
     const filtered = allCourses.filter(course => {
-      // Basic matches
       const nameMatch = course.name.toLowerCase().includes(query);
       const fullNameMatch = course.fullName.toLowerCase().includes(query);
       const categoryMatch = course.category.toLowerCase().includes(query);
       
-      // B.Tech variations
       const btechMatch = (course.name === 'B.Tech') && (
         query === 'btech' || query === 'b.tech' || query === 'b tech' || 
         query === 'engineering' || query === 'bachelor of technology'
       );
       
-      // BCA variations
       const bcaMatch = (course.name === 'BCA') && (
         query === 'bca' || query === 'computer applications' || query === 'bachelor of computer applications'
       );
       
-      // BBA variations
       const bbaMatch = (course.name === 'BBA') && (
         query === 'bba' || query === 'business administration' || query === 'bachelor of business administration'
       );
       
-      // MBA variations
       const mbaMatch = (course.name === 'MBA') && (
         query === 'mba' || query === 'master of business administration'
       );
       
-      // MCA variations
       const mcaMatch = (course.name === 'MCA') && (
         query === 'mca' || query === 'master of computer applications'
       );
@@ -199,12 +190,26 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
-        {/* Logo */}
+        {/* Logo with Image */}
         <Link to="/" className="logo">
-          <div className="logo-icon">📚</div>
+          <img 
+            src="/logo.png" 
+            alt="Study Portal" 
+            className="logo-image"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.style.display = 'none';
+              // Fallback if image fails to load
+              const fallback = e.target.parentElement.querySelector('.logo-fallback');
+              if (fallback) fallback.style.display = 'flex';
+            }}
+          />
+          <div className="logo-fallback" style={{ display: 'none' }}>
+            <div className="logo-icon">📚</div>
+          </div>
           <div className="logo-text">
             <span className="logo-title">Study Portal</span>
-            <span className="logo-subtitle">BY KARAN Suyal </span>
+            <span className="logo-subtitle">BY KARAN SUYAL</span>
           </div>
         </Link>
 
