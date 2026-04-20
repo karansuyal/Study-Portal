@@ -378,8 +378,8 @@ const Home = () => {
           </h1>
           <p className="hero-subtitle">
             Your one-stop destination for notes, PYQs, syllabus and study materials
-            Special thanks to Upashana Joshi for contributing valuable study materials to the portal
           </p>
+          <h5>Special thanks to Upashana Joshi for contributing valuable study materials to the portal</h5>
           
           <div className="search-wrapper">
             <div className="search-box">
