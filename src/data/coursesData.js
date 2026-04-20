@@ -65,7 +65,7 @@ export const coursesData = {
       { id: 134, name: 'Finite Automata and Formal Languages', code: 'TCS402', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
       { id: 135, name: 'Microprocessors', code: 'TCS403', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
       { id: 136, name: 'Fundamental of Statistics and AI', code: 'TCS421', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
-      { id: 137, name: 'Java Programming Language', code: 'TCS408', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
+      { id: 137, name: 'Java Programming', code: 'TCS408', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 138, name: 'Design and Analysis of Algorithms', code: 'TCS409', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 139, name: 'Career Skills', code: 'XCS401', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
       
