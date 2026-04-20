@@ -377,10 +377,9 @@ const Home = () => {
             Welcome to <span className="hero-gradient">{config.APP_NAME}</span>
           </h1>
           <p className="hero-subtitle">
-            Your one-stop destination for notes, PYQs, syllabus and study materials
+            Your one-stop destination for notes, PYQs, syllabus and study materials <br />
+            Special thanks to Upashana Joshi for contributing valuable study materials to the portal
           </p>
-          <p >Special thanks to Upashana Joshi for contributing valuable study materials to the portal</p>
-          
           <div className="search-wrapper">
             <div className="search-box">
               <span className="search-icon">🔍</span>
