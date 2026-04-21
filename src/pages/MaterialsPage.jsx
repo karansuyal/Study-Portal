@@ -652,8 +652,17 @@ laptopYoutubeThumbnail: {
   background: '#000',
   cursor: 'pointer',
   overflow: 'hidden',
-  height: '120px'  // ✅ 140px se 120px (aur kam)
+  height: '140px',
+   width: '100%'  // ✅ 140px se 120px (aur kam)
 },
+laptopYoutubeThumbnailImg: {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',  // ✅ Image cover karega without distortion
+  objectPosition: 'center',  // ✅ Center align
+  transition: 'transform 0.3s ease'
+},
+
 
 // Mobile materials list
 mobileMaterialsList: {
@@ -678,7 +687,14 @@ mobileYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
-  height: '100px'  // ✅ 120px se 100px
+  height: '120px',
+  width: '100%'  // ✅ 120px se 100px
+},
+mobileYoutubeThumbnailImg: {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',  // ✅ Fix image distortion
+  objectPosition: 'center'
 },
     // Laptop Styles (existing)
     laptopHeaderButtons: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' },
