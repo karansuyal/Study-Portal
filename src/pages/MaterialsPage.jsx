@@ -615,6 +615,7 @@ const YouTubeCard = ({ material }) => {
     innerContainer: { maxWidth: '1200px', margin: '0 auto' },
     
     // Laptop YouTube Card Styles - FIXED
+
 laptopYoutubeCard: {
   border: '1px solid #e5e7eb',
   borderRadius: '12px',
@@ -623,49 +624,32 @@ laptopYoutubeCard: {
   background: 'white',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%'
+  height: '100%',
+  minHeight: '480px'  
 },
+
 laptopYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
   overflow: 'hidden',
-  height: '180px'
+  height: '180px' 
 },
-laptopYoutubeThumbnailImg: {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-  transition: 'transform 0.3s ease'
-},
-laptopYoutubePlayIcon: {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '50px',
-  height: '50px',
-  background: 'rgba(255,0,0,0.8)',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '20px',
-  color: 'white',
-  opacity: 0.9,
-  transition: 'all 0.3s ease'
-},
+
 laptopYoutubeContent: {
   flex: 1,
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  padding: '0'  
 },
+
 laptopYoutubeTextContent: {
-  padding: '20px',
+  padding: '20px',  
   flex: 1,
   display: 'flex',
   flexDirection: 'column'
 },
+
 laptopYoutubeWatchButton: {
   width: '100%',
   padding: '12px',
@@ -682,9 +666,8 @@ laptopYoutubeWatchButton: {
   fontSize: '14px',
   marginTop: 'auto'
 },
-    
     // Mobile YouTube Card Styles
-  mobileYoutubeCard: {
+    mobileYoutubeCard: {
   background: 'white',
   borderRadius: '16px',
   overflow: 'hidden',
@@ -693,37 +676,21 @@ laptopYoutubeWatchButton: {
   display: 'flex',
   flexDirection: 'column'
 },
+
 mobileYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
   height: '160px'
 },
-mobileYoutubeThumbnailImg: {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover'
-},
-mobileYoutubePlayIcon: {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '40px',
-  height: '40px',
-  background: 'rgba(255,0,0,0.8)',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '16px',
-  color: 'white'
-},
+
 mobileYoutubeContent: {
   flex: 1,
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  padding: '0'
 },
+
 mobileYoutubeWatchButton: {
   width: '100%',
   padding: '10px',
@@ -740,7 +707,6 @@ mobileYoutubeWatchButton: {
   cursor: 'pointer',
   marginTop: 'auto'
 },
-    
     // Laptop Styles (existing)
     laptopHeaderButtons: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' },
     laptopBackButton: { display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'white', color: '#4f46e5', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '16px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease' },
