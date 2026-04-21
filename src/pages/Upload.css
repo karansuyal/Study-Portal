@@ -1079,10 +1079,13 @@
   border-left: none !important;
 }
 
-/* Add to Upload.css */
+/* YouTube Preview Styles */
 .youtube-input-wrapper {
   padding: 20px;
   text-align: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  margin: 10px 0;
 }
 
 .youtube-label {
@@ -1116,15 +1119,26 @@
 
 .youtube-preview {
   margin-top: 15px;
-  padding: 10px;
+  padding: 15px;
   background: #f0fdf4;
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: center;
+  border: 1px solid #bbf7d0;
+}
+
+.youtube-thumbnail-preview {
+  margin-top: 10px;
 }
 
 .youtube-thumbnail-preview img {
   max-width: 200px;
   border-radius: 8px;
-  margin-top: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.video-id-hint {
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-top: 8px;
+  font-family: monospace;
 }

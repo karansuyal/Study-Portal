@@ -1,4 +1,4 @@
-// src/pages/Upload.js - WITH YOUTUBE VIDEO SUPPORT
+// src/pages/Upload.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Upload.css';
@@ -84,6 +84,53 @@ const Upload = () => {
   // Get current material type config
   const currentMaterialType = materialTypes.find(t => t.value === formData.type);
 
+  // ✅ FIXED: Clean YouTube URL - remove tracking parameters
+  const cleanYoutubeUrl = (url) => {
+    if (!url) return '';
+    // Remove ?si=, &si=, &t=, etc. parameters
+    return url.split('?')[0].split('&')[0];
+  };
+
+  // ✅ FIXED: Extract YouTube video ID
+  const extractYoutubeId = (url) => {
+    if (!url) return null;
+    
+    const cleanUrl = cleanYoutubeUrl(url);
+    
+    // Match YouTube video ID (11 characters: letters, numbers, underscore, hyphen)
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+      /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = cleanUrl.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    
+    // If direct ID is provided (11 chars)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) {
+      return cleanUrl;
+    }
+    
+    return null;
+  };
+
+  // ✅ FIXED: Validate YouTube URL
+  const validateYoutubeUrl = (url) => {
+    if (!url) return false;
+    return extractYoutubeId(url) !== null;
+  };
+
+  // ✅ FIXED: Get YouTube thumbnail URL
+  const getYoutubeThumbnail = (videoId) => {
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  };
+
   // Course ID mapping
   const getCourseIdFromName = (courseName) => {
     const courseMap = {
@@ -148,48 +195,6 @@ const Upload = () => {
     }
   };
 
-  // ✅ NEW: Validate YouTube URL
-  const validateYoutubeUrl = (url) => {
-    if (!url) return false;
-    
-    // YouTube URL patterns
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
-      /youtube\.com\/embed\/([^?]+)/,
-      /youtube\.com\/shorts\/([^?]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1]; // Return video ID
-      }
-    }
-    return false;
-  };
-
-  // ✅ NEW: Extract YouTube Video ID
-  const getYoutubeVideoId = (url) => {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
-      /youtube\.com\/embed\/([^?]+)/,
-      /youtube\.com\/shorts\/([^?]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    return null;
-  };
-
-  // ✅ NEW: Get YouTube Thumbnail URL
-  const getYoutubeThumbnail = (videoId) => {
-    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-  };
-
   useEffect(() => {
     // Check authentication
     const savedUser = localStorage.getItem('study_portal_user');
@@ -238,9 +243,8 @@ const Upload = () => {
     }
   }, [formData.year]);
 
-  // ✅ NEW: Reset file/url when material type changes
+  // Reset file/url when material type changes
   useEffect(() => {
-    // Clear file and YouTube URL when type changes
     setFile(null);
     setYoutubeUrl('');
     const fileInput = document.getElementById('fileInput');
@@ -346,16 +350,27 @@ const Upload = () => {
     }
   };
 
+  // ✅ FIXED: Handle YouTube URL change with cleaning
   const handleYoutubeUrlChange = (e) => {
-    const url = e.target.value;
-    setYoutubeUrl(url);
+    let url = e.target.value;
     
-    // Validate URL
-    const videoId = validateYoutubeUrl(url);
-    if (videoId) {
-      console.log('✅ Valid YouTube URL, Video ID:', videoId);
-    } else if (url && formData.type === 'youtube') {
-      alert('⚠️ Please enter a valid YouTube URL');
+    if (url) {
+      // Clean the URL
+      const cleanUrl = cleanYoutubeUrl(url);
+      const videoId = extractYoutubeId(cleanUrl);
+      
+      if (videoId) {
+        console.log('✅ Valid YouTube URL, Video ID:', videoId);
+        // Update with cleaned URL
+        setYoutubeUrl(cleanUrl);
+      } else {
+        setYoutubeUrl(url);
+        if (formData.type === 'youtube' && url.trim()) {
+          alert('⚠️ Please enter a valid YouTube URL');
+        }
+      }
+    } else {
+      setYoutubeUrl('');
     }
   };
 
@@ -394,7 +409,7 @@ const Upload = () => {
         return;
       }
       
-      const videoId = validateYoutubeUrl(youtubeUrl);
+      const videoId = extractYoutubeId(youtubeUrl);
       if (!videoId) {
         alert('❌ Invalid YouTube URL. Please enter a valid YouTube link.');
         return;
@@ -456,12 +471,14 @@ const Upload = () => {
       uploadData.append('year', formData.year);
       uploadData.append('tags', formData.tags || '');
       
-      // ✅ Handle YouTube video separately
+      // Handle YouTube video separately
       if (formData.type === 'youtube') {
-        const videoId = getYoutubeVideoId(youtubeUrl);
+        const videoId = extractYoutubeId(youtubeUrl);
         const thumbnailUrl = getYoutubeThumbnail(videoId);
         
-        // Send YouTube data as JSON in description
+        console.log('🎥 YouTube Upload:', { videoId, thumbnailUrl });
+        
+        // Send YouTube data
         const youtubeData = {
           isYouTube: true,
           videoId: videoId,
@@ -475,8 +492,6 @@ const Upload = () => {
         uploadData.append('youtube_url', youtubeUrl);
         uploadData.append('youtube_id', videoId);
         uploadData.append('description', JSON.stringify(youtubeData));
-        
-        console.log('🎥 YouTube Upload:', { videoId, thumbnailUrl });
       } else {
         // File upload
         uploadData.append('file', file);
@@ -528,8 +543,8 @@ Upload Date: ${new Date().toLocaleDateString()}
         } else {
           alert(`✅ ${result.message || 'File uploaded successfully!'}\n\n` +
             `📝 Status: ${result.status || 'Pending approval'}\n\n` +
-            `🎓 Course: ${formData.course} (ID: ${courseId})\n` +
-            `📚 Subject: ${subjectName} (ID: ${subjectId || 'N/A'})\n` +
+            `🎓 Course: ${formData.course}\n` +
+            `📚 Subject: ${subjectName}\n` +
             `📖 Year: ${formData.year}, Semester: ${formData.semester}\n\n` +
             `⚠️ Note: File will be visible after admin approval.`);
         }
@@ -596,6 +611,7 @@ Upload Date: ${new Date().toLocaleDateString()}
 
   const currentBranchOptions = getCurrentBranchOptions();
   const isYouTubeType = formData.type === 'youtube';
+  const currentVideoId = isYouTubeType && youtubeUrl ? extractYoutubeId(youtubeUrl) : null;
 
   return (
     <div className="upload-container">
@@ -644,7 +660,7 @@ Upload Date: ${new Date().toLocaleDateString()}
               <input
                 type="url"
                 className="youtube-input"
-                placeholder="https://www.youtube.com/watch?v=..."
+                placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                 value={youtubeUrl}
                 onChange={handleYoutubeUrlChange}
               />
@@ -653,14 +669,18 @@ Upload Date: ${new Date().toLocaleDateString()}
               </p>
             </div>
             
-            {youtubeUrl && validateYoutubeUrl(youtubeUrl) && (
+            {currentVideoId && (
               <div className="youtube-preview">
                 <p>✅ Valid YouTube URL</p>
                 <div className="youtube-thumbnail-preview">
                   <img 
-                    src={`https://img.youtube.com/vi/${getYoutubeVideoId(youtubeUrl)}/mqdefault.jpg`} 
+                    src={`https://img.youtube.com/vi/${currentVideoId}/mqdefault.jpg`}
                     alt="Video thumbnail preview"
+                    onError={(e) => {
+                      e.target.src = `https://img.youtube.com/vi/${currentVideoId}/hqdefault.jpg`;
+                    }}
                   />
+                  <p className="video-id-hint">Video ID: {currentVideoId}</p>
                 </div>
               </div>
             )}
@@ -701,7 +721,7 @@ Upload Date: ${new Date().toLocaleDateString()}
         )}
       </div>
 
-      {/* Rest of the form remains same */}
+      {/* Upload Form */}
       <div className="upload-form">
         <h3 className="form-section-title">📄 Material Details</h3>
         
@@ -882,8 +902,8 @@ Upload Date: ${new Date().toLocaleDateString()}
               <p><strong>Year/Semester:</strong> Year {formData.year}, Semester {formData.semester}</p>
               <p><strong>Subject:</strong> {formData.subject}</p>
               <p><strong>Material Type:</strong> {currentMaterialType?.label || formData.type}</p>
-              {isYouTubeType && youtubeUrl && validateYoutubeUrl(youtubeUrl) && (
-                <p><strong>🎥 YouTube URL:</strong> {youtubeUrl}</p>
+              {isYouTubeType && currentVideoId && (
+                <p><strong>🎥 YouTube Video ID:</strong> {currentVideoId}</p>
               )}
             </div>
           </div>
