@@ -224,6 +224,11 @@ class Note(db.Model):
     rating_sum = db.Column(db.Integer, default=0)
     cloudinary_url = db.Column(db.String(500))  
     cloudinary_public_id = db.Column(db.String(200))
+    is_youtube = db.Column(db.Boolean, default=False)
+    youtube_url = db.Column(db.String(500))
+    youtube_id = db.Column(db.String(20))
+    youtube_thumbnail = db.Column(db.String(500))
+    youtube_embed_url = db.Column(db.String(500))
 
     status = db.Column(db.String(20), default='pending')
     rejection_reason = db.Column(db.Text)
@@ -269,6 +274,11 @@ class Note(db.Model):
             'user_email': user.email if user else 'Unknown',
             'cloudinary_url': self.cloudinary_url,  
             'cloudinary_public_id': self.cloudinary_public_id,
+            'is_youtube': self.is_youtube or False,
+            'youtube_url': self.youtube_url,
+            'youtube_id': self.youtube_id,
+            'youtube_thumbnail': self.youtube_thumbnail,
+            'youtube_embed_url': self.youtube_embed_url
         }
         
         
@@ -1173,6 +1183,252 @@ def get_all_materials():
         return jsonify({'success': False, 'error': str(e)}), 500
     
     
+# ==================== UPLOAD ROUTE (WITH YOUTUBE SUPPORT) ====================
+@app.route('/api/upload', methods=['POST', 'OPTIONS'])
+@jwt_required()
+def upload_note():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = jsonify({'success': True})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response, 200
+        
+    try:
+        user_id = get_jwt_identity()
+        print(f"👤 User ID from token: {user_id}")
+
+        user = db.session.get(User, int(user_id))
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+
+        # ✅ CHECK IF IT'S A YOUTUBE VIDEO
+        is_youtube = request.form.get('is_youtube') == 'true'
+        
+        title = request.form.get('title', '').strip()
+        description = request.form.get('description', '').strip()
+        course_id = request.form.get('course_id')
+        subject_id = request.form.get('subject_id')
+        note_type = request.form.get('type', 'notes')
+        semester = request.form.get('semester', '1')
+        year = request.form.get('year', '1')
+        tags = request.form.get('tags', '')
+
+        if not title:
+            return jsonify({'success': False, 'error': 'Title is required'}), 400
+
+        if not course_id:
+            return jsonify({'success': False, 'error': 'Course ID is required'}), 400
+
+        course = db.session.get(Course, int(course_id))
+        if not course:
+            return jsonify({'success': False, 'error': 'Course not found'}), 404
+
+        # ==================== YOUTUBE VIDEO HANDLING ====================
+        if is_youtube:
+            youtube_url = request.form.get('youtube_url', '')
+            youtube_id = request.form.get('youtube_id', '')
+            
+            if not youtube_url or not youtube_id:
+                return jsonify({'success': False, 'error': 'YouTube URL and ID are required'}), 400
+            
+            # Validate YouTube ID (should be 11 characters)
+            if len(youtube_id) != 11:
+                return jsonify({'success': False, 'error': 'Invalid YouTube video ID'}), 400
+            
+            youtube_thumbnail = f"https://img.youtube.com/vi/{youtube_id}/maxresdefault.jpg"
+            youtube_embed_url = f"https://www.youtube.com/embed/{youtube_id}"
+            
+            # Parse description JSON if exists
+            try:
+                youtube_data = json.loads(description) if description else {}
+                actual_description = youtube_data.get('description', '')
+            except:
+                actual_description = description
+            
+            is_admin = user.role == 'admin'
+            
+            # Create note record for YouTube video
+            note = Note(
+                title=title,
+                description=actual_description,
+                note_type=note_type,
+                course_id=course.id,
+                subject_id=int(subject_id) if subject_id and subject_id != 'null' else None,
+                user_id=user.id,
+                status='approved' if is_admin else 'pending',
+                uploaded_at=datetime.now(timezone.utc),
+                approved_at=datetime.now(timezone.utc) if is_admin else None,
+                # YouTube specific fields
+                is_youtube=True,
+                youtube_url=youtube_url,
+                youtube_id=youtube_id,
+                youtube_thumbnail=youtube_thumbnail,
+                youtube_embed_url=youtube_embed_url,
+                # Additional fields
+                file_name=youtube_id,
+                original_filename=f"{title}.youtube",
+                file_type='youtube',
+                file_path=youtube_url
+            )
+            
+            db.session.add(note)
+            db.session.commit()
+            
+            print(f"✅ YouTube video saved with ID: {note.id}")
+            print(f"🎥 YouTube ID: {youtube_id}")
+            
+            return jsonify({
+                'success': True,
+                'message': 'YouTube video added successfully!',
+                'note': note.to_dict(),
+                'status': note.status
+            }), 201
+        
+        # ==================== FILE UPLOAD HANDLING (EXISTING CODE) ====================
+        else:
+            if 'file' not in request.files:
+                return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({'success': False, 'error': 'No file selected'}), 400
+
+            if not allowed_file(file.filename):
+                return jsonify({'success': False, 'error': 'File type not allowed'}), 400
+
+            print(f"✅ Course found: {course.name}")
+
+            # ==================== PREPARE FILENAME ====================
+            import cloudinary.uploader
+            import time
+            import tempfile
+            import os
+
+            original_filename = secure_filename(file.filename)
+
+            if '.' in original_filename:
+                file_ext = original_filename.rsplit('.', 1)[1].lower()
+            else:
+                file_ext = ""
+
+            timestamp = int(time.time())
+            unique_id = uuid.uuid4().hex[:8]
+            base_filename = f"{timestamp}_{unique_id}_{original_filename}"
+
+            # ==================== GET SUBJECT NAME ====================
+            subject_name = "General"
+            if subject_id and subject_id != 'null':
+                subject = db.session.get(Subject, int(subject_id))
+                if subject:
+                    subject_name = subject.name
+                    print(f"📚 Subject: {subject_name} (ID: {subject_id})")
+
+            # ==================== CREATE CLOUDINARY FOLDER STRUCTURE ====================
+            course_folder = course.name.replace(' ', '_').replace('/', '_')
+            semester_folder = f"Semester_{semester}"
+            subject_folder = subject_name.replace(' ', '_').replace('/', '_')
+            
+            cloudinary_folder = f"study_portal/{course_folder}/{semester_folder}/{subject_folder}/{note_type}"
+
+            resource_type = "raw" if file_ext in ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt'] else "image"
+
+            print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
+            print(f"📄 Resource Type: {resource_type}")
+
+            # ==================== CLOUDINARY UPLOAD ====================
+            upload_result = cloudinary.uploader.upload(
+                file,
+                folder=cloudinary_folder,
+                public_id=f"{timestamp}_{unique_id}",
+                resource_type=resource_type,
+                type="upload",
+                overwrite=False
+            )
+
+            print("✅ Cloudinary upload successful!")
+
+            cloudinary_url = upload_result['secure_url']
+            cloudinary_public_id = upload_result['public_id']
+            file_size = upload_result.get('bytes', 0)
+
+            # ==================== GOOGLE DRIVE BACKUP ====================
+            try:
+                from google_drive import upload_to_drive
+                
+                file.seek(0)
+                
+                with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{original_filename}") as tmp:
+                    tmp.write(file.read())
+                    tmp_path = tmp.name
+                
+                safe_title = title.replace('/', '_').replace('\\', '_').replace(':', '_').replace('*', '_').replace('?', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_')
+                drive_filename = f"{safe_title}.pdf"
+                
+                upload_to_drive(
+                    tmp_path, 
+                    drive_filename,
+                    course=course.name,           
+                    semester=semester,            
+                    subject=subject_name,         
+                    note_type=note_type           
+                )
+                
+                os.remove(tmp_path)
+                print(f"✅ Google Drive backup complete")
+                
+            except ImportError:
+                print("⚠️ Google Drive module not found, skipping backup")
+            except Exception as e:
+                print(f"⚠️ Google Drive backup failed: {e}")
+
+            # ==================== DATABASE SAVE ====================
+            is_admin = user.role == 'admin'
+
+            note = Note(
+                title=title,
+                description=description,
+                file_name=base_filename,
+                original_filename=original_filename,
+                file_path=cloudinary_url,
+                file_type=file_ext,
+                file_size=file_size,
+                note_type=note_type,
+                course_id=course.id,
+                subject_id=int(subject_id) if subject_id and subject_id != 'null' else None,
+                user_id=user.id,
+                status='approved' if is_admin else 'pending',
+                uploaded_at=datetime.now(timezone.utc),
+                approved_at=datetime.now(timezone.utc) if is_admin else None,
+                cloudinary_url=cloudinary_url,
+                cloudinary_public_id=cloudinary_public_id,
+                # YouTube fields as False
+                is_youtube=False
+            )
+
+            db.session.add(note)
+            db.session.commit()
+
+            print(f"✅ Note saved with ID: {note.id}")
+
+            return jsonify({
+                'success': True,
+                'message': 'File uploaded successfully!',
+                'note': note.to_dict(),
+                'file_url': cloudinary_url,
+                'status': note.status
+            }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Upload Error: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+# ==================== UPLOAD ROUTE ====================
+
 # ==================== UPLOAD ROUTE ====================
 @app.route('/api/upload', methods=['POST'])
 @jwt_required()
@@ -1362,144 +1618,6 @@ def upload_note():
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
-# # ==================== UPLOAD ROUTE ====================
-# @app.route('/api/upload', methods=['POST'])
-# @jwt_required()
-# def upload_note():
-#     try:
-#         user_id = get_jwt_identity()
-#         print(f"👤 User ID from token: {user_id}")
-
-#         user = db.session.get(User, int(user_id))
-#         if not user:
-#             return jsonify({'success': False, 'error': 'User not found'}), 404
-
-#         if 'file' not in request.files:
-#             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
-
-#         file = request.files['file']
-#         if file.filename == '':
-#             return jsonify({'success': False, 'error': 'No file selected'}), 400
-
-#         title = request.form.get('title', '').strip()
-#         description = request.form.get('description', '').strip()
-#         course_id = request.form.get('course_id')
-#         subject_id = request.form.get('subject_id')
-#         note_type = request.form.get('type', 'notes')
-
-#         if not title:
-#             return jsonify({'success': False, 'error': 'Title is required'}), 400
-
-#         if not course_id:
-#             return jsonify({'success': False, 'error': 'Course ID is required'}), 400
-
-#         if not allowed_file(file.filename):
-#             return jsonify({'success': False, 'error': 'File type not allowed'}), 400
-
-#         course = db.session.get(Course, int(course_id))
-#         if not course:
-#             return jsonify({'success': False, 'error': 'Course not found'}), 404
-
-#         print(f"✅ Course found: {course.name}")
-
-#         # ==================== CLOUDINARY UPLOAD ====================
-#         import cloudinary.uploader
-#         import time
-
-#         # filename clean
-#         original_filename = secure_filename(file.filename)
-
-#         if '.' in original_filename:
-#             file_ext = original_filename.rsplit('.', 1)[1].lower()
-#         else:
-#             file_ext = ""
-
-#         # resource type detect
-#         document_types = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt']
-
-#         if file_ext in document_types:
-#             resource_type = "raw"
-#         else:
-#             resource_type = "image"
-
-#         # create folder
-#         course_folder = course.name.replace(' ', '_').replace('/', '_')
-
-#         subject_folder = "General"
-#         if subject_id:
-#             subject = db.session.get(Subject, int(subject_id))
-#             if subject:
-#                 subject_folder = subject.name.replace(' ', '_').replace('/', '_')
-
-#         cloudinary_folder = f"study_portal/{course_folder}/{subject_folder}/{note_type}"
-
-#         # unique id
-#         timestamp = int(time.time())
-#         unique_id = uuid.uuid4().hex[:8]
-#         public_id = f"{timestamp}_{unique_id}"
-
-#         print(f"📤 Uploading to Cloudinary folder: {cloudinary_folder}")
-#         print(f"📄 Resource Type: {resource_type}")
-
-#         # upload
-#         upload_result = cloudinary.uploader.upload(
-#             file,
-#             folder=cloudinary_folder,
-#             public_id=public_id,
-#             resource_type=resource_type,
-#             type="upload",
-#             overwrite=False
-#         )
-
-#         print("✅ Cloudinary upload successful!")
-
-#         cloudinary_url = upload_result['secure_url']
-#         cloudinary_public_id = upload_result['public_id']
-#         file_size = upload_result.get('bytes', 0)
-
-#         # ==================== DATABASE SAVE ====================
-
-#         is_admin = user.role == 'admin'
-
-#         note = Note(
-#             title=title,
-#             description=description,
-#             file_name=original_filename,
-#             original_filename=original_filename,
-#             file_path=cloudinary_url,
-#             file_type=file_ext,
-#             file_size=file_size,
-#             note_type=note_type,
-#             course_id=course.id,
-#             subject_id=subject_id if subject_id else None,
-#             user_id=user.id,
-#             status='approved' if is_admin else 'pending',
-#             uploaded_at=datetime.now(timezone.utc),
-#             approved_at=datetime.now(timezone.utc) if is_admin else None,
-#             cloudinary_url=cloudinary_url,
-#             cloudinary_public_id=cloudinary_public_id
-#         )
-
-#         db.session.add(note)
-#         db.session.commit()
-
-#         print(f"✅ Note saved with ID: {note.id}")
-
-#         return jsonify({
-#             'success': True,
-#             'message': 'File uploaded successfully!',
-#             'note': note.to_dict(),
-#             'file_url': cloudinary_url,
-#             'status': note.status
-#         }), 201
-
-#     except Exception as e:
-#         db.session.rollback()
-#         print(f"❌ Upload Error: {str(e)}")
-#         traceback.print_exc()
-#         return jsonify({'success': False, 'error': str(e)}), 500
-
-
 # ==================== USER MANAGEMENT ROUTES ====================
 
 @app.route('/api/admin/users', methods=['GET'])
