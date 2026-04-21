@@ -1078,3 +1078,53 @@
 .admin-note {
   border-left: none !important;
 }
+
+/* Add to Upload.css */
+.youtube-input-wrapper {
+  padding: 20px;
+  text-align: center;
+}
+
+.youtube-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+
+.youtube-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.youtube-input:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.youtube-hint {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.youtube-preview {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f0fdf4;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.youtube-thumbnail-preview img {
+  max-width: 200px;
+  border-radius: 8px;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
