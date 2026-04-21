@@ -613,7 +613,28 @@ const YouTubeCard = ({ material }) => {
   const styles = {
     container: { minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: isMobile ? '10px' : '20px', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' },
     innerContainer: { maxWidth: '1200px', margin: '0 auto' },
-    // Laptop YouTube Card Styles - HEIGHT KAM
+    // In laptopMaterialsGrid - Add alignItems: 'stretch'
+laptopMaterialsGrid: {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+  gap: '25px',
+  alignItems: 'stretch'  // ✅ YEH ADD KARO - sab cards same height
+},
+
+// Normal Material Card - Add height: '100%'
+laptopMaterialCard: {
+  border: '1px solid #e5e7eb',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  transition: 'all 0.4s ease',
+  background: 'white',
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%'  // ✅ ADD THIS
+},
+
+// YouTube Card - Same structure as normal card
 laptopYoutubeCard: {
   border: '1px solid #e5e7eb',
   borderRadius: '12px',
@@ -622,114 +643,26 @@ laptopYoutubeCard: {
   background: 'white',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%'
+  height: '100%'  // ✅ ADD THIS
 },
 
+// Thumbnail height aur kam karo
 laptopYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
   overflow: 'hidden',
-  height: '140px'  // ✅ 180px se 140px kiya (height kam)
+  height: '120px'  // ✅ 140px se 120px (aur kam)
 },
 
-laptopYoutubeThumbnailImg: {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover'
-},
-
-laptopYoutubePlayIcon: {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '40px',  // ✅ 50px se 40px
-  height: '40px', // ✅ 50px se 40px
-  background: 'rgba(255,0,0,0.8)',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '16px', // ✅ 20px se 16px
-  color: 'white'
-},
-
-laptopYoutubeTextContent: {
-  padding: '12px 16px',  // ✅ 20px se kam kiya
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column'
-},
-
-laptopMaterialTitle: {
-  fontSize: '16px',  // ✅ 18px se 16px
-  fontWeight: '600',
-  color: '#1f2937',
-  marginBottom: '8px',
-  lineHeight: '1.4'
-},
-
-laptopMaterialDescription: {
-  color: '#6b7280',
-  fontSize: '13px',  // ✅ 14px se 13px
-  lineHeight: '1.5',
-  marginBottom: '12px',
-  minHeight: '40px'  // ✅ 60px se 40px
-},
-
-laptopMaterialStats: {
+// Mobile materials list
+mobileMaterialsList: {
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: '10px',  // ✅ 15px se 10px
-  marginBottom: '12px',  // ✅ 20px se 12px
-  background: '#f9fafb',
-  padding: '10px',  // ✅ 15px se 10px
-  borderRadius: '8px'
+  gridTemplateColumns: '1fr',
+  gap: '15px'
 },
 
-laptopStatItem: {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '6px',
-  color: '#6b7280',
-  fontSize: '12px'  // ✅ 13px se 12px
-},
-
-laptopFileInfo: {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingTop: '10px',  // ✅ 15px se 10px
-  borderTop: '1px solid #e5e7eb',
-  fontSize: '12px',
-  color: '#9ca3af'
-},
-
-laptopMaterialActions: {
-  padding: '12px 16px',  // ✅ 20px se 12px
-  background: '#f9fafb',
-  borderTop: '1px solid #e5e7eb',
-  display: 'flex',
-  gap: '12px'
-},
-
-laptopYoutubeWatchButton: {
-  flex: 2,
-  padding: '8px 12px',  // ✅ 12px se 8px
-  background: '#FF0000',
-  color: 'white',
-  border: 'none',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  fontWeight: '600',
-  fontSize: '13px'  // ✅ 14px se 13px
-},
-
+// Mobile YouTube Card
 mobileYoutubeCard: {
   background: 'white',
   borderRadius: '16px',
@@ -740,99 +673,12 @@ mobileYoutubeCard: {
   flexDirection: 'column'
 },
 
+// Thumbnail height aur kam
 mobileYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
-  height: '120px'  // ✅ 160px se 120px
-},
-
-mobileYoutubeThumbnailImg: {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover'
-},
-
-mobileYoutubePlayIcon: {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '32px',  // ✅ 40px se 32px
-  height: '32px',
-  background: 'rgba(255,0,0,0.8)',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '12px',
-  color: 'white'
-},
-
-mobileMaterialContent: {
-  padding: '12px'  // ✅ 15px se 12px
-},
-
-mobileMaterialTitle: {
-  fontSize: '14px',  // ✅ 15px se 14px
-  fontWeight: '600',
-  color: '#1f2937',
-  marginBottom: '6px'
-},
-
-mobileMaterialDescription: {
-  fontSize: '12px',  // ✅ 13px se 12px
-  color: '#6b7280',
-  marginBottom: '10px'
-},
-
-mobileMaterialMeta: {
-  display: 'flex',
-  gap: '10px',
-  marginBottom: '10px',
-  fontSize: '10px',  // ✅ 11px se 10px
-  color: '#9ca3af'
-},
-
-mobileRatingContainer: {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '3px',
-  marginBottom: '10px'
-},
-
-mobileFileInfo: {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '6px',
-  fontSize: '10px',
-  color: '#9ca3af',
-  paddingTop: '6px',
-  borderTop: '1px solid #e5e7eb'
-},
-
-mobileMaterialActions: {
-  display: 'flex',
-  gap: '8px',
-  padding: '10px 12px',  // ✅ 15px se 10px
-  background: '#f9fafb',
-  borderTop: '1px solid #e5e7eb'
-},
-
-mobileYoutubeWatchButton: {
-  flex: 2,
-  padding: '8px',  // ✅ 10px se 8px
-  background: '#FF0000',
-  color: 'white',
-  border: 'none',
-  borderRadius: '8px',
-  fontSize: '11px',  // ✅ 12px se 11px
-  fontWeight: '500',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '5px',
-  cursor: 'pointer'
+  height: '100px'  // ✅ 120px se 100px
 },
     // Laptop Styles (existing)
     laptopHeaderButtons: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' },
