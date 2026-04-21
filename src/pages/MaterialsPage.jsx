@@ -136,6 +136,7 @@ const MaterialsPage = () => {
   };
 
   // ✅ YOUTUBE CARD COMPONENT
+// ✅ YOUTUBE CARD - NO EXTRA LINK
 const YouTubeCard = ({ material }) => {
   const stats = useNoteStats(material.id, {
     views: material.views || 0,
@@ -147,107 +148,132 @@ const YouTubeCard = ({ material }) => {
     window.open(material.youtube_url, '_blank');
   };
 
+  const getThumbnailUrl = () => {
+    if (material.youtube_thumbnail) return material.youtube_thumbnail;
+    if (material.youtube_id) {
+      return `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`;
+    }
+    return 'https://via.placeholder.com/320x180?text=YouTube';
+  };
+
   if (!isMobile) {
     return (
-      <div style={styles.laptopYoutubeCard}>
-        <div style={styles.laptopYoutubeThumbnail} onClick={handleWatchOnYouTube}>
+      <div style={styles.laptopMaterialCard}>
+        {/* Thumbnail */}
+        <div style={styles.youtubeThumbnailWrapper} onClick={handleWatchOnYouTube}>
           <img 
-            src={material.youtube_thumbnail || `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`}
+            src={getThumbnailUrl()}
             alt={material.title}
-            style={styles.laptopYoutubeThumbnailImg}
-            onError={(e) => {
-              e.target.src = `https://img.youtube.com/vi/${material.youtube_id}/hqdefault.jpg`;
-            }}
+            style={styles.youtubeThumbnailImg}
           />
-          <div style={styles.laptopYoutubePlayIcon}>▶</div>
+          <div style={styles.youtubePlayIcon}>▶</div>
         </div>
-        <div style={styles.laptopYoutubeContent}>
-          <div style={styles.laptopMaterialHeader('#FF0000')}>
-            <div style={styles.laptopMaterialType}>
-              <span style={{ color: '#FF0000', fontSize: '16px' }}><FaYoutube /></span>
-              <span style={{ color: '#FF0000', fontWeight: '600', fontSize: '14px' }}>YouTube</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#6b7280', fontSize: '12px' }}>
-                <FaUser size={10} /> {material.user}
-              </div>
-            </div>
+        
+        {/* Header */}
+        <div style={styles.laptopMaterialHeader('#FF0000')}>
+          <div style={styles.laptopMaterialType}>
+            <span style={{ color: '#FF0000', fontSize: '14px' }}><FaYoutube /></span>
+            <span style={{ color: '#FF0000', fontWeight: '600', fontSize: '12px' }}>YouTube</span>
           </div>
-          <div style={styles.laptopYoutubeTextContent}>
-            <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-            <p style={styles.laptopMaterialDescription}>{material.description}</p>
-            <div style={styles.laptopMaterialStats}>
-              <div style={styles.laptopStatItem}>
-                <FaClock color="#9ca3af" size={12} />
-                <span>{material.uploadDate}</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaEye color="#9ca3af" size={12} />
-                <span>{stats.views} views</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaStar color="#fbbf24" size={12} />
-                <span>{stats.rating.toFixed(1)}/5</span>
-              </div>
-              <div style={styles.laptopRatingContainer}>
-                <Rating materialId={material.id} currentRating={stats.rating} />
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#6b7280', fontSize: '11px' }}>
+              <FaUser size={10} /> {material.user?.split(' ')[0] || 'User'}
             </div>
           </div>
-          <div style={styles.laptopMaterialActions}>
-            <button
-              style={styles.laptopYoutubeWatchButton}
-              onClick={handleWatchOnYouTube}
-            >
-              <FaYoutube size={14} /> Watch on YouTube
-            </button>
+        </div>
+        
+        {/* Content */}
+        <div style={styles.laptopMaterialContent}>
+          <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
+          <p style={styles.laptopMaterialDescription}>
+            {material.description?.substring(0, 80) || 'No description'}
+          </p>
+          
+          <div style={styles.laptopMaterialStats}>
+            <div style={styles.laptopStatItem}>
+              <FaClock size={11} /> {material.uploadDate}
+            </div>
+            <div style={styles.laptopStatItem}>
+              <FaEye size={11} /> {stats.views} views
+            </div>
+            <div style={styles.laptopStatItem}>
+              <FaStar size={11} /> {stats.rating?.toFixed(1) || 0}/5
+            </div>
+            <div style={styles.laptopRatingContainer}>
+              <Rating materialId={material.id} currentRating={stats.rating} />
+            </div>
           </div>
+          
+          {/* ✅ FILE INFO - REMOVE THIS ENTIRE SECTION */}
+          {/* <div style={styles.laptopFileInfo}>
+            <span>...</span>
+          </div> */}
+        </div>
+        
+        {/* Actions - Only button */}
+        <div style={styles.laptopMaterialActions}>
+          <button
+            style={{ ...styles.laptopDownloadButton(false), background: '#FF0000' }}
+            onClick={handleWatchOnYouTube}
+          >
+            <FaYoutube size={12} /> Watch on YouTube
+          </button>
         </div>
       </div>
     );
   }
 
-  // Mobile YouTube Card
+  // Mobile Version
   return (
-    <div style={styles.mobileYoutubeCard}>
+    <div style={styles.mobileMaterialCard}>
+      {/* Thumbnail */}
       <div style={styles.mobileYoutubeThumbnail} onClick={handleWatchOnYouTube}>
         <img 
-          src={material.youtube_thumbnail || `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`}
+          src={getThumbnailUrl()}
           alt={material.title}
           style={styles.mobileYoutubeThumbnailImg}
         />
         <div style={styles.mobileYoutubePlayIcon}>▶</div>
       </div>
-      <div style={styles.mobileYoutubeContent}>
-        <div style={styles.mobileMaterialHeader}>
-          <div style={styles.mobileMaterialType}>
-            <span style={{ color: '#FF0000' }}><FaYoutube /></span>
-            <span style={{ color: '#FF0000', fontWeight: '500' }}>YouTube</span>
-          </div>
+      
+      {/* Header */}
+      <div style={styles.mobileMaterialHeader}>
+        <div style={styles.mobileMaterialType}>
+          <span style={{ color: '#FF0000', fontSize: '12px' }}><FaYoutube /></span>
+          <span style={{ color: '#FF0000', fontWeight: '500', fontSize: '11px' }}>YouTube</span>
         </div>
-        <div style={styles.mobileMaterialContent}>
-          <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-          <p style={styles.mobileMaterialDescription}>{material.description}</p>
-          <div style={styles.mobileMaterialMeta}>
-            <div style={styles.mobileMetaItem}>
-              <FaClock /> {material.uploadDate}
-            </div>
-            <div style={styles.mobileMetaItem}>
-              <FaEye /> {stats.views}
-            </div>
-          </div>
-          <div style={styles.mobileRatingContainer}>
-            <Rating materialId={material.id} currentRating={stats.rating} />
-          </div>
+      </div>
+      
+      {/* Content */}
+      <div style={styles.mobileMaterialContent}>
+        <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
+        <p style={styles.mobileMaterialDescription}>
+          {material.description?.substring(0, 60) || 'No description'}
+        </p>
+        
+        <div style={styles.mobileMaterialMeta}>
+          <span><FaClock size={10} /> {material.uploadDate}</span>
+          <span><FaEye size={10} /> {stats.views} views</span>
         </div>
-        <div style={styles.mobileMaterialActions}>
-          <button
-            style={styles.mobileYoutubeWatchButton}
-            onClick={handleWatchOnYouTube}
-          >
-            <FaYoutube /> Watch on YouTube
-          </button>
+        
+        <div style={styles.mobileRatingContainer}>
+          <Rating materialId={material.id} currentRating={stats.rating} />
         </div>
+        
+        {/* ✅ FILE INFO - REMOVE THIS ENTIRE SECTION */}
+        {/* <div style={styles.mobileFileInfo}>
+          <FaYoutube style={{ color: '#FF0000' }} /> YouTube
+        </div> */}
+      </div>
+      
+      {/* Actions */}
+      <div style={styles.mobileMaterialActions}>
+        <button
+          style={{ ...styles.mobileDownloadButton(false), background: '#FF0000' }}
+          onClick={handleWatchOnYouTube}
+        >
+          <FaYoutube size={10} /> Watch
+        </button>
       </div>
     </div>
   );
@@ -613,15 +639,15 @@ const YouTubeCard = ({ material }) => {
   const styles = {
     container: { minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: isMobile ? '10px' : '20px', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' },
     innerContainer: { maxWidth: '1200px', margin: '0 auto' },
-    // In laptopMaterialsGrid - Add alignItems: 'stretch'
+   
 laptopMaterialsGrid: {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
   gap: '25px',
-  alignItems: 'stretch'  // ✅ YEH ADD KARO - sab cards same height
+  alignItems: 'stretch'  
 },
 
-// Normal Material Card - Add height: '100%'
+
 laptopMaterialCard: {
   border: '1px solid #e5e7eb',
   borderRadius: '12px',
@@ -631,10 +657,10 @@ laptopMaterialCard: {
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%'  // ✅ ADD THIS
+  height: '100%'  
 },
 
-// YouTube Card - Same structure as normal card
+
 laptopYoutubeCard: {
   border: '1px solid #e5e7eb',
   borderRadius: '12px',
@@ -643,28 +669,26 @@ laptopYoutubeCard: {
   background: 'white',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%'  // ✅ ADD THIS
+  height: '100%'  
 },
 
-// Thumbnail height aur kam karo
+
 laptopYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
   overflow: 'hidden',
   height: '140px',
-   width: '100%'  // ✅ 140px se 120px (aur kam)
+   width: '100%' 
 },
 laptopYoutubeThumbnailImg: {
   width: '100%',
   height: '100%',
-  objectFit: 'cover',  // ✅ Image cover karega without distortion
-  objectPosition: 'center',  // ✅ Center align
+  objectFit: 'cover',  
+  objectPosition: 'center', 
   transition: 'transform 0.3s ease'
 },
 
-
-// Mobile materials list
 mobileMaterialsList: {
   display: 'grid',
   gridTemplateColumns: '1fr',
@@ -682,18 +706,17 @@ mobileYoutubeCard: {
   flexDirection: 'column'
 },
 
-// Thumbnail height aur kam
 mobileYoutubeThumbnail: {
   position: 'relative',
   background: '#000',
   cursor: 'pointer',
   height: '120px',
-  width: '100%'  // ✅ 120px se 100px
+  width: '100%'  
 },
 mobileYoutubeThumbnailImg: {
   width: '100%',
   height: '100%',
-  objectFit: 'cover',  // ✅ Fix image distortion
+  objectFit: 'cover',  
   objectPosition: 'center'
 },
     // Laptop Styles (existing)
