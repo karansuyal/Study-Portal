@@ -136,6 +136,7 @@ const MaterialsPage = () => {
   };
 
   // ✅ YOUTUBE CARD COMPONENT
+// ✅ YOUTUBE CARD - NO EXTRA LINK (Sirf button)
 const YouTubeCard = ({ material }) => {
   const stats = useNoteStats(material.id, {
     views: material.views || 0,
@@ -147,107 +148,134 @@ const YouTubeCard = ({ material }) => {
     window.open(material.youtube_url, '_blank');
   };
 
+  const getThumbnailUrl = () => {
+    if (material.youtube_thumbnail) return material.youtube_thumbnail;
+    if (material.youtube_id) {
+      return `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`;
+    }
+    return 'https://via.placeholder.com/320x180?text=YouTube';
+  };
+
   if (!isMobile) {
     return (
-      <div style={styles.laptopYoutubeCard}>
-        <div style={styles.laptopYoutubeThumbnail} onClick={handleWatchOnYouTube}>
+      <div style={styles.laptopMaterialCard}>
+        {/* Thumbnail */}
+        <div style={styles.youtubeThumbnailWrapper} onClick={handleWatchOnYouTube}>
           <img 
-            src={material.youtube_thumbnail || `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`}
+            src={getThumbnailUrl()}
             alt={material.title}
-            style={styles.laptopYoutubeThumbnailImg}
-            onError={(e) => {
-              e.target.src = `https://img.youtube.com/vi/${material.youtube_id}/hqdefault.jpg`;
-            }}
+            style={styles.youtubeThumbnailImg}
           />
-          <div style={styles.laptopYoutubePlayIcon}>▶</div>
+          <div style={styles.youtubePlayIcon}>▶</div>
         </div>
-        <div style={styles.laptopYoutubeContent}>
-          <div style={styles.laptopMaterialHeader('#FF0000')}>
-            <div style={styles.laptopMaterialType}>
-              <span style={{ color: '#FF0000', fontSize: '16px' }}><FaYoutube /></span>
-              <span style={{ color: '#FF0000', fontWeight: '600', fontSize: '14px' }}>YouTube</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#6b7280', fontSize: '12px' }}>
-                <FaUser size={10} /> {material.user}
-              </div>
-            </div>
+        
+        {/* Header */}
+        <div style={styles.laptopMaterialHeader('#FF0000')}>
+          <div style={styles.laptopMaterialType}>
+            <span style={{ color: '#FF0000', fontSize: '14px' }}><FaYoutube /></span>
+            <span style={{ color: '#FF0000', fontWeight: '600', fontSize: '12px' }}>YouTube</span>
           </div>
-          <div style={styles.laptopYoutubeTextContent}>
-            <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-            <p style={styles.laptopMaterialDescription}>{material.description}</p>
-            <div style={styles.laptopMaterialStats}>
-              <div style={styles.laptopStatItem}>
-                <FaClock color="#9ca3af" size={12} />
-                <span>{material.uploadDate}</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaEye color="#9ca3af" size={12} />
-                <span>{stats.views} views</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaStar color="#fbbf24" size={12} />
-                <span>{stats.rating.toFixed(1)}/5</span>
-              </div>
-              <div style={styles.laptopRatingContainer}>
-                <Rating materialId={material.id} currentRating={stats.rating} />
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#6b7280', fontSize: '11px' }}>
+              <FaUser size={10} /> {material.user?.split(' ')[0] || 'User'}
             </div>
           </div>
-          <div style={styles.laptopMaterialActions}>
-            <button
-              style={styles.laptopYoutubeWatchButton}
-              onClick={handleWatchOnYouTube}
-            >
-              <FaYoutube size={14} /> Watch on YouTube
-            </button>
+        </div>
+        
+        {/* Content - NO EXTRA LINK HERE */}
+        <div style={styles.laptopMaterialContent}>
+          <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
+          <p style={styles.laptopMaterialDescription}>
+            {material.description?.substring(0, 80) || 'No description'}
+          </p>
+          
+          <div style={styles.laptopMaterialStats}>
+            <div style={styles.laptopStatItem}>
+              <FaClock size={11} /> {material.uploadDate}
+            </div>
+            <div style={styles.laptopStatItem}>
+              <FaEye size={11} /> {stats.views} views
+            </div>
+            <div style={styles.laptopStatItem}>
+              <FaStar size={11} /> {stats.rating?.toFixed(1) || 0}/5
+            </div>
+            <div style={styles.laptopRatingContainer}>
+              <Rating materialId={material.id} currentRating={stats.rating} />
+            </div>
           </div>
+          
+          {/* File Info - NO LINK, sirf text */}
+          <div style={styles.laptopFileInfo}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px' }}>
+              <FaYoutube style={{ color: '#FF0000' }} /> YouTube Video
+            </span>
+          </div>
+        </div>
+        
+        {/* Actions - SIRF EK BUTTON, no extra link */}
+        <div style={styles.laptopMaterialActions}>
+          <button
+            style={{ ...styles.laptopDownloadButton(false), background: '#FF0000' }}
+            onClick={handleWatchOnYouTube}
+          >
+            <FaYoutube size={12} /> Watch on YouTube
+          </button>
         </div>
       </div>
     );
   }
 
-  // Mobile YouTube Card
+  // Mobile Version - NO EXTRA LINK
   return (
-    <div style={styles.mobileYoutubeCard}>
+    <div style={styles.mobileMaterialCard}>
+      {/* Thumbnail */}
       <div style={styles.mobileYoutubeThumbnail} onClick={handleWatchOnYouTube}>
         <img 
-          src={material.youtube_thumbnail || `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`}
+          src={getThumbnailUrl()}
           alt={material.title}
           style={styles.mobileYoutubeThumbnailImg}
         />
         <div style={styles.mobileYoutubePlayIcon}>▶</div>
       </div>
-      <div style={styles.mobileYoutubeContent}>
-        <div style={styles.mobileMaterialHeader}>
-          <div style={styles.mobileMaterialType}>
-            <span style={{ color: '#FF0000' }}><FaYoutube /></span>
-            <span style={{ color: '#FF0000', fontWeight: '500' }}>YouTube</span>
-          </div>
+      
+      {/* Header */}
+      <div style={styles.mobileMaterialHeader}>
+        <div style={styles.mobileMaterialType}>
+          <span style={{ color: '#FF0000', fontSize: '12px' }}><FaYoutube /></span>
+          <span style={{ color: '#FF0000', fontWeight: '500', fontSize: '11px' }}>YouTube</span>
         </div>
-        <div style={styles.mobileMaterialContent}>
-          <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-          <p style={styles.mobileMaterialDescription}>{material.description}</p>
-          <div style={styles.mobileMaterialMeta}>
-            <div style={styles.mobileMetaItem}>
-              <FaClock /> {material.uploadDate}
-            </div>
-            <div style={styles.mobileMetaItem}>
-              <FaEye /> {stats.views}
-            </div>
-          </div>
-          <div style={styles.mobileRatingContainer}>
-            <Rating materialId={material.id} currentRating={stats.rating} />
-          </div>
+      </div>
+      
+      {/* Content */}
+      <div style={styles.mobileMaterialContent}>
+        <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
+        <p style={styles.mobileMaterialDescription}>
+          {material.description?.substring(0, 60) || 'No description'}
+        </p>
+        
+        <div style={styles.mobileMaterialMeta}>
+          <span><FaClock size={10} /> {material.uploadDate}</span>
+          <span><FaEye size={10} /> {stats.views} views</span>
         </div>
-        <div style={styles.mobileMaterialActions}>
-          <button
-            style={styles.mobileYoutubeWatchButton}
-            onClick={handleWatchOnYouTube}
-          >
-            <FaYoutube /> Watch on YouTube
-          </button>
+        
+        <div style={styles.mobileRatingContainer}>
+          <Rating materialId={material.id} currentRating={stats.rating} />
         </div>
+        
+        {/* File Info - NO LINK */}
+        <div style={styles.mobileFileInfo}>
+          <FaYoutube style={{ color: '#FF0000' }} /> YouTube
+        </div>
+      </div>
+      
+      {/* Actions - SIRF EK BUTTON */}
+      <div style={styles.mobileMaterialActions}>
+        <button
+          style={{ ...styles.mobileDownloadButton(false), background: '#FF0000' }}
+          onClick={handleWatchOnYouTube}
+        >
+          <FaYoutube size={10} /> Watch
+        </button>
       </div>
     </div>
   );
