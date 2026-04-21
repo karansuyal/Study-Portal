@@ -5,7 +5,8 @@ import {
   FaQuestionCircle, FaHistory, FaArrowLeft, FaBookOpen, 
   FaClock, FaStar, FaSpinner, FaUser, FaSearch,
   FaFilter, FaFileWord, FaFilePowerpoint, FaFileImage,
-  FaFileArchive, FaSync, FaCloudUploadAlt,FaYoutube
+  FaFileArchive, FaSync, FaCloudUploadAlt, FaYoutube,
+  FaExternalLinkAlt
 } from 'react-icons/fa';
 import { coursesData, getSubjects } from '../data/coursesData';
 import api, { API_URL } from '../services/api';
@@ -82,7 +83,7 @@ const MaterialsPage = () => {
     );
   };
 
-  // Material types
+  // ✅ MATERIAL TYPES - FIXED: 'youtube' id (lowercase, no space)
   const materialTypes = [
     { id: 'all', name: 'All Materials', icon: <FaFilter />, color: '#6b7280' },
     { id: 'syllabus', name: 'Syllabus', icon: <FaBook />, color: '#3B82F6' },
@@ -90,7 +91,7 @@ const MaterialsPage = () => {
     { id: 'pyq', name: 'PYQs', icon: <FaHistory />, color: '#8B5CF6' },
     { id: 'important', name: 'Imp Questions', icon: <FaQuestionCircle />, color: '#F59E0B' },
     { id: 'lab', name: 'Lab Manuals', icon: <FaBookOpen />, color: '#EF4444' },
-    { id: 'You Tube', name: 'You Tube', icon: <FaYoutube />, color: '#EF4444' }
+    { id: 'youtube', name: 'YouTube', icon: <FaYoutube />, color: '#FF0000' }
   ];
 
   // ✅ NOTIFICATION HELPER
@@ -134,11 +135,128 @@ const MaterialsPage = () => {
     }, 3000);
   };
 
-  // ✅ MATERIAL CARD COMPONENT
+  // ✅ YOUTUBE CARD COMPONENT
+  const YouTubeCard = ({ material }) => {
+    const stats = useNoteStats(material.id, {
+      views: material.views || 0,
+      downloads: material.downloads || 0,
+      rating: material.rating || 0
+    });
+
+    const handleWatchOnYouTube = () => {
+      window.open(material.youtube_url, '_blank');
+    };
+
+    if (!isMobile) {
+      return (
+        <div style={styles.laptopYoutubeCard}>
+          <div style={styles.laptopYoutubeThumbnail} onClick={handleWatchOnYouTube}>
+            <img 
+              src={material.youtube_thumbnail || `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`}
+              alt={material.title}
+              style={styles.laptopYoutubeThumbnailImg}
+              onError={(e) => {
+                e.target.src = `https://img.youtube.com/vi/${material.youtube_id}/hqdefault.jpg`;
+              }}
+            />
+            <div style={styles.laptopYoutubePlayIcon}>▶</div>
+          </div>
+          <div style={styles.laptopYoutubeContent}>
+            <div style={styles.laptopMaterialHeader('#FF0000')}>
+              <div style={styles.laptopMaterialType}>
+                <span style={{ color: '#FF0000', fontSize: '16px' }}><FaYoutube /></span>
+                <span style={{ color: '#FF0000', fontWeight: '600', fontSize: '14px' }}>YouTube</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#6b7280', fontSize: '12px' }}>
+                  <FaUser size={10} /> {material.user}
+                </div>
+              </div>
+            </div>
+            <div style={styles.laptopYoutubeTextContent}>
+              <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
+              <p style={styles.laptopMaterialDescription}>{material.description}</p>
+              <div style={styles.laptopMaterialStats}>
+                <div style={styles.laptopStatItem}>
+                  <FaClock color="#9ca3af" size={12} />
+                  <span>{material.uploadDate}</span>
+                </div>
+                <div style={styles.laptopStatItem}>
+                  <FaEye color="#9ca3af" size={12} />
+                  <span>{stats.views} views</span>
+                </div>
+                <div style={styles.laptopStatItem}>
+                  <FaStar color="#fbbf24" size={12} />
+                  <span>{stats.rating.toFixed(1)}/5</span>
+                </div>
+                <div style={styles.laptopRatingContainer}>
+                  <Rating materialId={material.id} currentRating={stats.rating} />
+                </div>
+              </div>
+            </div>
+            <div style={styles.laptopMaterialActions}>
+              <button
+                style={styles.laptopYoutubeWatchButton}
+                onClick={handleWatchOnYouTube}
+              >
+                <FaYoutube size={14} /> Watch on YouTube
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Mobile YouTube Card
+    return (
+      <div style={styles.mobileYoutubeCard}>
+        <div style={styles.mobileYoutubeThumbnail} onClick={handleWatchOnYouTube}>
+          <img 
+            src={material.youtube_thumbnail || `https://img.youtube.com/vi/${material.youtube_id}/mqdefault.jpg`}
+            alt={material.title}
+            style={styles.mobileYoutubeThumbnailImg}
+          />
+          <div style={styles.mobileYoutubePlayIcon}>▶</div>
+        </div>
+        <div style={styles.mobileYoutubeContent}>
+          <div style={styles.mobileMaterialHeader}>
+            <div style={styles.mobileMaterialType}>
+              <span style={{ color: '#FF0000' }}><FaYoutube /></span>
+              <span style={{ color: '#FF0000', fontWeight: '500' }}>YouTube</span>
+            </div>
+          </div>
+          <div style={styles.mobileMaterialContent}>
+            <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
+            <p style={styles.mobileMaterialDescription}>{material.description}</p>
+            <div style={styles.mobileMaterialMeta}>
+              <div style={styles.mobileMetaItem}>
+                <FaClock /> {material.uploadDate}
+              </div>
+              <div style={styles.mobileMetaItem}>
+                <FaEye /> {stats.views}
+              </div>
+            </div>
+            <div style={styles.mobileRatingContainer}>
+              <Rating materialId={material.id} currentRating={stats.rating} />
+            </div>
+          </div>
+          <div style={styles.mobileMaterialActions}>
+            <button
+              style={styles.mobileYoutubeWatchButton}
+              onClick={handleWatchOnYouTube}
+            >
+              <FaYoutube /> Watch
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ✅ REGULAR MATERIAL CARD COMPONENT
   const MaterialCard = ({ material, typeInfo }) => {
     const [downloading, setDownloading] = useState(false);
     
-    // ✅ useNoteStats hook - UNIVERSAL COUNTERS
     const stats = useNoteStats(material.id, {
       views: material.views || 0,
       downloads: material.downloads || 0,
@@ -149,15 +267,11 @@ const MaterialsPage = () => {
       setDownloading(true);
       
       try {
-        // ✅ Universal download increment
         stats.incrementDownload();
         
         if (material.cloudinary_url) {
-          console.log('📥 Direct Cloudinary download:', material.cloudinary_url);
-          
           const response = await fetch(material.cloudinary_url);
           const blob = await response.blob();
-          
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
@@ -166,24 +280,18 @@ const MaterialsPage = () => {
           link.click();
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
-          
           showNotification('✅ Download Complete!', material.title, 'success');
         } else {
-          // API download
           const token = localStorage.getItem('study_portal_token');
-          
           if (!token) {
             showNotification('Error', 'Please login again', 'error');
             return;
           }
-          
           const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
           });
-          
           if (!response.ok) throw new Error(`Download failed: ${response.status}`);
-          
           if (response.redirected) {
             window.open(response.url, '_blank');
           } else {
@@ -194,7 +302,6 @@ const MaterialsPage = () => {
             link.download = material.file_name || `${material.title}.pdf`;
             link.click();
           }
-          
           showNotification('✅ Download Complete!', material.title, 'success');
         }
       } catch (error) {
@@ -276,153 +383,70 @@ const MaterialsPage = () => {
       };
     };
 
-    // Laptop View
     if (!isMobile) {
       return (
         <div style={styles.laptopMaterialCard}>
-          {/* Header */}
           <div style={styles.laptopMaterialHeader(typeInfo.color)}>
             <div style={styles.laptopMaterialType}>
-              <span style={{ color: typeInfo.color, fontSize: '16px' }}>
-                {typeInfo.icon}
-              </span>
-              <span style={{ color: typeInfo.color, fontWeight: '600', fontSize: '14px' }}>
-                {typeInfo.name}
-              </span>
+              <span style={{ color: typeInfo.color, fontSize: '16px' }}>{typeInfo.icon}</span>
+              <span style={{ color: typeInfo.color, fontWeight: '600', fontSize: '14px' }}>{typeInfo.name}</span>
             </div>
-            
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#6b7280', fontSize: '12px' }}>
                 <FaUser size={10} /> {material.user}
               </div>
             </div>
           </div>
-          
-          {/* Content */}
           <div style={styles.laptopMaterialContent}>
-            <h4 style={styles.laptopMaterialTitle}>
-              {material.title}
-            </h4>
-            <p style={styles.laptopMaterialDescription}>
-              {material.description}
-            </p>
-            
+            <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
+            <p style={styles.laptopMaterialDescription}>{material.description}</p>
             <div style={styles.laptopMaterialStats}>
-              <div style={styles.laptopStatItem}>
-                <FaClock color="#9ca3af" size={12} />
-                <span>{material.uploadDate}</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaDownload color="#9ca3af" size={12} />
-                <span>{stats.downloads} downloads</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaEye color="#9ca3af" size={12} />
-                <span>{stats.views} views</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaStar color="#fbbf24" size={12} />
-                <span>{stats.rating.toFixed(1)}/5</span>
-              </div>
-              
-              <div style={styles.laptopRatingContainer}>
-                <Rating materialId={material.id} currentRating={stats.rating} />
-              </div>
+              <div style={styles.laptopStatItem}><FaClock color="#9ca3af" size={12} /><span>{material.uploadDate}</span></div>
+              <div style={styles.laptopStatItem}><FaDownload color="#9ca3af" size={12} /><span>{stats.downloads} downloads</span></div>
+              <div style={styles.laptopStatItem}><FaEye color="#9ca3af" size={12} /><span>{stats.views} views</span></div>
+              <div style={styles.laptopStatItem}><FaStar color="#fbbf24" size={12} /><span>{stats.rating.toFixed(1)}/5</span></div>
+              <div style={styles.laptopRatingContainer}><Rating materialId={material.id} currentRating={stats.rating} /></div>
             </div>
-            
             <div style={styles.laptopFileInfo}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                {getFileIcon(material.fileType)}
-                <span>{material.fileSize}</span>
+                {getFileIcon(material.fileType)} <span>{material.fileSize}</span>
               </span>
             </div>
           </div>
-          
-          {/* Action Buttons */}
           <div style={styles.laptopMaterialActions}>
-            <button
-              style={styles.laptopPreviewButton}
-              onClick={handlePreview}
-            >
-              <FaEye size={14} /> Preview
-            </button>
-            
-            <button
-              style={styles.laptopDownloadButton(downloading)}
-              onClick={handleDownload}
-              disabled={downloading}
-            >
-              {downloading ? (
-                <>
-                  <FaSpinner style={{ animation: 'spin 1s linear infinite' }} size={14} />
-                  Downloading...
-                </>
-              ) : (
-                <>
-                  <FaDownload size={14} /> Download
-                </>
-              )}
+            <button style={styles.laptopPreviewButton} onClick={handlePreview}><FaEye size={14} /> Preview</button>
+            <button style={styles.laptopDownloadButton(downloading)} onClick={handleDownload} disabled={downloading}>
+              {downloading ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} size={14} /> Downloading...</> : <><FaDownload size={14} /> Download</>}
             </button>
           </div>
         </div>
       );
     }
 
-    // Mobile View
     return (
       <div style={styles.mobileMaterialCard}>
         {material.isNew && <span style={styles.mobileNewBadge}>NEW</span>}
-        
         <div style={styles.mobileMaterialHeader}>
           <div style={styles.mobileMaterialType}>
             <span style={{ color: typeInfo?.color }}>{typeInfo?.icon}</span>
             <span style={{ color: typeInfo?.color, fontWeight: '500' }}>{typeInfo?.name}</span>
           </div>
         </div>
-        
         <div style={styles.mobileMaterialContent}>
           <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
           <p style={styles.mobileMaterialDescription}>{material.description}</p>
-          
           <div style={styles.mobileMaterialMeta}>
-            <div style={styles.mobileMetaItem}>
-              <FaClock /> {material.uploadDate}
-            </div>
-            <div style={styles.mobileMetaItem}>
-              <FaEye /> {stats.views}
-            </div>
-            <div style={styles.mobileMetaItem}>
-              <FaDownload /> {stats.downloads}
-            </div>
+            <div style={styles.mobileMetaItem}><FaClock /> {material.uploadDate}</div>
+            <div style={styles.mobileMetaItem}><FaEye /> {stats.views}</div>
+            <div style={styles.mobileMetaItem}><FaDownload /> {stats.downloads}</div>
           </div>
-          
-          <div style={styles.mobileRatingContainer}>
-            <Rating materialId={material.id} currentRating={stats.rating} />
-          </div>
-          
-          <div style={styles.mobileFileInfo}>
-            {getFileIcon(material.fileType)}
-            <span>{material.fileSize}</span>
-          </div>
+          <div style={styles.mobileRatingContainer}><Rating materialId={material.id} currentRating={stats.rating} /></div>
+          <div style={styles.mobileFileInfo}>{getFileIcon(material.fileType)} <span>{material.fileSize}</span></div>
         </div>
-        
         <div style={styles.mobileMaterialActions}>
-          <button 
-            style={styles.mobilePreviewButton} 
-            onClick={handlePreview}
-          >
-            <FaEye /> Preview
-          </button>
-          <button
-            style={styles.mobileDownloadButton(downloading)}
-            onClick={handleDownload}
-            disabled={downloading}
-          >
-            {downloading ? (
-              <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Downloading</>
-            ) : (
-              <><FaDownload /> Download</>
-            )}
+          <button style={styles.mobilePreviewButton} onClick={handlePreview}><FaEye /> Preview</button>
+          <button style={styles.mobileDownloadButton(downloading)} onClick={handleDownload} disabled={downloading}>
+            {downloading ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Downloading</> : <><FaDownload /> Download</>}
           </button>
         </div>
       </div>
@@ -435,15 +459,11 @@ const MaterialsPage = () => {
     
     try {
       setError(null);
-      
       console.log('📥 Fetching materials for subject:', subjectId);
       
       let response;
       try {
-        response = await api.getMaterials({
-          subject_id: subjectId,
-          status: 'approved'
-        });
+        response = await api.getMaterials({ subject_id: subjectId, status: 'approved' });
       } catch (apiError) {
         console.error('API Error:', apiError);
         setError('Failed to connect to server. Please try again.');
@@ -461,15 +481,13 @@ const MaterialsPage = () => {
         transformedMaterials = response.notes.map((note) => ({
           id: note.id,
           title: note.title || 'Untitled',
-          type: note.note_type || note.type || 'notes',
+          type: note.is_youtube ? 'youtube' : (note.note_type || note.type || 'notes'),
           description: note.description || 'No description available',
           fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
           original_filename: note.original_filename,
           fileType: note.file_type || 'pdf',
           uploadDate: note.uploaded_at ? new Date(note.uploaded_at).toLocaleDateString('en-IN', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
+            day: 'numeric', month: 'short', year: 'numeric'
           }) : 'N/A',
           downloads: note.downloads || 0,
           views: note.views || 0,
@@ -478,18 +496,18 @@ const MaterialsPage = () => {
           fileUrl: note.file_url || '#',
           cloudinary_url: note.cloudinary_url,
           user: note.user_name || note.uploader_name || 'Unknown',
-          isNew: note.uploaded_at ? new Date(note.uploaded_at) > new Date(Date.now() - 7*24*60*60*1000) : false
+          isNew: note.uploaded_at ? new Date(note.uploaded_at) > new Date(Date.now() - 7*24*60*60*1000) : false,
+          is_youtube: note.is_youtube || false,
+          youtube_url: note.youtube_url,
+          youtube_id: note.youtube_id,
+          youtube_thumbnail: note.youtube_thumbnail,
+          youtube_embed_url: note.youtube_embed_url
         }));
       }
       
       setMaterials(transformedMaterials);
-      
-      if (transformedMaterials.length === 0) {
-        setError('No approved materials found for this subject.');
-      }
-      
+      if (transformedMaterials.length === 0) setError('No approved materials found for this subject.');
       setLastRefreshed(new Date());
-      
     } catch (error) {
       console.error('Error fetching materials:', error);
       setError('Failed to load materials. Please try again.');
@@ -500,20 +518,15 @@ const MaterialsPage = () => {
     }
   };
 
-  // ✅ FORMAT BYTES
   const formatBytes = (bytes) => {
     if (!bytes) return 'N/A';
     const units = ['B', 'KB', 'MB', 'GB'];
     let size = bytes;
     let unitIndex = 0;
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
-      unitIndex++;
-    }
+    while (size >= 1024 && unitIndex < units.length - 1) { size /= 1024; unitIndex++; }
     return `${size.toFixed(1)} ${units[unitIndex]}`;
   };
 
-  // ✅ GET FILE ICON
   const getFileIcon = (fileType) => {
     const type = fileType?.toLowerCase() || 'pdf';
     if (type.includes('pdf')) return <FaFilePdf style={{ color: '#ef4444' }} />;
@@ -528,11 +541,9 @@ const MaterialsPage = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      
       try {
         const subjects = getSubjects(parseInt(courseId), parseInt(yearId), parseInt(semId));
         const foundSubject = subjects.find(sub => sub.id === parseInt(subjectId));
-        
         if (foundSubject) {
           setSubject(foundSubject);
           setCourseInfo(coursesData[courseId]);
@@ -547,23 +558,16 @@ const MaterialsPage = () => {
         setLoading(false);
       }
     };
-    
     loadData();
   }, [courseId, yearId, semId, subjectId]);
 
-  // ✅ VIEW INCREMENT ON FIRST PAGE LOAD (ONE TIME ONLY)
+  // ✅ VIEW INCREMENT ON FIRST PAGE LOAD
   useEffect(() => {
     const incrementViewsOnce = async () => {
-      // Agar views already increment ho chuke hain to mat karo
       if (viewsIncremented) return;
-      
-      // Agar materials load nahi hue hain to mat karo
       if (materials.length === 0 || !subject) return;
-      
       console.log('👁️ Auto-incrementing views for all materials (FIRST TIME ONLY)');
-      setViewsIncremented(true); // Flag set karo taaki dobara na ho
-      
-      // Sab materials ke views increment karo
+      setViewsIncremented(true);
       for (const material of materials) {
         try {
           const token = localStorage.getItem('study_portal_token');
@@ -576,23 +580,13 @@ const MaterialsPage = () => {
           console.error(`❌ Error incrementing view for ${material.id}:`, error);
         }
       }
-      
-      // 2 sec baad refresh karo taaki updated views dikhein
-      setTimeout(() => {
-        fetchMaterialsFromBackend(true);
-      }, 2000);
+      setTimeout(() => { fetchMaterialsFromBackend(true); }, 2000);
     };
-
     incrementViewsOnce();
-  }, [materials, subject, viewsIncremented]); // Sirf tab run hoga jab materials/subject change ho
+  }, [materials, subject, viewsIncremented]);
 
-  const handleBack = () => {
-    navigate(`/course/${courseId}/year/${yearId}/sem/${semId}`);
-  };
-
-  const handleRefresh = () => {
-    fetchMaterialsFromBackend(true);
-  };
+  const handleBack = () => navigate(`/course/${courseId}/year/${yearId}/sem/${semId}`);
+  const handleRefresh = () => fetchMaterialsFromBackend(true);
 
   // ✅ FILTER MATERIALS
   const filteredMaterials = materials.filter(material => {
@@ -604,7 +598,6 @@ const MaterialsPage = () => {
     return matchesType && matchesSearch;
   });
 
-  // ✅ MATERIAL STATS
   const getMaterialStats = () => {
     const stats = {};
     materialTypes.forEach(type => {
@@ -614,715 +607,113 @@ const MaterialsPage = () => {
     });
     return stats;
   };
-
   const materialStats = getMaterialStats();
 
-  // ✅ STYLES (apke existing styles yahan rahenge)
+  // ==================== STYLES ====================
   const styles = {
-    // ... (apne saare styles yahan copy karo)
-    container: {
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: isMobile ? '10px' : '20px',
-      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
-    },
-    innerContainer: {
-      maxWidth: '1200px',
-      margin: '0 auto'
-    },
-    // Laptop styles (apne saare styles yahan copy karo)
-    laptopHeaderButtons: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '20px',
-      flexWrap: 'wrap',
-      gap: '15px'
-    },
-    laptopBackButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '12px 24px',
-      background: 'white',
-      color: '#4f46e5',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      fontWeight: '600',
-      fontSize: '16px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.3s ease'
-    },
-    laptopRefreshButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '12px 24px',
-      background: '#10b981',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      fontWeight: '600',
-      fontSize: '16px',
-      boxShadow: '0 4px 6px rgba(16, 185, 129, 0.3)',
-      transition: 'all 0.3s ease'
-    },
-    laptopSubjectHeader: {
-      background: 'white',
-      padding: '30px',
-      borderRadius: '16px',
-      marginBottom: '30px',
-      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '25px',
-      flexWrap: 'wrap'
-    },
-    laptopSubjectIconContainer: {
-      width: '90px',
-      height: '90px',
-      borderRadius: '50%',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: '0'
-    },
-    laptopSubjectIcon: {
-      fontSize: '40px',
-      color: 'white'
-    },
-    laptopSubjectInfo: {
-      flex: '1'
-    },
-    laptopSubjectName: {
-      fontSize: '32px',
-      fontWeight: '700',
-      color: '#1f2937',
-      marginBottom: '10px'
-    },
-    laptopSubjectCode: {
-      fontSize: '18px',
-      color: '#6b7280',
-      marginBottom: '15px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '20px',
-      flexWrap: 'wrap'
-    },
-    laptopBreadcrumb: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      fontSize: '14px',
-      color: '#9ca3af',
-      flexWrap: 'wrap'
-    },
-    laptopBreadcrumbItem: {
-      padding: '6px 12px',
-      background: '#f3f4f6',
-      borderRadius: '6px'
-    },
-    laptopCurrentBreadcrumb: {
-      background: '#4f46e5',
-      color: 'white'
-    },
-    laptopStatsBox: {
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px',
-      borderRadius: '12px',
-      color: 'white',
-      textAlign: 'center',
-      minWidth: '120px'
-    },
-    laptopStatsNumber: {
-      fontSize: '32px',
-      fontWeight: '700',
-      marginBottom: '5px'
-    },
-    laptopStatsLabel: {
-      fontSize: '14px',
-      opacity: '0.9'
-    },
-    laptopLastRefreshed: {
-      fontSize: '12px',
-      color: '#9ca3af',
-      marginTop: '10px',
-      textAlign: 'right'
-    },
-    laptopSearchContainer: {
-      position: 'relative',
-      marginBottom: '25px'
-    },
-    laptopSearchInput: {
-      width: '100%',
-      padding: '16px 20px 16px 50px',
-      fontSize: '16px',
-      border: '2px solid #e5e7eb',
-      borderRadius: '10px',
-      background: '#f9fafb',
-      transition: 'all 0.3s',
-      outline: 'none'
-    },
-    laptopSearchIcon: {
-      position: 'absolute',
-      left: '20px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: '#9ca3af',
-      fontSize: '18px'
-    },
-    laptopFiltersContainer: {
-      background: 'white',
-      padding: '20px',
-      borderRadius: '12px',
-      marginBottom: '25px',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-    },
-    laptopFiltersTitle: {
-      fontSize: '20px',
-      fontWeight: '600',
-      color: '#1f2937',
-      marginBottom: '15px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    laptopFiltersGrid: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '10px'
-    },
-    laptopFilterButton: (type, selected) => ({
-      padding: '12px 20px',
-      border: `2px solid ${selected ? type.color : '#e5e7eb'}`,
-      borderRadius: '8px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      fontSize: '14px',
-      fontWeight: '500',
-      background: selected ? `${type.color}15` : 'white',
-      color: selected ? type.color : '#4b5563',
-      transition: 'all 0.3s'
-    }),
-    laptopFilterCount: {
-      background: '#f3f4f6',
-      color: '#6b7280',
-      padding: '2px 8px',
-      borderRadius: '12px',
-      fontSize: '12px',
-      fontWeight: 'bold'
-    },
-    laptopMaterialsGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-      gap: '25px'
-    },
-    laptopMaterialCard: {
-      border: '1px solid #e5e7eb',
-      borderRadius: '12px',
-      overflow: 'hidden',
-      transition: 'all 0.4s ease',
-      background: 'white',
-      position: 'relative'
-    },
-    laptopNewBadge: {
-      position: 'absolute',
-      top: '10px',
-      right: '10px',
-      background: '#ef4444',
-      color: 'white',
-      padding: '4px 12px',
-      borderRadius: '20px',
-      fontSize: '12px',
-      fontWeight: 'bold',
-      zIndex: 1,
-      boxShadow: '0 2px 4px rgba(239, 68, 68, 0.3)'
-    },
-    laptopMaterialHeader: (color) => ({
-      padding: '18px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderBottom: '1px solid #e5e7eb',
-      background: `${color}10`
-    }),
-    laptopMaterialType: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    laptopMaterialContent: {
-      padding: '25px'
-    },
-    laptopMaterialTitle: {
-      fontSize: '18px',
-      fontWeight: '600',
-      color: '#1f2937',
-      marginBottom: '12px',
-      lineHeight: '1.4'
-    },
-    laptopMaterialDescription: {
-      color: '#6b7280',
-      fontSize: '14px',
-      lineHeight: '1.6',
-      marginBottom: '20px',
-      minHeight: '60px'
-    },
-    laptopMaterialStats: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '15px',
-      marginBottom: '20px',
-      background: '#f9fafb',
-      padding: '15px',
-      borderRadius: '8px'
-    },
-    laptopStatItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      color: '#6b7280',
-      fontSize: '13px'
-    },
-    laptopRatingContainer: {
-      gridColumn: 'span 2',
-      display: 'flex',
-      justifyContent: 'center',
-      marginTop: '5px'
-    },
-    laptopFileInfo: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingTop: '15px',
-      borderTop: '1px solid #e5e7eb',
-      fontSize: '13px',
-      color: '#9ca3af'
-    },
-    laptopMaterialActions: {
-      padding: '20px',
-      background: '#f9fafb',
-      borderTop: '1px solid #e5e7eb',
-      display: 'flex',
-      gap: '12px'
-    },
-    laptopPreviewButton: {
-      flex: '1',
-      padding: '12px',
-      background: 'white',
-      border: '2px solid #e5e7eb',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      fontWeight: '600',
-      color: '#4b5563',
-      fontSize: '14px'
-    },
-    laptopDownloadButton: (downloading) => ({
-      flex: '2',
-      padding: '12px',
-      background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: downloading ? 'not-allowed' : 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      fontWeight: '600',
-      fontSize: '14px',
-      opacity: downloading ? 0.7 : 1
-    }),
+    container: { minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: isMobile ? '10px' : '20px', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' },
+    innerContainer: { maxWidth: '1200px', margin: '0 auto' },
     
-    // Mobile styles (apne saare mobile styles yahan copy karo)
-    mobileHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      background: 'white',
-      padding: '12px 15px',
-      borderRadius: '12px',
-      marginBottom: '15px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-    },
-    mobileBackButton: {
-      background: '#f3f4f6',
-      border: 'none',
-      width: '40px',
-      height: '40px',
-      borderRadius: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '18px',
-      color: '#4f46e5',
-      cursor: 'pointer'
-    },
-    mobileTitle: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#1f2937',
-      flex: 1,
-      textAlign: 'center',
-      padding: '0 10px',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    mobileRefreshButton: {
-      background: '#f3f4f6',
-      border: 'none',
-      width: '40px',
-      height: '40px',
-      borderRadius: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '18px',
-      color: '#10b981',
-      cursor: 'pointer'
-    },
-    mobileSubjectCard: {
-      background: 'white',
-      borderRadius: '16px',
-      padding: '20px',
-      marginBottom: '15px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '15px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-    },
-    mobileSubjectIconContainer: {
-      width: '60px',
-      height: '60px',
-      borderRadius: '50%',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: 0
-    },
-    mobileSubjectIcon: {
-      fontSize: '30px',
-      color: 'white'
-    },
-    mobileSubjectInfo: {
-      flex: 1
-    },
-    mobileSubjectName: {
-      fontSize: '18px',
-      fontWeight: '700',
-      color: '#1f2937',
-      marginBottom: '4px'
-    },
-    mobileSubjectCode: {
-      fontSize: '13px',
-      color: '#6b7280',
-      marginBottom: '6px'
-    },
-    mobileSubjectMeta: {
-      display: 'flex',
-      gap: '12px',
-      fontSize: '12px',
-      color: '#4f46e5',
-      flexWrap: 'wrap'
-    },
-    mobileSearchContainer: {
-      position: 'relative',
-      marginBottom: '15px'
-    },
-    mobileSearchIcon: {
-      position: 'absolute',
-      left: '15px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: '#9ca3af',
-      fontSize: '16px'
-    },
-    mobileSearchInput: {
-      width: '100%',
-      padding: '14px 45px 14px 45px',
-      fontSize: '14px',
-      border: 'none',
-      borderRadius: '12px',
-      background: 'white',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-      outline: 'none'
-    },
-    mobileClearButton: {
-      position: 'absolute',
-      right: '15px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      background: 'none',
-      border: 'none',
-      color: '#9ca3af',
-      fontSize: '16px',
-      cursor: 'pointer',
-      padding: '5px'
-    },
-    mobileFilterToggle: {
-      width: '100%',
-      padding: '12px',
-      background: 'white',
-      border: 'none',
-      borderRadius: '12px',
-      marginBottom: '10px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      fontSize: '14px',
-      fontWeight: '500',
-      color: '#4f46e5',
-      cursor: 'pointer',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-    },
-    mobileFiltersContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '8px',
-      marginBottom: '15px',
-      background: 'white',
-      padding: '15px',
-      borderRadius: '12px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-    },
-    mobileFilterButton: (type, selected) => ({
-      padding: '8px 12px',
-      border: `1px solid ${selected ? type.color : '#e5e7eb'}`,
-      borderRadius: '20px',
-      background: selected ? `${type.color}15` : 'white',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      fontSize: '12px',
-      fontWeight: '500',
-      color: selected ? type.color : '#4b5563',
-      cursor: 'pointer',
-      transition: 'all 0.2s'
-    }),
-    mobileFilterCount: {
-      background: '#f3f4f6',
-      color: '#6b7280',
-      padding: '2px 6px',
-      borderRadius: '12px',
-      fontSize: '10px',
-      marginLeft: '4px'
-    },
-    mobileErrorMessage: {
-      background: '#fee2e2',
-      color: '#dc2626',
-      padding: '12px',
-      borderRadius: '8px',
-      marginBottom: '15px',
-      textAlign: 'center',
-      fontSize: '13px'
-    },
-    mobileEmptyState: {
-      background: 'white',
-      padding: '40px 20px',
-      borderRadius: '16px',
-      textAlign: 'center'
-    },
-    mobileEmptyIcon: {
-      fontSize: '48px',
-      marginBottom: '15px',
-      opacity: 0.5
-    },
-    mobileUploadButton: {
-      marginTop: '15px',
-      padding: '12px 24px',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      fontSize: '14px',
-      fontWeight: '600',
-      display: 'inlineFlex',
-      alignItems: 'center',
-      gap: '8px',
-      cursor: 'pointer'
-    },
-    mobileMaterialsList: {
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gap: '15px'
-    },
-    mobileMaterialCard: {
-      background: 'white',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      position: 'relative',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-    },
-    mobileNewBadge: {
-      position: 'absolute',
-      top: '10px',
-      right: '10px',
-      background: '#ef4444',
-      color: 'white',
-      padding: '4px 8px',
-      borderRadius: '12px',
-      fontSize: '10px',
-      fontWeight: 'bold',
-      zIndex: 1
-    },
-    mobileMaterialHeader: {
-      padding: '12px 15px',
-      background: '#f9fafb',
-      borderBottom: '1px solid #e5e7eb'
-    },
-    mobileMaterialType: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      fontSize: '12px'
-    },
-    mobileMaterialContent: {
-      padding: '15px'
-    },
-    mobileMaterialTitle: {
-      fontSize: '15px',
-      fontWeight: '600',
-      color: '#1f2937',
-      marginBottom: '8px',
-      lineHeight: '1.4'
-    },
-    mobileMaterialDescription: {
-      fontSize: '13px',
-      color: '#6b7280',
-      marginBottom: '12px',
-      lineHeight: '1.5',
-      display: '-webkit-box',
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: 'vertical',
-      overflow: 'hidden'
-    },
-    mobileMaterialMeta: {
-      display: 'flex',
-      gap: '12px',
-      marginBottom: '12px',
-      fontSize: '11px',
-      color: '#9ca3af',
-      flexWrap: 'wrap'
-    },
-    mobileMetaItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px'
-    },
-    mobileRatingContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '3px',
-      marginBottom: '12px'
-    },
-    mobileStarButton: {
-      background: 'none',
-      border: 'none',
-      fontSize: '16px',
-      cursor: 'pointer',
-      padding: '2px'
-    },
-    mobileFileInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      fontSize: '11px',
-      color: '#9ca3af',
-      paddingTop: '8px',
-      borderTop: '1px solid #e5e7eb'
-    },
-    mobileMaterialActions: {
-      display: 'flex',
-      gap: '8px',
-      padding: '15px',
-      background: '#f9fafb',
-      borderTop: '1px solid #e5e7eb'
-    },
-    mobilePreviewButton: {
-      flex: 1,
-      padding: '10px',
-      background: 'white',
-      border: '1px solid #e5e7eb',
-      borderRadius: '8px',
-      fontSize: '12px',
-      fontWeight: '500',
-      color: '#4b5563',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '5px',
-      cursor: 'pointer'
-    },
-    mobileDownloadButton: (downloading) => ({
-      flex: 2,
-      padding: '10px',
-      background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      fontSize: '12px',
-      fontWeight: '500',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '5px',
-      cursor: downloading ? 'not-allowed' : 'pointer',
-      opacity: downloading ? 0.7 : 1
-    }),
-    loadingContainer: {
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white'
-    },
-    loadingSpinner: {
-      width: isMobile ? '40px' : '50px',
-      height: isMobile ? '40px' : '50px',
-      border: isMobile ? '3px solid rgba(255,255,255,0.3)' : '5px solid rgba(255,255,255,0.3)',
-      borderTop: isMobile ? '3px solid white' : '5px solid white',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite',
-      marginBottom: isMobile ? '10px' : '20px'
-    },
-    errorContainer: {
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
-      padding: '20px',
-      textAlign: 'center'
-    },
-    backButton: {
-      padding: isMobile ? '10px 20px' : '12px 24px',
-      background: '#4f46e5',
-      color: 'white',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      fontSize: isMobile ? '14px' : '16px',
-      marginTop: '20px',
-      display: 'inlineFlex',
-      alignItems: 'center',
-      gap: '8px'
-    }
+    // Laptop YouTube Card Styles
+    laptopYoutubeCard: { border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden', transition: 'all 0.4s ease', background: 'white', display: 'flex', flexDirection: 'column' },
+    laptopYoutubeThumbnail: { position: 'relative', background: '#000', cursor: 'pointer', overflow: 'hidden', height: '200px' },
+    laptopYoutubeThumbnailImg: { width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' },
+    laptopYoutubePlayIcon: { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '60px', height: '60px', background: 'rgba(255,0,0,0.8)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white', opacity: 0.9, transition: 'all 0.3s ease' },
+    laptopYoutubeContent: { flex: 1 },
+    laptopYoutubeTextContent: { padding: '25px' },
+    laptopYoutubeWatchButton: { flex: 2, padding: '12px', background: '#FF0000', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: '600', fontSize: '14px' },
+    
+    // Mobile YouTube Card Styles
+    mobileYoutubeCard: { background: 'white', borderRadius: '16px', overflow: 'hidden', marginBottom: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
+    mobileYoutubeThumbnail: { position: 'relative', background: '#000', cursor: 'pointer', height: '180px' },
+    mobileYoutubeThumbnailImg: { width: '100%', height: '100%', objectFit: 'cover' },
+    mobileYoutubePlayIcon: { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '50px', height: '50px', background: 'rgba(255,0,0,0.8)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'white' },
+    mobileYoutubeContent: { flex: 1 },
+    mobileYoutubeWatchButton: { flex: 2, padding: '10px', background: '#FF0000', color: 'white', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', cursor: 'pointer' },
+    
+    // Laptop Styles (existing)
+    laptopHeaderButtons: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' },
+    laptopBackButton: { display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'white', color: '#4f46e5', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '16px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease' },
+    laptopRefreshButton: { display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '16px', boxShadow: '0 4px 6px rgba(16, 185, 129, 0.3)', transition: 'all 0.3s ease' },
+    laptopSubjectHeader: { background: 'white', padding: '30px', borderRadius: '16px', marginBottom: '30px', boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)', display: 'flex', alignItems: 'center', gap: '25px', flexWrap: 'wrap' },
+    laptopSubjectIconContainer: { width: '90px', height: '90px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+    laptopSubjectIcon: { fontSize: '40px', color: 'white' },
+    laptopSubjectInfo: { flex: 1 },
+    laptopSubjectName: { fontSize: '32px', fontWeight: '700', color: '#1f2937', marginBottom: '10px' },
+    laptopSubjectCode: { fontSize: '18px', color: '#6b7280', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' },
+    laptopBreadcrumb: { display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: '#9ca3af', flexWrap: 'wrap' },
+    laptopBreadcrumbItem: { padding: '6px 12px', background: '#f3f4f6', borderRadius: '6px' },
+    laptopCurrentBreadcrumb: { background: '#4f46e5', color: 'white' },
+    laptopStatsBox: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', borderRadius: '12px', color: 'white', textAlign: 'center', minWidth: '120px' },
+    laptopStatsNumber: { fontSize: '32px', fontWeight: '700', marginBottom: '5px' },
+    laptopStatsLabel: { fontSize: '14px', opacity: '0.9' },
+    laptopLastRefreshed: { fontSize: '12px', color: '#9ca3af', marginTop: '10px', textAlign: 'right' },
+    laptopSearchContainer: { position: 'relative', marginBottom: '25px' },
+    laptopSearchInput: { width: '100%', padding: '16px 20px 16px 50px', fontSize: '16px', border: '2px solid #e5e7eb', borderRadius: '10px', background: '#f9fafb', transition: 'all 0.3s', outline: 'none' },
+    laptopSearchIcon: { position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '18px' },
+    laptopFiltersContainer: { background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '25px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' },
+    laptopFiltersTitle: { fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' },
+    laptopFiltersGrid: { display: 'flex', flexWrap: 'wrap', gap: '10px' },
+    laptopFilterButton: (type, selected) => ({ padding: '12px 20px', border: `2px solid ${selected ? type.color : '#e5e7eb'}`, borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '500', background: selected ? `${type.color}15` : 'white', color: selected ? type.color : '#4b5563', transition: 'all 0.3s' }),
+    laptopFilterCount: { background: '#f3f4f6', color: '#6b7280', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' },
+    laptopMaterialsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '25px' },
+    laptopMaterialCard: { border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden', transition: 'all 0.4s ease', background: 'white', position: 'relative' },
+    laptopMaterialHeader: (color) => ({ padding: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e5e7eb', background: `${color}10` }),
+    laptopMaterialType: { display: 'flex', alignItems: 'center', gap: '8px' },
+    laptopMaterialContent: { padding: '25px' },
+    laptopMaterialTitle: { fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '12px', lineHeight: '1.4' },
+    laptopMaterialDescription: { color: '#6b7280', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px', minHeight: '60px' },
+    laptopMaterialStats: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px', background: '#f9fafb', padding: '15px', borderRadius: '8px' },
+    laptopStatItem: { display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '13px' },
+    laptopRatingContainer: { gridColumn: 'span 2', display: 'flex', justifyContent: 'center', marginTop: '5px' },
+    laptopFileInfo: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '15px', borderTop: '1px solid #e5e7eb', fontSize: '13px', color: '#9ca3af' },
+    laptopMaterialActions: { padding: '20px', background: '#f9fafb', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '12px' },
+    laptopPreviewButton: { flex: 1, padding: '12px', background: 'white', border: '2px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: '600', color: '#4b5563', fontSize: '14px' },
+    laptopDownloadButton: (downloading) => ({ flex: 2, padding: '12px', background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)', color: 'white', border: 'none', borderRadius: '8px', cursor: downloading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: '600', fontSize: '14px', opacity: downloading ? 0.7 : 1 }),
+    
+    // Mobile Styles
+    mobileHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'white', padding: '12px 15px', borderRadius: '12px', marginBottom: '15px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
+    mobileBackButton: { background: '#f3f4f6', border: 'none', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', color: '#4f46e5', cursor: 'pointer' },
+    mobileTitle: { fontSize: '16px', fontWeight: '600', color: '#1f2937', flex: 1, textAlign: 'center', padding: '0 10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+    mobileRefreshButton: { background: '#f3f4f6', border: 'none', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', color: '#10b981', cursor: 'pointer' },
+    mobileSubjectCard: { background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
+    mobileSubjectIconContainer: { width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+    mobileSubjectIcon: { fontSize: '30px', color: 'white' },
+    mobileSubjectInfo: { flex: 1 },
+    mobileSubjectName: { fontSize: '18px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' },
+    mobileSubjectCode: { fontSize: '13px', color: '#6b7280', marginBottom: '6px' },
+    mobileSubjectMeta: { display: 'flex', gap: '12px', fontSize: '12px', color: '#4f46e5', flexWrap: 'wrap' },
+    mobileSearchContainer: { position: 'relative', marginBottom: '15px' },
+    mobileSearchIcon: { position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '16px' },
+    mobileSearchInput: { width: '100%', padding: '14px 45px 14px 45px', fontSize: '14px', border: 'none', borderRadius: '12px', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', outline: 'none' },
+    mobileClearButton: { position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', fontSize: '16px', cursor: 'pointer', padding: '5px' },
+    mobileFilterToggle: { width: '100%', padding: '12px', background: 'white', border: 'none', borderRadius: '12px', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: '500', color: '#4f46e5', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
+    mobileFiltersContainer: { display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
+    mobileFilterButton: (type, selected) => ({ padding: '8px 12px', border: `1px solid ${selected ? type.color : '#e5e7eb'}`, borderRadius: '20px', background: selected ? `${type.color}15` : 'white', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '500', color: selected ? type.color : '#4b5563', cursor: 'pointer', transition: 'all 0.2s' }),
+    mobileFilterCount: { background: '#f3f4f6', color: '#6b7280', padding: '2px 6px', borderRadius: '12px', fontSize: '10px', marginLeft: '4px' },
+    mobileErrorMessage: { background: '#fee2e2', color: '#dc2626', padding: '12px', borderRadius: '8px', marginBottom: '15px', textAlign: 'center', fontSize: '13px' },
+    mobileEmptyState: { background: 'white', padding: '40px 20px', borderRadius: '16px', textAlign: 'center' },
+    mobileEmptyIcon: { fontSize: '48px', marginBottom: '15px', opacity: 0.5 },
+    mobileUploadButton: { marginTop: '15px', padding: '12px 24px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' },
+    mobileMaterialsList: { display: 'grid', gridTemplateColumns: '1fr', gap: '15px' },
+    mobileMaterialCard: { background: 'white', borderRadius: '16px', overflow: 'hidden', position: 'relative', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
+    mobileNewBadge: { position: 'absolute', top: '10px', right: '10px', background: '#ef4444', color: 'white', padding: '4px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold', zIndex: 1 },
+    mobileMaterialHeader: { padding: '12px 15px', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' },
+    mobileMaterialType: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' },
+    mobileMaterialContent: { padding: '15px' },
+    mobileMaterialTitle: { fontSize: '15px', fontWeight: '600', color: '#1f2937', marginBottom: '8px', lineHeight: '1.4' },
+    mobileMaterialDescription: { fontSize: '13px', color: '#6b7280', marginBottom: '12px', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' },
+    mobileMaterialMeta: { display: 'flex', gap: '12px', marginBottom: '12px', fontSize: '11px', color: '#9ca3af', flexWrap: 'wrap' },
+    mobileMetaItem: { display: 'flex', alignItems: 'center', gap: '4px' },
+    mobileRatingContainer: { display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '12px' },
+    mobileFileInfo: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#9ca3af', paddingTop: '8px', borderTop: '1px solid #e5e7eb' },
+    mobileMaterialActions: { display: 'flex', gap: '8px', padding: '15px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' },
+    mobilePreviewButton: { flex: 1, padding: '10px', background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px', fontWeight: '500', color: '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', cursor: 'pointer' },
+    mobileDownloadButton: (downloading) => ({ flex: 2, padding: '10px', background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.7 : 1 }),
+    loadingContainer: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' },
+    loadingSpinner: { width: isMobile ? '40px' : '50px', height: isMobile ? '40px' : '50px', border: isMobile ? '3px solid rgba(255,255,255,0.3)' : '5px solid rgba(255,255,255,0.3)', borderTop: isMobile ? '3px solid white' : '5px solid white', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: isMobile ? '10px' : '20px' },
+    errorContainer: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '20px', textAlign: 'center' },
+    backButton: { padding: isMobile ? '10px 20px' : '12px 24px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: isMobile ? '14px' : '16px', marginTop: '20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }
   };
 
   // ✅ LOADING STATE
@@ -1341,9 +732,7 @@ const MaterialsPage = () => {
       <div style={styles.errorContainer}>
         <div style={{ fontSize: isMobile ? '48px' : '60px', marginBottom: '20px' }}>🔍</div>
         <h2 style={{ fontSize: isMobile ? '20px' : '24px' }}>Subject not found</h2>
-        <button style={styles.backButton} onClick={handleBack}>
-          <FaArrowLeft /> Go Back
-        </button>
+        <button style={styles.backButton} onClick={handleBack}><FaArrowLeft /> Go Back</button>
       </div>
     );
   }
@@ -1353,71 +742,27 @@ const MaterialsPage = () => {
     return (
       <div style={styles.container}>
         <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-          }
-          @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-          }
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+          @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
         `}</style>
-        
         <div style={styles.innerContainer}>
-          {/* Header */}
           <div style={styles.laptopHeaderButtons}>
-            <button style={styles.laptopBackButton} onClick={handleBack}>
-              <FaArrowLeft /> Back to Subjects
-            </button>
-            
+            <button style={styles.laptopBackButton} onClick={handleBack}><FaArrowLeft /> Back to Subjects</button>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button 
-                style={styles.laptopRefreshButton}
-                onClick={handleRefresh}
-                disabled={refreshing}
-              >
+              <button style={styles.laptopRefreshButton} onClick={handleRefresh} disabled={refreshing}>
                 <FaSync style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
                 {refreshing ? 'Refreshing...' : 'Refresh'}
               </button>
-              
-              <button 
-                style={{ ...styles.laptopRefreshButton, background: '#8b5cf6' }}
-                onClick={() => navigate('/upload')}
-              >
+              <button style={{ ...styles.laptopRefreshButton, background: '#8b5cf6' }} onClick={() => navigate('/upload')}>
                 <FaCloudUploadAlt /> Upload
               </button>
             </div>
           </div>
-          
-          {/* Error Message */}
-          {error && (
-            <div style={{
-              background: '#fee2e2',
-              color: '#dc2626',
-              padding: '15px',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              textAlign: 'center'
-            }}>
-              ⚠️ {error}
-            </div>
-          )}
-          
-          {/* Last Refreshed */}
-          <div style={styles.laptopLastRefreshed}>
-            Last updated: {lastRefreshed.toLocaleTimeString()}
-          </div>
-          
-          {/* Subject Header */}
+          {error && <div style={{ background: '#fee2e2', color: '#dc2626', padding: '15px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>⚠️ {error}</div>}
+          <div style={styles.laptopLastRefreshed}>Last updated: {lastRefreshed.toLocaleTimeString()}</div>
           <div style={styles.laptopSubjectHeader}>
-            <div style={styles.laptopSubjectIconContainer}>
-              <div style={styles.laptopSubjectIcon}>📚</div>
-            </div>
-            
+            <div style={styles.laptopSubjectIconContainer}><div style={styles.laptopSubjectIcon}>📚</div></div>
             <div style={styles.laptopSubjectInfo}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
                 <div>
@@ -1428,177 +773,60 @@ const MaterialsPage = () => {
                     <span>📁 <strong>{materials.length} Materials</strong></span>
                     <span>🏷️ <strong>{subject.type || 'Theory'}</strong></span>
                   </div>
-                  
                   <div style={styles.laptopBreadcrumb}>
-                    <span style={styles.laptopBreadcrumbItem}>
-                      {courseInfo?.name || `Course ${courseId}`}
-                    </span>
-                    <span>→</span>
-                    <span style={styles.laptopBreadcrumbItem}>
-                      Year {yearId}
-                    </span>
-                    <span>→</span>
-                    <span style={styles.laptopBreadcrumbItem}>
-                      Semester {semId}
-                    </span>
-                    <span>→</span>
-                    <span style={{ ...styles.laptopBreadcrumbItem, ...styles.laptopCurrentBreadcrumb }}>
-                      {subject.name}
-                    </span>
+                    <span style={styles.laptopBreadcrumbItem}>{courseInfo?.name || `Course ${courseId}`}</span><span>→</span>
+                    <span style={styles.laptopBreadcrumbItem}>Year {yearId}</span><span>→</span>
+                    <span style={styles.laptopBreadcrumbItem}>Semester {semId}</span><span>→</span>
+                    <span style={{ ...styles.laptopBreadcrumbItem, ...styles.laptopCurrentBreadcrumb }}>{subject.name}</span>
                   </div>
                 </div>
-                
                 <div style={styles.laptopStatsBox}>
                   <div style={styles.laptopStatsNumber}>{materials.length}</div>
                   <div style={styles.laptopStatsLabel}>Total Files</div>
-                  <div style={{ ...styles.laptopStatsLabel, fontSize: '12px', marginTop: '5px' }}>
-                    {materials.filter(m => m.isNew).length} New
-                  </div>
+                  <div style={{ ...styles.laptopStatsLabel, fontSize: '12px', marginTop: '5px' }}>{materials.filter(m => m.isNew).length} New</div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Search Bar */}
           <div style={styles.laptopSearchContainer}>
             <div style={styles.laptopSearchIcon}><FaSearch /></div>
-            <input
-              type="text"
-              placeholder={`Search in ${subject.name} materials...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={styles.laptopSearchInput}
-            />
-            {searchQuery && (
-              <button
-                style={{
-                  position: 'absolute',
-                  right: '20px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: '#9ca3af',
-                  cursor: 'pointer',
-                  fontSize: '18px'
-                }}
-                onClick={() => setSearchQuery('')}
-              >
-                ✕
-              </button>
-            )}
+            <input type="text" placeholder={`Search in ${subject.name} materials...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={styles.laptopSearchInput} />
+            {searchQuery && <button style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '18px' }} onClick={() => setSearchQuery('')}>✕</button>}
           </div>
-
-          {/* Filter Buttons */}
           <div style={styles.laptopFiltersContainer}>
-            <h3 style={styles.laptopFiltersTitle}>
-              <FaFilter /> Filter by Material Type
-            </h3>
+            <h3 style={styles.laptopFiltersTitle}><FaFilter /> Filter by Material Type</h3>
             <div style={styles.laptopFiltersGrid}>
               {materialTypes.map((type) => (
-                <button
-                  key={type.id}
-                  onClick={() => setSelectedType(type.id)}
-                  style={styles.laptopFilterButton(type, selectedType === type.id)}
-                >
-                  <span style={{ color: type.color }}>{type.icon}</span>
-                  {type.name}
-                  {type.id !== 'all' && (
-                    <span style={styles.laptopFilterCount}>
-                      {materialStats[type.id] || 0}
-                    </span>
-                  )}
+                <button key={type.id} onClick={() => setSelectedType(type.id)} style={styles.laptopFilterButton(type, selectedType === type.id)}>
+                  <span style={{ color: type.color }}>{type.icon}</span> {type.name}
+                  {type.id !== 'all' && <span style={styles.laptopFilterCount}>{materialStats[type.id] || 0}</span>}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Materials Grid */}
           {filteredMaterials.length === 0 ? (
-            <div style={{
-              background: 'white',
-              padding: '60px 20px',
-              borderRadius: '12px',
-              textAlign: 'center',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-            }}>
+            <div style={{ background: 'white', padding: '60px 20px', borderRadius: '12px', textAlign: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
               <div style={{ fontSize: '60px', marginBottom: '20px', opacity: '0.5' }}>📭</div>
-              <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#6b7280', marginBottom: '10px' }}>
-                No materials found
-              </h3>
-              <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '30px' }}>
-                {searchQuery 
-                  ? `No materials match "${searchQuery}"`
-                  : 'No approved materials available yet. Upload something!'}
-              </p>
+              <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#6b7280', marginBottom: '10px' }}>No materials found</h3>
+              <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '30px' }}>{searchQuery ? `No materials match "${searchQuery}"` : 'No approved materials available yet. Upload something!'}</p>
               <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-                <button
-                  style={{
-                    padding: '12px 30px',
-                    background: '#4f46e5',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    fontSize: '16px'
-                  }}
-                  onClick={() => navigate('/upload')}
-                >
-                  <FaCloudUploadAlt style={{ marginRight: '8px' }} />
-                  Upload Materials
-                </button>
-                {searchQuery && (
-                  <button
-                    style={{
-                      padding: '12px 30px',
-                      background: '#6b7280',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontWeight: '600',
-                      fontSize: '16px'
-                    }}
-                    onClick={() => setSearchQuery('')}
-                  >
-                    Clear Search
-                  </button>
-                )}
+                <button style={{ padding: '12px 30px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '16px' }} onClick={() => navigate('/upload')}><FaCloudUploadAlt style={{ marginRight: '8px' }} /> Upload Materials</button>
+                {searchQuery && <button style={{ padding: '12px 30px', background: '#6b7280', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '16px' }} onClick={() => setSearchQuery('')}>Clear Search</button>}
               </div>
             </div>
           ) : (
-            <div style={{
-              background: 'white',
-              padding: '30px',
-              borderRadius: '12px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-            }}>
+            <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-                <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#1f2937' }}>
-                  {selectedType === 'all' ? 'All Study Materials' : materialTypes.find(t => t.id === selectedType)?.name}
-                </h3>
-                <span style={{ 
-                  background: '#f3f4f6',
-                  padding: '5px 15px',
-                  borderRadius: '20px',
-                  color: '#6b7280',
-                  fontWeight: '500'
-                }}>
-                  {filteredMaterials.length} material{filteredMaterials.length !== 1 ? 's' : ''}
-                </span>
+                <h3 style={{ fontSize: '24px', fontWeight: '700', color: '#1f2937' }}>{selectedType === 'all' ? 'All Study Materials' : materialTypes.find(t => t.id === selectedType)?.name}</h3>
+                <span style={{ background: '#f3f4f6', padding: '5px 15px', borderRadius: '20px', color: '#6b7280', fontWeight: '500' }}>{filteredMaterials.length} material{filteredMaterials.length !== 1 ? 's' : ''}</span>
               </div>
-              
               <div style={styles.laptopMaterialsGrid}>
                 {filteredMaterials.map((material) => {
+                  if (material.is_youtube || material.type === 'youtube') {
+                    return <YouTubeCard key={material.id} material={material} />;
+                  }
                   const typeInfo = materialTypes.find(t => t.id === material.type) || materialTypes[1];
-                  return (
-                    <MaterialCard 
-                      key={material.id} 
-                      material={material} 
-                      typeInfo={typeInfo}
-                    />
-                  );
+                  return <MaterialCard key={material.id} material={material} typeInfo={typeInfo} />;
                 })}
               </div>
             </div>
@@ -1611,111 +839,53 @@ const MaterialsPage = () => {
   // ✅ MOBILE VIEW
   return (
     <div style={styles.container}>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-      
+      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
       <div style={styles.innerContainer}>
-        {/* Mobile Header */}
         <div style={styles.mobileHeader}>
-          <button style={styles.mobileBackButton} onClick={handleBack}>
-            <FaArrowLeft />
-          </button>
+          <button style={styles.mobileBackButton} onClick={handleBack}><FaArrowLeft /></button>
           <h2 style={styles.mobileTitle}>{subject.name}</h2>
-          <button style={styles.mobileRefreshButton} onClick={handleRefresh}>
-            <FaSync style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
-          </button>
+          <button style={styles.mobileRefreshButton} onClick={handleRefresh}><FaSync style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} /></button>
         </div>
-
-        {/* Subject Info Card */}
         <div style={styles.mobileSubjectCard}>
-          <div style={styles.mobileSubjectIconContainer}>
-            <span style={styles.mobileSubjectIcon}>📚</span>
-          </div>
+          <div style={styles.mobileSubjectIconContainer}><span style={styles.mobileSubjectIcon}>📚</span></div>
           <div style={styles.mobileSubjectInfo}>
             <h1 style={styles.mobileSubjectName}>{subject.name}</h1>
             <p style={styles.mobileSubjectCode}>{subject.code}</p>
-            <div style={styles.mobileSubjectMeta}>
-              <span>🎓 {subject.credits} Credits</span>
-              <span>📁 {materials.length} Files</span>
-            </div>
+            <div style={styles.mobileSubjectMeta}><span>🎓 {subject.credits} Credits</span><span>📁 {materials.length} Files</span></div>
           </div>
         </div>
-
-        {/* Search Bar */}
         <div style={styles.mobileSearchContainer}>
           <div style={styles.mobileSearchIcon}><FaSearch /></div>
-          <input
-            type="text"
-            placeholder="Search materials..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.mobileSearchInput}
-          />
-          {searchQuery && (
-            <button style={styles.mobileClearButton} onClick={() => setSearchQuery('')}>
-              ✕
-            </button>
-          )}
+          <input type="text" placeholder="Search materials..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={styles.mobileSearchInput} />
+          {searchQuery && <button style={styles.mobileClearButton} onClick={() => setSearchQuery('')}>✕</button>}
         </div>
-
-        {/* Filter Toggle for Mobile */}
-        <button style={styles.mobileFilterToggle} onClick={() => setShowFilters(!showFilters)}>
-          <FaFilter /> {showFilters ? 'Hide Filters' : 'Show Filters'}
-        </button>
-
-        {/* Filters */}
+        <button style={styles.mobileFilterToggle} onClick={() => setShowFilters(!showFilters)}><FaFilter /> {showFilters ? 'Hide Filters' : 'Show Filters'}</button>
         {showFilters && (
           <div style={styles.mobileFiltersContainer}>
             {materialTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => setSelectedType(type.id)}
-                style={styles.mobileFilterButton(type, selectedType === type.id)}
-              >
-                <span style={{ color: type.color }}>{type.icon}</span>
-                {type.name}
-                {type.id !== 'all' && (
-                  <span style={styles.mobileFilterCount}>{materialStats[type.id] || 0}</span>
-                )}
+              <button key={type.id} onClick={() => setSelectedType(type.id)} style={styles.mobileFilterButton(type, selectedType === type.id)}>
+                <span style={{ color: type.color }}>{type.icon}</span> {type.name}
+                {type.id !== 'all' && <span style={styles.mobileFilterCount}>{materialStats[type.id] || 0}</span>}
               </button>
             ))}
           </div>
         )}
-
-        {/* Error Message */}
-        {error && (
-          <div style={styles.mobileErrorMessage}>
-            ⚠️ {error}
-          </div>
-        )}
-
-        {/* Materials List */}
+        {error && <div style={styles.mobileErrorMessage}>⚠️ {error}</div>}
         {filteredMaterials.length === 0 ? (
           <div style={styles.mobileEmptyState}>
             <div style={styles.mobileEmptyIcon}>📭</div>
             <h3 style={{ fontSize: '18px', marginBottom: '10px' }}>No materials found</h3>
-            <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>
-              {searchQuery ? `No results for "${searchQuery}"` : 'Upload something!'}
-            </p>
-            <button style={styles.mobileUploadButton} onClick={() => navigate('/upload')}>
-              <FaCloudUploadAlt /> Upload
-            </button>
+            <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>{searchQuery ? `No results for "${searchQuery}"` : 'Upload something!'}</p>
+            <button style={styles.mobileUploadButton} onClick={() => navigate('/upload')}><FaCloudUploadAlt /> Upload</button>
           </div>
         ) : (
           <div style={styles.mobileMaterialsList}>
             {filteredMaterials.map((material) => {
+              if (material.is_youtube || material.type === 'youtube') {
+                return <YouTubeCard key={material.id} material={material} />;
+              }
               const typeInfo = materialTypes.find(t => t.id === material.type) || materialTypes[1];
-              return (
-                <MaterialCard 
-                  key={material.id} 
-                  material={material} 
-                  typeInfo={typeInfo}
-                />
-              );
+              return <MaterialCard key={material.id} material={material} typeInfo={typeInfo} />;
             })}
           </div>
         )}
