@@ -257,11 +257,11 @@ const About = () => {
             Karan Suyal
           </h3>
           <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>
-            Full Stack Developer & Student
+            <strong>Full Stack Developer & Student</strong>
           </p>
           <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            BCA in Computer Science<br />
-            •Special thanks to Upashana Joshi for contributing valuable study materials to the portal❤️
+            <strong>BCA in Computer Science</strong><br />
+            • Special thanks to Upashana Joshi for contributing valuable study materials to the portal❤️
           </p>
           <div style={{ 
             display: 'flex', 
