@@ -5,7 +5,7 @@ import {
   FaQuestionCircle, FaHistory, FaArrowLeft, FaBookOpen, 
   FaClock, FaStar, FaSpinner, FaUser, FaSearch,
   FaFilter, FaFileWord, FaFilePowerpoint, FaFileImage,
-  FaFileArchive, FaSync, FaCloudUploadAlt
+  FaFileArchive, FaSync, FaCloudUploadAlt,FaYoutube
 } from 'react-icons/fa';
 import { coursesData, getSubjects } from '../data/coursesData';
 import api, { API_URL } from '../services/api';
@@ -90,7 +90,7 @@ const MaterialsPage = () => {
     { id: 'pyq', name: 'PYQs', icon: <FaHistory />, color: '#8B5CF6' },
     { id: 'important', name: 'Imp Questions', icon: <FaQuestionCircle />, color: '#F59E0B' },
     { id: 'lab', name: 'Lab Manuals', icon: <FaBookOpen />, color: '#EF4444' },
-    { id: 'assignment', name: 'Assignments', icon: <FaFilePdf />, color: '#EC4899' }
+    { id: 'You Tube', name: 'You Tube Videos', icon: <FaYoutube />, color: '#EF4444' }
   ];
 
   // ✅ NOTIFICATION HELPER
