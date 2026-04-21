@@ -260,7 +260,8 @@ const About = () => {
             Full Stack Developer & Student
           </p>
           <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            BCA in Computer Science • Passionate about EdTech
+            BCA in Computer Science • Passionate about EdTech <br />
+            [Special thanks to Upashana Joshi for contributing valuable study materials to the portal]
           </p>
           <div style={{ 
             display: 'flex', 
