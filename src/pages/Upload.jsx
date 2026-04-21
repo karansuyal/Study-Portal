@@ -73,7 +73,7 @@ const Upload = () => {
     { value: 'pyq', label: '📝 Previous Year Questions (PYQ)' },
     { value: 'syllabus', label: '📋 Syllabus' },
     { value: 'lab', label: '🔬 Lab Manuals' },
-    { value: 'assignment', label: '📝 Assignments' },
+    { value: 'youtube', label: '🎥 YouTube Videos' },
     { value: 'presentation', label: '📊 Presentations' },
     { value: 'important', label: '❓ Important Questions' },
     { value: 'project', label: '📁 Project Report' },

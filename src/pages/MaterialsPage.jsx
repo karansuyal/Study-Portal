@@ -90,7 +90,7 @@ const MaterialsPage = () => {
     { id: 'pyq', name: 'PYQs', icon: <FaHistory />, color: '#8B5CF6' },
     { id: 'important', name: 'Imp Questions', icon: <FaQuestionCircle />, color: '#F59E0B' },
     { id: 'lab', name: 'Lab Manuals', icon: <FaBookOpen />, color: '#EF4444' },
-    { id: 'You Tube', name: 'You Tube Videos', icon: <FaYoutube />, color: '#EF4444' }
+    { id: 'You Tube', name: 'You Tube', icon: <FaYoutube />, color: '#EF4444' }
   ];
 
   // ✅ NOTIFICATION HELPER

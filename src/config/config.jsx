@@ -140,9 +140,9 @@ const config = {
       extensions: ['pdf', 'doc', 'docx', 'zip', 'rar'],
       maxSize: 20 * 1024 * 1024 // 20MB
     },
-    'assignment': {
-      name: 'Assignments',
-      icon: '📄',
+    'youtube': {
+      name: 'You Tube Videos',
+      icon: '🎥',
       color: '#EC4899',
       extensions: ['pdf', 'doc', 'docx'],
       maxSize: 5 * 1024 * 1024 // 5MB
