@@ -450,42 +450,53 @@ const YouTubeCard = ({ material }) => {
   };
 
   // ✅ FETCH MATERIALS FUNCTION
-  const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
-    if (showRefreshIndicator) setRefreshing(true);
+  // ✅ FETCH MATERIALS FUNCTION - CLEAN DESCRIPTION
+const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
+  if (showRefreshIndicator) setRefreshing(true);
+  
+  try {
+    setError(null);
+    console.log('📥 Fetching materials for subject:', subjectId);
     
+    let response;
     try {
-      setError(null);
-      console.log('📥 Fetching materials for subject:', subjectId);
-      
-      let response;
-      try {
-        response = await api.getMaterials({ subject_id: subjectId, status: 'approved' });
-      } catch (apiError) {
-        console.error('API Error:', apiError);
-        setError('Failed to connect to server. Please try again.');
-        setMaterials([]);
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-      
-      console.log('API Response:', response);
-      
-      let transformedMaterials = [];
-      
-      if (response && response.notes && response.notes.length > 0) {
-        transformedMaterials = response.notes.map((note) => ({
+      response = await api.getMaterials({ subject_id: subjectId, status: 'approved' });
+    } catch (apiError) {
+      console.error('API Error:', apiError);
+      setError('Failed to connect to server. Please try again.');
+      setMaterials([]);
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+    
+    console.log('API Response:', response);
+    
+    let transformedMaterials = [];
+    
+    if (response && response.notes && response.notes.length > 0) {
+      transformedMaterials = response.notes.map((note) => {
+        // ✅ Clean description based on note type
+        let cleanDesc = '';
+        
+        if (note.is_youtube) {
+          // YouTube video - extract actual description from JSON
+          try {
+            const parsed = JSON.parse(note.description);
+            cleanDesc = parsed.description || 'YouTube video';
+          } catch {
+            cleanDesc = note.description || 'YouTube video';
+          }
+        } else {
+          // Normal file - direct description
+          cleanDesc = note.description || 'No description available';
+        }
+        
+        return {
           id: note.id,
           title: note.title || 'Untitled',
           type: note.is_youtube ? 'youtube' : (note.note_type || note.type || 'notes'),
-          description: (() => {
-        try {
-        const parsed = JSON.parse(note.description);
-         return ''; 
-        } catch {
-          return note.description || 'No description available';
-          }
-          })(),
+          description: cleanDesc,  // ✅ Clean description
           fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
           original_filename: note.original_filename,
           fileType: note.file_type || 'pdf',
@@ -505,21 +516,22 @@ const YouTubeCard = ({ material }) => {
           youtube_id: note.youtube_id,
           youtube_thumbnail: note.youtube_thumbnail,
           youtube_embed_url: note.youtube_embed_url
-        }));
-      }
-      
-      setMaterials(transformedMaterials);
-      if (transformedMaterials.length === 0) setError('No approved materials found for this subject.');
-      setLastRefreshed(new Date());
-    } catch (error) {
-      console.error('Error fetching materials:', error);
-      setError('Failed to load materials. Please try again.');
-      setMaterials([]);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+        };
+      });
     }
-  };
+    
+    setMaterials(transformedMaterials);
+    if (transformedMaterials.length === 0) setError('No approved materials found for this subject.');
+    setLastRefreshed(new Date());
+  } catch (error) {
+    console.error('Error fetching materials:', error);
+    setError('Failed to load materials. Please try again.');
+    setMaterials([]);
+  } finally {
+    setLoading(false);
+    setRefreshing(false);
+  }
+};
 
   const formatBytes = (bytes) => {
     if (!bytes) return 'N/A';
