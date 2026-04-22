@@ -226,7 +226,6 @@ const YouTubeCard = ({ material }) => {
         </div>
         <div style={styles.mobileMaterialContent}>
           <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-          <p style={styles.mobileMaterialDescription}>{material.description}</p>
           <div style={styles.mobileMaterialMeta}>
             <div style={styles.mobileMetaItem}>
               <FaClock /> {material.uploadDate}
@@ -432,7 +431,6 @@ const YouTubeCard = ({ material }) => {
         </div>
         <div style={styles.mobileMaterialContent}>
           <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-          <p style={styles.mobileMaterialDescription}>{material.description}</p>
           <div style={styles.mobileMaterialMeta}>
             <div style={styles.mobileMetaItem}><FaClock /> {material.uploadDate}</div>
             <div style={styles.mobileMetaItem}><FaEye /> {stats.views}</div>
@@ -480,7 +478,14 @@ const YouTubeCard = ({ material }) => {
           id: note.id,
           title: note.title || 'Untitled',
           type: note.is_youtube ? 'youtube' : (note.note_type || note.type || 'notes'),
-          description: note.description || '',
+          description: (() => {
+        try {
+        const parsed = JSON.parse(note.description);
+         return ''; 
+        } catch {
+          return note.description || 'No description available';
+          }
+          })(),
           fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
           original_filename: note.original_filename,
           fileType: note.file_type || 'pdf',
