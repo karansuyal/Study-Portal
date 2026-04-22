@@ -31,7 +31,7 @@ export const coursesData = {
   { id: 113, name: 'Engineering Mathematics-II', code: 'TMA201', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
   { id: 114, name: 'Basic Electronics Engineering', code: 'TEC201', credits: 3, materials: 20, rating: 4.2, type: 'Theory' },
   { id: 115, name: 'Environmental Science', code: 'TE2101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' },
-  { id: 116, name: 'Fundamental of Computer & Introduction to Programming', code: 'TCS201', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+  { id: 116, name: 'Fundamental of AI & ML', code: 'TCS201', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
   
   // LAB SUBJECTS LAST (Semester 1 - Actual)
   { id: 117, name: 'Basic Electronics Engineering Lab', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Lab' },
