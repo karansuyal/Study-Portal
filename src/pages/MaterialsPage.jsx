@@ -159,6 +159,23 @@ const MaterialsPage = () => {
     }, 3000);
   };
 
+
+  const getCleanDescription = (desc) => {
+  if (!desc) return '';
+
+  try {
+    const parsed = JSON.parse(desc);
+
+    if (parsed.ops) {
+      return parsed.ops.map(op => op.insert).join('');
+    }
+
+    return parsed.description || parsed.text || Object.values(parsed).join(' ');
+  } catch {
+    return desc;
+  }
+};
+
   // ✅ YOUTUBE CARD COMPONENT
   const YouTubeCard = ({material}) => {
     const stats = useNoteStats(material.id, {
