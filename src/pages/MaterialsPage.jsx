@@ -167,11 +167,20 @@ const MaterialsPage = () => {
     const parsed = JSON.parse(desc);
 
     if (parsed.ops) {
-      return parsed.ops.map(op => op.insert).join('');
+      return parsed.ops
+        .map(op => op.insert)
+        .join('')
+        .replace(/\n/g, ' ')
+        .trim();
     }
 
-    return parsed.description || parsed.text || Object.values(parsed).join(' ');
+    if (typeof parsed === 'object') {
+      return parsed.description || parsed.text || '';
+    }
+
+    return '';
   } catch {
+    
     return desc;
   }
 };
