@@ -159,30 +159,35 @@ const MaterialsPage = () => {
     }, 3000);
   };
 
-
-  const getCleanDescription = (desc) => {
+const getCleanDescription = (desc) => {
   if (!desc) return '';
+  
 
-  try {
-    const parsed = JSON.parse(desc);
-
-    if (parsed.ops) {
-      return parsed.ops
-        .map(op => op.insert)
-        .join('')
-        .replace(/\n/g, ' ')
-        .trim();
-    }
-
-    if (typeof parsed === 'object') {
-      return parsed.description || parsed.text || '';
-    }
-
-    return '';
-  } catch {
+  if (desc.includes('--- Academic Details ---')) {
     
-    return desc;
+    const cleanPart = desc.split('--- Academic Details ---')[0];
+    return cleanPart.trim() || 'No description available';
   }
+  
+ 
+  if (desc.trim().startsWith('{') || desc.trim().startsWith('[')) {
+    try {
+      const parsed = JSON.parse(desc);
+    
+      if (parsed.description) {
+        return parsed.description;
+      }
+     
+      if (parsed.ops) {
+        return parsed.ops.map(op => op.insert).join('').trim() || 'No description available';
+      }
+      return 'No description available';
+    } catch {
+      return desc;
+    }
+  }
+  
+  return desc || 'No description available';
 };
 
   // ✅ YOUTUBE CARD COMPONENT
