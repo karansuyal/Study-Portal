@@ -175,7 +175,6 @@ const YouTubeCard = ({ material }) => {
           </div>
           <div style={styles.laptopYoutubeTextContent}>
             <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-            <p style={styles.laptopMaterialDescription}>{material.description}</p>
             <div style={styles.laptopMaterialStats}>
               <div style={styles.laptopStatItem}>
                 <FaClock color="#9ca3af" size={12} />
@@ -399,7 +398,6 @@ const YouTubeCard = ({ material }) => {
           </div>
           <div style={styles.laptopMaterialContent}>
             <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-            <p style={styles.laptopMaterialDescription}>{material.description}</p>
             <div style={styles.laptopMaterialStats}>
               <div style={styles.laptopStatItem}><FaClock color="#9ca3af" size={12} /><span>{material.uploadDate}</span></div>
               <div style={styles.laptopStatItem}><FaDownload color="#9ca3af" size={12} /><span>{stats.downloads} downloads</span></div>
@@ -482,7 +480,14 @@ const YouTubeCard = ({ material }) => {
           id: note.id,
           title: note.title || 'Untitled',
           type: note.is_youtube ? 'youtube' : (note.note_type || note.type || 'notes'),
-          description: note.description || 'No description available',
+          description: (() => {
+        try {
+        const parsed = JSON.parse(note.description);
+         return ''; 
+        } catch {
+          return note.description || 'No description available';
+          }
+          })(),
           fileSize: note.file_size ? formatBytes(note.file_size) : 'N/A',
           original_filename: note.original_filename,
           fileType: note.file_type || 'pdf',
