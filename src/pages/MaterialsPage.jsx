@@ -478,6 +478,9 @@ const MaterialsPage = () => {
           </div>
           <div style={styles.laptopMaterialContent}>
             <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
+            <p style={styles.laptopMaterialDescription}>
+           {material.description}
+            </p>
             <div style={styles.laptopMaterialStats}>
               <div style={styles.laptopStatItem}>
                 <FaClock color="#9ca3af" size={12} />
@@ -547,6 +550,9 @@ const MaterialsPage = () => {
         </div>
         <div style={styles.mobileMaterialContent}>
           <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
+          <p style={styles.mobileMaterialDescription}>
+          {material.description}
+          </p>
           <div style={styles.mobileMaterialMeta}>
             <div style={styles.mobileMetaItem}>
               <FaClock /> {material.uploadDate}
