@@ -656,21 +656,7 @@ const MaterialsPage = () => {
           type: note.is_youtube
             ? "youtube"
             : note.note_type || note.type || "notes",
-          description: (() => {
-            if (!note.description) return "";
-
-            try {
-              const parsed = JSON.parse(note.description);
-
-              return typeof parsed === "string"
-                ? parsed
-                : parsed.title ||
-                    parsed.desc ||
-                    Object.values(parsed).join(" ");
-            } catch {
-              return note.description;
-            }
-          })(),
+          description: note.description || "",
           fileSize: note.file_size ? formatBytes(note.file_size) : "N/A",
           original_filename: note.original_filename,
           fileType: note.file_type || "pdf",
