@@ -924,7 +924,7 @@ def search_knowledge_base(query, user_id=None):
 
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
-@jwt_required(optional=True)
+# @jwt_required(optional=True)
 def chat_with_ai():
     # Handle preflight
     if request.method == 'OPTIONS':
