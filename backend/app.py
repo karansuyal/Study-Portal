@@ -1012,7 +1012,7 @@ You are a helpful study assistant for a student.
         # Call Gemini API or use fallback
         if GEMINI_API_KEY:
             try:
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai.GenerativeModel('gemini-1.0-pro')
                 response = model.generate_content(prompt)
                 ai_response = response.text.strip()
             except Exception as e:
