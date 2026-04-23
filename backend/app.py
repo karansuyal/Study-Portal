@@ -932,12 +932,10 @@ def search_knowledge_base(query, user_id=None):
 
 # Function to get Gemini response
 def get_gemini_response(prompt):
-    """Get response from Gemini API with multiple model fallbacks"""
-    
     model_names = [
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-flash",
-        "gemini-1.0-pro"
+        "models/gemini-2.5-flash",
+        "models/gemini-2.0-flash",
+        "models/gemini-2.5-pro"
     ]
     
     for model_name in model_names:
@@ -955,7 +953,7 @@ def get_gemini_response(prompt):
             print(f"❌ Model {model_name} failed: {str(e)[:100]}")
             continue
     
-    return None
+    return "AI is temporarily unavailable 😔"
 
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
