@@ -844,11 +844,18 @@ def verify_email():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==================== AI CHATBOT (GEMINI API) ====================
-# Configure Gemini
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
     print("✅ Gemini AI configured successfully")
+    
+    # Test available models
+    try:
+        available_models = genai.list_models()
+        gemini_models = [m.name for m in available_models if 'gemini' in m.name]
+        print(f"📋 Available Gemini models: {gemini_models[:5]}")
+    except:
+        print("⚠️ Could not list models")
 else:
     print("⚠️ GEMINI_API_KEY not found, chatbot will use fallback mode")
 
@@ -923,6 +930,35 @@ def search_knowledge_base(query, user_id=None):
         print(f"Search error: {e}")
         return {'subjects': [], 'notes': [], 'pyqs': []}
 
+# Function to get Gemini response
+def get_gemini_response(prompt):
+    """Get response from Gemini API with multiple model fallbacks"""
+    
+    # List of models to try in order
+    model_names = [
+        'gemini-1.5-pro',
+        'gemini-1.5-flash', 
+        'gemini-pro',
+        'models/gemini-1.5-pro',
+        'models/gemini-1.5-flash',
+        'models/gemini-pro'
+    ]
+    
+    for model_name in model_names:
+        try:
+            print(f"🔄 Trying model: {model_name}")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(prompt)
+            
+            if response and response.text:
+                print(f"✅ Success with model: {model_name}")
+                return response.text.strip()
+        except Exception as e:
+            print(f"❌ Model {model_name} failed: {str(e)[:100]}")
+            continue
+    
+    return None
+
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
 @jwt_required(optional=True)
@@ -972,8 +1008,7 @@ def chat_with_ai():
         
         # Prepare prompt
         if user_context:
-            prompt = f"""
-You are a helpful study assistant for a college student.
+            prompt = f"""You are a helpful study assistant for a college student.
 
 **Student Profile:**
 - Name: {user_context['name']}
@@ -994,8 +1029,7 @@ You are a helpful study assistant for a college student.
 
 **Your Response:**"""
         else:
-            prompt = f"""
-You are a helpful study assistant for a student.
+            prompt = f"""You are a helpful study assistant for a student.
 
 **Relevant Materials from Portal:**
 {context if context else "No specific materials found."}
@@ -1010,15 +1044,13 @@ You are a helpful study assistant for a student.
 **Your Response:**"""
 
         # Call Gemini API or use fallback
+        ai_response = None
+        
         if GEMINI_API_KEY:
-            try:
-                model = genai.GenerativeModel('gemini-1.0-pro')
-                response = model.generate_content(prompt)
-                ai_response = response.text.strip()
-            except Exception as e:
-                print(f"Gemini error: {e}")
-                ai_response = fallback_response(user_message, context)
-        else:
+            ai_response = get_gemini_response(prompt)
+        
+        # If Gemini failed or not configured, use fallback
+        if not ai_response:
             ai_response = fallback_response(user_message, context)
         
         # Add helpful tip if materials found
@@ -1032,6 +1064,7 @@ You are a helpful study assistant for a student.
         
     except Exception as e:
         print(f"❌ Chat error: {str(e)}")
+        traceback.print_exc()
         return jsonify({
             'success': True,
             'response': "I'm having a bit of trouble right now. Please try again in a moment! 🙏"
@@ -1055,6 +1088,7 @@ def fallback_response(question, context):
     
     else:
         return f"👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n\nWhat would you like to know about {question}?"
+    
     
 # ==================== ADMIN ROUTES ====================
 
