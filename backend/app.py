@@ -1953,7 +1953,36 @@ def not_found(error):
 def unauthorized_response(callback):
     return jsonify({'success': False, 'error': 'Authentication required'}), 401
 
+# ==================== ADMIN PANEL ROUTES ====================
 
+@app.route('/admin')
+def serve_admin():
+    """Serve admin panel HTML"""
+    try:
+       
+        if os.path.exists('static/admin.html'):
+            return send_from_directory('static', 'admin.html')
+        # Agar root folder mein hai toh
+        elif os.path.exists('admin.html'):
+            return send_file('admin.html')
+        else:
+            return jsonify({'error': 'Admin panel not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/admin/<path:filename>')
+def serve_admin_static(filename):
+    """Serve admin static files"""
+    try:
+        if os.path.exists(f'static/{filename}'):
+            return send_from_directory('static', filename)
+        elif os.path.exists(filename):
+            return send_file(filename)
+        else:
+            return jsonify({'error': 'File not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 # ==================== START APP ====================
 
 if __name__ == '__main__':
