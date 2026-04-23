@@ -301,25 +301,38 @@ const Home = () => {
   };
 
   const fetchData = async () => {
+  try {
+    const coursesToShow = isMobile ? 3 : isTablet ? 4 : 6;
+    const coursesData = await getFeaturedCourses(coursesToShow);
+
+    const transformedCourses = coursesData.courses.map((course) => ({
+      id: course.id,
+      name: course.name,
+      branch: course.branch || "General",
+      semester: course.semester || "All",
+      code: course.code || "GEN",
+      notes: course.notes || 0,
+      pyqs: course.pyqs || 0,
+      description: course.description || "Study materials",
+      created_at: course.created_at,
+    }));
+
+    setBackendCourses(transformedCourses);
+
+    // ✅ FIX: Only fetch stats if user is admin (to avoid 401)
+    const token = localStorage.getItem('study_portal_token');
+    const user = JSON.parse(localStorage.getItem('study_portal_user') || '{}');
+    
+    let statsData;
     try {
-      const coursesToShow = isMobile ? 3 : isTablet ? 4 : 6;
-      const coursesData = await getFeaturedCourses(coursesToShow);
-
-      const transformedCourses = coursesData.courses.map((course) => ({
-        id: course.id,
-        name: course.name,
-        branch: course.branch || "General",
-        semester: course.semester || "All",
-        code: course.code || "GEN",
-        notes: course.notes || 0,
-        pyqs: course.pyqs || 0,
-        description: course.description || "Study materials",
-        created_at: course.created_at,
-      }));
-
-      setBackendCourses(transformedCourses);
-
-      const statsData = await getStats();
+      statsData = await getStats();
+    } catch (statsError) {
+      console.warn('Stats fetch failed (might be non-admin):', statsError);
+      // Use default stats if API fails
+      statsData = null;
+    }
+    
+    if (statsData && (user.role === 'admin' || token)) {
       setStats([
         {
           title: "Total Notes",
@@ -346,11 +359,8 @@ const Home = () => {
           key: "downloads",
         },
       ]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-
-      setBackendCourses([]);
-
+    } else {
+      // Use default stats for non-admin users
       setStats([
         {
           title: "Total Notes",
@@ -377,10 +387,42 @@ const Home = () => {
           key: "downloads",
         },
       ]);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    setBackendCourses([]);
+
+    setStats([
+      {
+        title: "Total Notes",
+        value: `${config.STATS_DEFAULTS.totalNotes}+`,
+        icon: "📄",
+        key: "notes",
+      },
+      {
+        title: "PYQs",
+        value: `${config.STATS_DEFAULTS.totalPYQs}+`,
+        icon: "📝",
+        key: "pyqs",
+      },
+      {
+        title: "Courses",
+        value: `${config.STATS_DEFAULTS.totalCourses}+`,
+        icon: "🎓",
+        key: "courses",
+      },
+      {
+        title: "Downloads",
+        value: `${config.STATS_DEFAULTS.totalDownloads}+`,
+        icon: "⬇️",
+        key: "downloads",
+      },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {

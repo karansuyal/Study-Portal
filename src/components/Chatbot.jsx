@@ -37,9 +37,9 @@ const Chatbot = () => {
         'Content-Type': 'application/json'
       };
       
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      if (token && token !== 'undefined' && token !== 'null') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
       const response = await fetch('https://study-portal-ill8.onrender.com/api/chat', {
         method: 'POST',
