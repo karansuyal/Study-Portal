@@ -934,25 +934,23 @@ def search_knowledge_base(query, user_id=None):
 def get_gemini_response(prompt):
     """Get response from Gemini API with multiple model fallbacks"""
     
-    # List of models to try in order
     model_names = [
-        'gemini-1.5-pro',
-        'gemini-1.5-flash', 
-        'gemini-pro',
-        'models/gemini-1.5-pro',
-        'models/gemini-1.5-flash',
-        'models/gemini-pro'
+        "gemini-1.5-flash-latest",
+        "gemini-1.5-flash",
+        "gemini-1.0-pro"
     ]
     
     for model_name in model_names:
         try:
             print(f"🔄 Trying model: {model_name}")
+            
             model = genai.GenerativeModel(model_name)
             response = model.generate_content(prompt)
             
-            if response and response.text:
+            if response and hasattr(response, "text"):
                 print(f"✅ Success with model: {model_name}")
                 return response.text.strip()
+                
         except Exception as e:
             print(f"❌ Model {model_name} failed: {str(e)[:100]}")
             continue
