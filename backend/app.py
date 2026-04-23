@@ -1049,7 +1049,12 @@ def rate_note(note_id):
         note = db.session.get(Note, note_id)
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
-
+        
+        if note.rating_count is None:
+            note.rating_count = 0
+        if note.rating_sum is None:
+            note.rating_sum = 0
+            
         existing_rating = db.session.execute(
             db.select(UserRating).filter_by(
                 note_id=note_id,
@@ -1063,7 +1068,7 @@ def rate_note(note_id):
             existing_rating.updated_at = datetime.now(timezone.utc)
 
             note.rating_sum = note.rating_sum - old_rating + rating_value
-            note.rating = note.rating_sum / note.rating_count
+            note.rating = note.rating_sum / note.rating_count if note.rating_count > 0 else 0
 
             message = 'Rating updated successfully'
         else:
@@ -1080,7 +1085,7 @@ def rate_note(note_id):
 
             note.rating_count += 1
             note.rating_sum += rating_value
-            note.rating = note.rating_sum / note.rating_count
+            note.rating = note.rating_sum / note.rating_count if note.rating_count > 0 else 0
 
             message = 'Rating submitted successfully'
 
