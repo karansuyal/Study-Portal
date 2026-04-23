@@ -888,11 +888,9 @@ def get_user_context(user_id):
         print(f"Error getting user context: {e}")
         return None
 
-# Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def chat_with_ai():
-    # Handle preflight
     if request.method == 'OPTIONS':
         response = jsonify({'success': True})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -913,96 +911,113 @@ def chat_with_ai():
         if not user_message:
             return jsonify({'success': False, 'error': 'Message is required'}), 400
         
-        # Get user context
+        # ==================== STEP 1: SEARCH DATABASE ====================
+        query_terms = user_message.lower().split()
+        
+        # Search for relevant subjects
+        relevant_subjects = []
+        for term in query_terms:
+            subjects = Subject.query.filter(
+                Subject.name.ilike(f'%{term}%'),
+                Subject.course_id == user.course_id if user.course_id else True
+            ).limit(3).all()
+            relevant_subjects.extend(subjects)
+        
+        # Search for relevant notes/materials
+        relevant_notes = []
+        for term in query_terms:
+            notes = Note.query.filter(
+                Note.title.ilike(f'%{term}%'),
+                Note.status == 'approved'
+            ).limit(5).all()
+            relevant_notes.extend(notes)
+        
+        # Search for PYQs
+        relevant_pyqs = []
+        for term in query_terms:
+            pyqs = Note.query.filter(
+                Note.note_type == 'pyq',
+                Note.title.ilike(f'%{term}%'),
+                Note.status == 'approved'
+            ).limit(3).all()
+            relevant_pyqs.extend(pyqs)
+        
+        # ==================== STEP 2: PREPARE CONTEXT ====================
+        context = ""
+        
+        if relevant_subjects:
+            context += "\n📚 Relevant Subjects in Database:\n"
+            for sub in relevant_subjects[:5]:
+                context += f"- {sub.name} (Code: {sub.code})\n"
+        
+        if relevant_notes:
+            context += "\n📄 Available Study Materials:\n"
+            for note in relevant_notes[:5]:
+                context += f"- {note.title} ({note.note_type})\n"
+        
+        if relevant_pyqs:
+            context += "\n📝 Previous Year Questions Available:\n"
+            for pyq in relevant_pyqs[:3]:
+                context += f"- {pyq.title}\n"
+        
+        # ==================== STEP 3: GET USER CONTEXT ====================
         user_context = get_user_context(user.id)
         
-        # Check if Gemini is configured
-        if not GEMINI_API_KEY:
-            # Fallback response
-            return jsonify({
-                'success': True,
-                'response': f"Hi {user.name}! 👋\n\nI'm your AI study assistant. The AI feature is currently being set up. In the meantime, you can:\n\n📚 Browse study materials\n📝 Practice PYQs\n💬 Ask your teachers for help\n\nStay tuned for the AI assistant!"
-            })
-        
-        # Prepare prompt with user context
-        if user_context:
-            prompt = f"""
+        # ==================== STEP 4: PREPARE PROMPT ====================
+        prompt = f"""
 You are a helpful study assistant for a college student.
 
 Student Profile:
 - Name: {user_context['name']}
 - Course/Branch: {user_context['course']}
 - Semester: {user_context['semester']}
-- Recent Subjects: {', '.join(user_context['subjects'])}
 
-The student is using a Study Portal where they can access notes, PYQs, syllabus, and study materials.
-
-Instructions:
-1. Be friendly and encouraging
-2. Give concise, accurate answers (max 150-200 words)
-3. If you don't know something, suggest checking their study materials or consulting their teacher
-4. Suggest relevant study resources from the portal if appropriate
-5. Keep responses educational and helpful
+{context}
 
 Student's Question: {user_message}
 
-Your response:"""
-        else:
-            prompt = f"""
-You are a helpful study assistant for a college student.
-
-Study Portal Features: Notes, PYQs (Previous Year Questions), Syllabus, Lab Manuals, YouTube videos
-
 Instructions:
-1. Be friendly and encouraging
-2. Give concise answers (max 200 words)
-3. Help with study tips, exam preparation, and subject doubts
-
-Student's Question: {user_message}
+1. If relevant information is available in the database context above, use it to answer
+2. Suggest specific study materials from the database if available
+3. If you don't know something, be honest and suggest checking the study portal
+4. Keep responses friendly, educational, and helpful (max 200 words)
+5. If the student asks about PYQs, tell them what's available
 
 Your response:"""
         
-        # Call Gemini API
+        # ==================== STEP 5: CALL GEMINI ====================
+        if not GEMINI_API_KEY:
+            return jsonify({
+                'success': True,
+                'response': f"Hi {user.name}! 👋\n\nI can help you with:\n📚 Study materials\n📝 Previous year questions\n🎯 Exam preparation\n\nWhat would you like to know?"
+            })
+        
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
-        
         ai_response = response.text.strip()
         
-        # Log chat for analytics (optional)
-        print(f"💬 {user.name}: {user_message[:50]}...")
-        print(f"🤖 AI: {ai_response[:50]}...")
+        # ==================== STEP 6: ADD SUGGESTIONS ====================
+        if relevant_notes or relevant_pyqs:
+            ai_response += "\n\n💡 **Tip:** Check the Study Materials section for more resources!"
         
         return jsonify({
             'success': True,
-            'response': ai_response
+            'response': ai_response,
+            'debug': {
+                'subjects_found': len(relevant_subjects),
+                'notes_found': len(relevant_notes),
+                'pyqs_found': len(relevant_pyqs)
+            }
         })
         
     except Exception as e:
         print(f"❌ Chat error: {str(e)}")
         traceback.print_exc()
         return jsonify({
-            'success': True,  # Return true with fallback message
-            'response': "I'm having a bit of trouble right now. Please try again in a moment! 🙏"
+            'success': True,
+            'response': "I'm having trouble connecting. Please try again! 🙏"
         })
-
-# Test chat endpoint (without auth - for testing)
-@app.route('/api/chat/test', methods=['POST'])
-def test_chat():
-    try:
-        data = request.get_json()
-        user_message = data.get('message', '')
         
-        if not GEMINI_API_KEY:
-            return jsonify({'response': 'Gemini API key not configured'})
-        
-        prompt = f"You are a helpful study assistant. Answer briefly: {user_message}"
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
-        
-        return jsonify({'success': True, 'response': response.text})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-    
 # ==================== ADMIN ROUTES ====================
 
 @app.route('/api/admin/stats', methods=['GET'])
