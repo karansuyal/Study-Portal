@@ -1,4 +1,4 @@
-/* Chatbot.css */
+/* src/components/Chatbot.css */
 .chatbot-toggle {
   position: fixed;
   bottom: 90px;
@@ -108,7 +108,6 @@
   background: #f8fafc;
 }
 
-/* Custom scrollbar */
 .chatbot-messages::-webkit-scrollbar {
   width: 5px;
 }
@@ -237,7 +236,6 @@
   cursor: not-allowed;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
   .chatbot-window {
     width: calc(100% - 40px);

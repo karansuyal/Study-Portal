@@ -1,3 +1,4 @@
+// src/components/Chatbot.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaTimes, FaPaperPlane, FaSpinner, FaUserGraduate } from 'react-icons/fa';
 import './Chatbot.css';
@@ -7,7 +8,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     { 
       role: 'bot', 
-      text: "Namaste! 👋 I'm your AI study assistant powered by Google Gemini.\n\nAsk me anything about:\n📚 Your courses\n📝 Exam preparation\n🎯 Study tips\n📖 Subject doubts"
+      text: "Hello Bro! 👋 I'm your AI study assistant powered by Google Gemini.\n\nAsk me anything about:\n📚 Your courses\n📝 Exam preparation\n🎯 Study tips\n📖 Subject doubts\n\nHow can I help you today?"
     }
   ]);
   const [input, setInput] = useState('');
@@ -32,22 +33,17 @@ const Chatbot = () => {
 
     try {
       const token = localStorage.getItem('study_portal_token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
       
-      if (!token) {
-        setMessages(prev => [...prev, { 
-          role: 'bot', 
-          text: "Please login first to use the AI assistant! 🔐" 
-        }]);
-        setLoading(false);
-        return;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
       const response = await fetch('https://study-portal-ill8.onrender.com/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: headers,
         body: JSON.stringify({ message: userMessage })
       });
 
