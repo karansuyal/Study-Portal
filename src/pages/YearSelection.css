@@ -1,11 +1,11 @@
-/* src/pages/SubjectSelection.css */
+/* src/pages/YearSelection.css */
 
 /* ============================================
-   SUBJECT SELECTION PAGE STYLES
+   YEAR SELECTION PAGE STYLES
    ============================================ */
 
 /* Container */
-.subject-container {
+.year-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1rem;
@@ -14,13 +14,13 @@
 }
 
 /* ============================================
-   COMPACT HEADER (Same as Year page)
+   COMPACT HEADER
    ============================================ */
-.subject-compact-header {
+.year-compact-header {
   margin-bottom: 2rem;
 }
 
-.subject-compact-back-button {
+.year-compact-back-button {
   padding: 0.4rem 1rem;
   background: #4f46e5;
   color: white;
@@ -33,12 +33,12 @@
   transition: all 0.3s;
 }
 
-.subject-compact-back-button:hover {
+.year-compact-back-button:hover {
   background: #4338ca;
   transform: translateX(-3px);
 }
 
-.subject-compact-course-info {
+.year-compact-course-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -50,17 +50,17 @@
   margin: 0 auto;
 }
 
-.subject-compact-course-icon {
+.year-compact-course-icon {
   font-size: 1.2rem;
 }
 
-.subject-compact-course-name {
+.year-compact-course-name {
   font-size: 1.1rem;
   font-weight: 600;
   color: #1f2937;
 }
 
-.subject-compact-course-details {
+.year-compact-course-details {
   font-size: 0.8rem;
   color: #6b7280;
   border-left: 1px solid #e5e7eb;
@@ -70,17 +70,17 @@
 /* ============================================
    SEARCH SECTION
    ============================================ */
-.subject-search-section {
+.year-search-section {
   margin-bottom: 2rem;
 }
 
-.subject-search-container {
+.year-search-container {
   position: relative;
   max-width: 500px;
   margin: 0 auto;
 }
 
-.subject-search-icon {
+.year-search-icon {
   position: absolute;
   left: 15px;
   top: 50%;
@@ -89,7 +89,7 @@
   color: #9ca3af;
 }
 
-.subject-search-input {
+.year-search-input {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 2.5rem;
   font-size: 0.9rem;
@@ -100,12 +100,12 @@
   background: white;
 }
 
-.subject-search-input:focus {
+.year-search-input:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.subject-clear-button {
+.year-clear-button {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -120,9 +120,9 @@
 }
 
 /* ============================================
-   SUBJECTS GRID
+   YEARS GRID
    ============================================ */
-.subject-subjects-grid {
+.year-years-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -130,9 +130,9 @@
 }
 
 /* ============================================
-   SUBJECT CARD (Same as Year card)
+   YEAR CARD
    ============================================ */
-.subject-card {
+.year-card {
   background: white;
   padding: 1.5rem;
   border-radius: 16px;
@@ -143,13 +143,13 @@
   border: 1px solid #e5e7eb;
 }
 
-.subject-card:hover {
+.year-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   border-color: #4f46e5;
 }
 
-.subject-number-circle {
+.year-number-circle {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -157,29 +157,22 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 0.8rem;
-  font-size: 1rem;
+}
+
+.year-number-text {
+  color: #1f2937;
+  font-size: 1.3rem;
   font-weight: bold;
 }
 
-.subject-code {
-  color: #1f2937;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-align: center;
-  word-break: break-word;
-  padding: 0 5px;
-  line-height: 1.3;
-  max-width: 60px;
-}
-
-.subject-name {
+.year-name {
   font-size: 1.2rem;
   margin-bottom: 0.3rem;
   color: #1f2937;
   font-weight: 600;
 }
 
-.subject-credits {
+.year-description {
   color: #6b7280;
   margin-bottom: 0.8rem;
   font-size: 0.8rem;
@@ -188,7 +181,7 @@
 /* ============================================
    MATERIALS PREVIEW
    ============================================ */
-.subject-materials-preview {
+.year-materials-preview {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -196,7 +189,7 @@
   margin: 0.8rem 0;
 }
 
-.subject-material-badge {
+.year-material-badge {
   background: #f3f4f6;
   color: #4b5563;
   padding: 0.2rem 0.6rem;
@@ -208,7 +201,7 @@
 /* ============================================
    STATS
    ============================================ */
-.subject-stats {
+.year-stats {
   display: flex;
   justify-content: center;
   gap: 0.8rem;
@@ -218,7 +211,7 @@
   flex-wrap: wrap;
 }
 
-.subject-stat {
+.year-stat {
   background: #f3f4f6;
   padding: 0.2rem 0.6rem;
   border-radius: 12px;
@@ -227,7 +220,7 @@
 /* ============================================
    SELECT BUTTON
    ============================================ */
-.subject-select-button {
+.year-select-button {
   margin-top: 0.8rem;
   padding: 0.6rem 1rem;
   color: white;
@@ -240,7 +233,7 @@
   transition: all 0.3s;
 }
 
-.subject-select-button:hover {
+.year-select-button:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
 }
@@ -248,7 +241,7 @@
 /* ============================================
    FOOTER
    ============================================ */
-.subject-simple-footer {
+.year-simple-footer {
   text-align: center;
   padding: 1rem;
   background: white;
@@ -261,7 +254,7 @@
 /* ============================================
    EMPTY STATE
    ============================================ */
-.subject-empty-state {
+.year-empty-state {
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
@@ -270,44 +263,91 @@
   border: 1px solid #e5e7eb;
 }
 
-.subject-empty-icon {
+.year-empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
 
-.subject-empty-state h3 {
+.year-empty-state h3 {
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
 
-.subject-empty-state p {
+.year-empty-state p {
   color: #6b7280;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+.year-error-container {
+  text-align: center;
+  padding: 3rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.year-error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.year-error-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.year-error-container p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.year-error-back-button {
+  padding: 0.75rem 1.5rem;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.year-error-back-button:hover {
+  background: #4338ca;
+  transform: translateX(-5px);
 }
 
 /* ============================================
    LOADING STATE
    ============================================ */
-.subject-loading-container {
+.year-loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justifyContent: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.subject-loading-spinner {
+.year-loading-spinner {
   width: 50px;
   height: 50px;
   border: 5px solid #e2e8f0;
   border-top: 5px solid #4f46e5;
   border-radius: 50%;
-  animation: subject-spin 1s linear infinite;
+  animation: year-spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
-@keyframes subject-spin {
+@keyframes year-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
@@ -316,119 +356,97 @@
    MOBILE RESPONSIVE
    ============================================ */
 
-/* Tablet */
+/* Tablet and Mobile (max-width: 768px) */
 @media (max-width: 768px) {
-  .subject-number-circle {
-    width: 60px;
-    height: 60px;
+  .year-container {
+    padding: 1rem;
   }
   
-  .subject-code {
-    font-size: 0.75rem;
-    max-width: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .subject-number-circle {
-    width: 55px;
-    height: 55px;
-  }
-
-  .subject-code {
-    font-size: 0.7rem;
-    max-width: 45px;
-  }
-
   /* Compact Header Mobile */
-  .subject-compact-course-info {
+  .year-compact-course-info {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
     padding: 0.75rem 1rem;
   }
   
-  .subject-compact-course-details {
+  .year-compact-course-details {
     border-left: none;
     padding-left: 0;
     border-top: 1px solid #e5e7eb;
     padding-top: 0.5rem;
   }
   
-  .subject-compact-course-name {
+  .year-compact-course-name {
     font-size: 0.95rem;
   }
   
-  .subject-compact-course-details {
+  .year-compact-course-details {
     font-size: 0.7rem;
   }
   
   /* Grid Mobile */
-  .subject-subjects-grid {
+  .year-years-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
   
   /* Card Mobile */
-  .subject-card {
+  .year-card {
     padding: 1.2rem;
   }
   
-  .subject-number-circle {
+  .year-number-circle {
     width: 50px;
     height: 50px;
   }
   
-  .subject-code {
-    font-size: 0.9rem;
+  .year-number-text {
+    font-size: 1.1rem;
   }
   
-  .subject-name {
+  .year-name {
     font-size: 1rem;
   }
   
-  .subject-credits {
-    font-size: 0.7rem;
-  }
-  
   /* Badges Mobile */
-  .subject-materials-preview {
+  .year-materials-preview {
     gap: 0.3rem;
   }
   
-  .subject-material-badge {
+  .year-material-badge {
     font-size: 0.65rem;
     padding: 0.15rem 0.5rem;
   }
   
   /* Stats Mobile */
-  .subject-stats {
+  .year-stats {
     gap: 0.5rem;
   }
   
-  .subject-stat {
+  .year-stat {
     font-size: 0.7rem;
   }
   
   /* Button Mobile */
-  .subject-select-button {
+  .year-select-button {
     padding: 0.5rem;
     font-size: 0.8rem;
   }
   
   /* Footer Mobile */
-  .subject-simple-footer {
+  .year-simple-footer {
     font-size: 0.7rem;
     padding: 0.75rem;
   }
   
   /* Search Mobile */
-  .subject-search-input {
+  .year-search-input {
     font-size: 0.85rem;
     padding: 0.65rem 2.2rem 0.65rem 2.2rem;
   }
   
-  .subject-compact-back-button {
+  .year-compact-back-button {
     font-size: 0.75rem;
     padding: 0.35rem 0.8rem;
   }
@@ -436,59 +454,59 @@
 
 /* Extra Small Devices (max-width: 480px) */
 @media (max-width: 480px) {
-  .subject-container {
+  .year-container {
     padding: 0.75rem;
   }
   
-  .subject-card {
+  .year-card {
     padding: 1rem;
   }
   
-  .subject-number-circle {
+  .year-number-circle {
     width: 45px;
     height: 45px;
   }
   
-  .subject-code {
-    font-size: 0.8rem;
-  }
-  
-  .subject-name {
-    font-size: 0.9rem;
-  }
-  
-  .subject-material-badge {
-    font-size: 0.6rem;
-  }
-  
-  .subject-stat {
-    font-size: 0.65rem;
-  }
-  
-  .subject-select-button {
-    font-size: 0.75rem;
-  }
-  
-  .subject-simple-footer {
-    font-size: 0.65rem;
-  }
-  
-  .subject-compact-course-icon {
+  .year-number-text {
     font-size: 1rem;
   }
   
-  .subject-compact-course-name {
+  .year-name {
+    font-size: 0.9rem;
+  }
+  
+  .year-material-badge {
+    font-size: 0.6rem;
+  }
+  
+  .year-stat {
+    font-size: 0.65rem;
+  }
+  
+  .year-select-button {
+    font-size: 0.75rem;
+  }
+  
+  .year-simple-footer {
+    font-size: 0.65rem;
+  }
+  
+  .year-compact-course-icon {
+    font-size: 1rem;
+  }
+  
+  .year-compact-course-name {
     font-size: 0.85rem;
   }
 }
 
 /* Landscape Mode for Mobile */
 @media (max-width: 768px) and (orientation: landscape) {
-  .subject-subjects-grid {
+  .year-years-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
   
-  .subject-card {
+  .year-card {
     padding: 1rem;
   }
 }
