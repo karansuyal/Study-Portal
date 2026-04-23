@@ -24,7 +24,9 @@ from flask import redirect
 from cloudinary_config import configure_cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import hashlib
 import google.generativeai as genai
+from collections import defaultdict
 import resend
 from google_drive import upload_to_drive
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -933,27 +935,30 @@ def search_knowledge_base(query, user_id=None):
 # Function to get Gemini response
 def get_gemini_response(prompt):
     model_names = [
-        "models/gemini-2.5-flash",
-        "models/gemini-2.0-flash",
-        "models/gemini-2.5-pro"
+        "models/gemini-2.0-flash",   
+        "models/gemini-2.5-flash",  
+        "models/gemini-2.5-pro"     
     ]
     
     for model_name in model_names:
         try:
             print(f"🔄 Trying model: {model_name}")
-            
             model = genai.GenerativeModel(model_name)
             response = model.generate_content(prompt)
-            
-            if response and hasattr(response, "text"):
+
+            if response and response.text:
                 print(f"✅ Success with model: {model_name}")
                 return response.text.strip()
-                
+
         except Exception as e:
             print(f"❌ Model {model_name} failed: {str(e)[:100]}")
-            continue
-    
-    return "AI is temporarily unavailable 😔"
+            
+            # Stop retry if quota exceeded
+            if "429" in str(e):
+                print("🚫 Quota exceeded, stopping further attempts")
+                break
+
+    return "⚠️ AI service temporarily unavailable. Please try later."
 
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
