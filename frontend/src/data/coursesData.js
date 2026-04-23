@@ -10,17 +10,17 @@ export const coursesData = {
         semesters: {
           1: [
             // THEORY SUBJECTS FIRST
-            { id: 101, name: 'Design Thinking', code: 'HSMC101', credits: 3, materials: 15, rating: 4.5, type: 'Theory' },
             { id: 102, name: 'Introduction to Python Programming', code: 'TCS102', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
             { id: 103, name: 'Basic Electrical Engineering', code: 'TEE101', credits: 3, materials: 20, rating: 4.3, type: 'Theory' },
             { id: 104, name: 'Professional Communication', code: 'THU101', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 105, name: 'Mathematics for AI-I', code: 'TMA102', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
             { id: 106, name: 'Engineering Physics', code: 'TPH101', credits: 4, materials: 15, rating: 4.6, type: 'Theory' },
+            { id: 101, name: 'Design Thinking', code: 'HSMC101', credits: 3, materials: 15, rating: 4.5, type: 'Theory' },
             
             // LAB SUBJECTS LAST
-            { id: 107, name: 'Python Programming Lab', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Lab' },
+            { id: 107, name: 'Mathematics for Core', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Theory' },
             { id: 108, name: 'Basic Electrical Engineering Lab', code: 'PEE151', credits: 1, materials: 12, rating: 4.5, type: 'Lab' },
-            { id: 109, name: 'Workshop and Manufacturing Practices', code: 'PME151', credits: 2, materials: 14, rating: 4.3, type: 'Lab' },
+            { id: 109, name: 'Python Programming Lab', code: 'PME151', credits: 2, materials: 14, rating: 4.3, type: 'Lab' },
             { id: 110, name: 'Physics Lab', code: 'PPH151', credits: 1, materials: 10, rating: 4.4, type: 'Lab' }
           ],
          
@@ -31,13 +31,13 @@ export const coursesData = {
   { id: 113, name: 'Engineering Mathematics-II', code: 'TMA201', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
   { id: 114, name: 'Basic Electronics Engineering', code: 'TEC201', credits: 3, materials: 20, rating: 4.2, type: 'Theory' },
   { id: 115, name: 'Environmental Science', code: 'TE2101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' },
-  { id: 116, name: 'Fundamental of Computer & Introduction to Programming', code: 'TCS201', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+  { id: 116, name: 'Fundamental of AI & ML', code: 'TCS201', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
   
   // LAB SUBJECTS LAST (Semester 1 - Actual)
-  { id: 117, name: 'Basic Electronics Engineering Lab', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Lab' },
-  { id: 118, name: 'Chemistry Lab', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Lab' },
-  { id: 119, name: 'Engineering Graphics and Design Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
-  { id: 120, name: 'C Programming Language', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
+  { id: 117, name: 'Programming in C', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Theory' },
+  { id: 118, name: 'Mathematics for Core  2', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
+  { id: 119, name: 'Chemistry Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
+  { id: 120, name: 'Basic Electronics Engineering Lab', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
   
 ],
         }
@@ -65,7 +65,7 @@ export const coursesData = {
       { id: 134, name: 'Finite Automata and Formal Languages', code: 'TCS402', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
       { id: 135, name: 'Microprocessors', code: 'TCS403', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
       { id: 136, name: 'Fundamental of Statistics and AI', code: 'TCS421', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
-      { id: 137, name: 'Programming in Java', code: 'TCS408', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
+      { id: 137, name: 'Java Programming', code: 'TCS408', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 138, name: 'Design and Analysis of Algorithms', code: 'TCS409', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 139, name: 'Career Skills', code: 'XCS401', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
       
@@ -117,23 +117,23 @@ export const coursesData = {
         semesters: {
           7: [
             // THEORY SUBJECTS FIRST
-            { id: 153, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
-            { id: 154, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
-            { id: 155, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
-            { id: 156, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 157, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
+            { id: 169, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
+            { id: 170, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
+            { id: 171, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+            { id: 172, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 173, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
             
             // LAB SUBJECTS LAST
-            { id: 158, name: 'Mobile App Development Lab', code: 'PCS451', credits: 2, materials: 22, rating: 4.7, type: 'Lab' },
-            { id: 159, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
-            { id: 160, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
+            { id: 174, name: 'Mobile App Development Lab', code: 'PCS451', credits: 2, materials: 22, rating: 4.7, type: 'Lab' },
+            { id: 175, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
+            { id: 176, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
           ],
           8: [
             // FINAL SEMESTER - Major Project Focus
-            { id: 161, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
-            { id: 162, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
-            { id: 163, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
-            { id: 164, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
+            { id: 177, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
+            { id: 178, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
+            { id: 179, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
+            { id: 180, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
           ]
         }
       }

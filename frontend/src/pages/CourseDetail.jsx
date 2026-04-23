@@ -71,7 +71,7 @@ const CourseDetail = () => {
         <button style={{...styles.tab, ...styles.activeTab}}>Notes</button>
         <button style={styles.tab}>PYQs</button>
         <button style={styles.tab}>Syllabus</button>
-        <button style={styles.tab}>Assignments</button>
+        <button style={styles.tab}>YouTube</button>
       </div>
 
       <div style={styles.content}>

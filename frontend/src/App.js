@@ -20,7 +20,8 @@ import SearchResults from './pages/SearchResults';
 import AllMaterials from './pages/AllMaterials';
 import AdminPanel from './pages/AdminPanel';
 import ScrollToTop from './components/ScrollToTop';
-import { CounterProvider } from './contexts/CounterContext';  
+import { CounterProvider } from './contexts/CounterContext';
+import Chatbot from './components/Chatbot';  
 
 
 // ✅ HIERARCHICAL PAGES IMPORTS
@@ -77,7 +78,7 @@ function App() {
                 />
               </Routes>
             </main>
-
+              <Chatbot />
             <Footer />
           </div>
         </CounterProvider>  {}

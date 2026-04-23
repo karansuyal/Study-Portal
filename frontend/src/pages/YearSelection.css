@@ -1,11 +1,11 @@
-/* src/pages/SemesterSelection.css */
+/* src/pages/YearSelection.css */
 
 /* ============================================
-   SEMESTER SELECTION PAGE STYLES
+   YEAR SELECTION PAGE STYLES
    ============================================ */
 
 /* Container */
-.semester-container {
+.year-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1rem;
@@ -14,13 +14,13 @@
 }
 
 /* ============================================
-   COMPACT HEADER (Same as Year page)
+   COMPACT HEADER
    ============================================ */
-.semester-compact-header {
+.year-compact-header {
   margin-bottom: 2rem;
 }
 
-.semester-compact-back-button {
+.year-compact-back-button {
   padding: 0.4rem 1rem;
   background: #4f46e5;
   color: white;
@@ -33,12 +33,12 @@
   transition: all 0.3s;
 }
 
-.semester-compact-back-button:hover {
+.year-compact-back-button:hover {
   background: #4338ca;
   transform: translateX(-3px);
 }
 
-.semester-compact-course-info {
+.year-compact-course-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -50,17 +50,17 @@
   margin: 0 auto;
 }
 
-.semester-compact-course-icon {
+.year-compact-course-icon {
   font-size: 1.2rem;
 }
 
-.semester-compact-course-name {
+.year-compact-course-name {
   font-size: 1.1rem;
-  fontWeight: 600;
+  font-weight: 600;
   color: #1f2937;
 }
 
-.semester-compact-course-details {
+.year-compact-course-details {
   font-size: 0.8rem;
   color: #6b7280;
   border-left: 1px solid #e5e7eb;
@@ -70,17 +70,17 @@
 /* ============================================
    SEARCH SECTION
    ============================================ */
-.semester-search-section {
+.year-search-section {
   margin-bottom: 2rem;
 }
 
-.semester-search-container {
+.year-search-container {
   position: relative;
   max-width: 500px;
   margin: 0 auto;
 }
 
-.semester-search-icon {
+.year-search-icon {
   position: absolute;
   left: 15px;
   top: 50%;
@@ -89,7 +89,7 @@
   color: #9ca3af;
 }
 
-.semester-search-input {
+.year-search-input {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 2.5rem;
   font-size: 0.9rem;
@@ -100,12 +100,12 @@
   background: white;
 }
 
-.semester-search-input:focus {
+.year-search-input:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.semester-clear-button {
+.year-clear-button {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -120,9 +120,9 @@
 }
 
 /* ============================================
-   SEMESTERS GRID
+   YEARS GRID
    ============================================ */
-.semester-semesters-grid {
+.year-years-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -130,9 +130,9 @@
 }
 
 /* ============================================
-   SEMESTER CARD (Same as Year card)
+   YEAR CARD
    ============================================ */
-.semester-card {
+.year-card {
   background: white;
   padding: 1.5rem;
   border-radius: 16px;
@@ -143,13 +143,13 @@
   border: 1px solid #e5e7eb;
 }
 
-.semester-card:hover {
+.year-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   border-color: #4f46e5;
 }
 
-.semester-number-circle {
+.year-number-circle {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -159,48 +159,29 @@
   margin: 0 auto 0.8rem;
 }
 
-.semester-number-text {
+.year-number-text {
   color: #1f2937;
   font-size: 1.3rem;
   font-weight: bold;
 }
 
-.semester-name {
+.year-name {
   font-size: 1.2rem;
   margin-bottom: 0.3rem;
   color: #1f2937;
   font-weight: 600;
 }
 
-.semester-status {
+.year-description {
   color: #6b7280;
   margin-bottom: 0.8rem;
   font-size: 0.8rem;
 }
 
 /* ============================================
-   STATS
-   ============================================ */
-.semester-stats {
-  display: flex;
-  justify-content: center;
-  gap: 0.8rem;
-  margin: 0.8rem 0;
-  font-size: 0.8rem;
-  color: #666;
-  flex-wrap: wrap;
-}
-
-.semester-stat {
-  background: #f3f4f6;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-}
-
-/* ============================================
    MATERIALS PREVIEW
    ============================================ */
-.semester-materials-preview {
+.year-materials-preview {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -208,7 +189,7 @@
   margin: 0.8rem 0;
 }
 
-.semester-material-badge {
+.year-material-badge {
   background: #f3f4f6;
   color: #4b5563;
   padding: 0.2rem 0.6rem;
@@ -218,9 +199,28 @@
 }
 
 /* ============================================
+   STATS
+   ============================================ */
+.year-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 0.8rem 0;
+  font-size: 0.8rem;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.year-stat {
+  background: #f3f4f6;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+}
+
+/* ============================================
    SELECT BUTTON
    ============================================ */
-.semester-select-button {
+.year-select-button {
   margin-top: 0.8rem;
   padding: 0.6rem 1rem;
   color: white;
@@ -233,20 +233,15 @@
   transition: all 0.3s;
 }
 
-.semester-select-button:hover:not(:disabled) {
+.year-select-button:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
-}
-
-.semester-select-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 /* ============================================
    FOOTER
    ============================================ */
-.semester-simple-footer {
+.year-simple-footer {
   text-align: center;
   padding: 1rem;
   background: white;
@@ -259,7 +254,7 @@
 /* ============================================
    EMPTY STATE
    ============================================ */
-.semester-empty-state {
+.year-empty-state {
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
@@ -268,25 +263,25 @@
   border: 1px solid #e5e7eb;
 }
 
-.semester-empty-icon {
+.year-empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
 
-.semester-empty-state h3 {
+.year-empty-state h3 {
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
 
-.semester-empty-state p {
+.year-empty-state p {
   color: #6b7280;
 }
 
 /* ============================================
    ERROR STATE
    ============================================ */
-.semester-error-container {
+.year-error-container {
   text-align: center;
   padding: 3rem;
   min-height: 100vh;
@@ -297,24 +292,24 @@
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.semester-error-icon {
+.year-error-icon {
   font-size: 4rem;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
 
-.semester-error-container h3 {
+.year-error-container h3 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
 
-.semester-error-container p {
+.year-error-container p {
   color: #6b7280;
   margin-bottom: 1.5rem;
 }
 
-.semester-error-back-button {
+.year-error-back-button {
   padding: 0.75rem 1.5rem;
   background: #4f46e5;
   color: white;
@@ -325,7 +320,7 @@
   transition: all 0.3s;
 }
 
-.semester-error-back-button:hover {
+.year-error-back-button:hover {
   background: #4338ca;
   transform: translateX(-5px);
 }
@@ -333,26 +328,26 @@
 /* ============================================
    LOADING STATE
    ============================================ */
-.semester-loading-container {
+.year-loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justifyContent: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.semester-loading-spinner {
+.year-loading-spinner {
   width: 50px;
   height: 50px;
   border: 5px solid #e2e8f0;
   border-top: 5px solid #4f46e5;
   border-radius: 50%;
-  animation: semester-spin 1s linear infinite;
+  animation: year-spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
-@keyframes semester-spin {
+@keyframes year-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
@@ -363,95 +358,95 @@
 
 /* Tablet and Mobile (max-width: 768px) */
 @media (max-width: 768px) {
-  .semester-container {
+  .year-container {
     padding: 1rem;
   }
   
   /* Compact Header Mobile */
-  .semester-compact-course-info {
+  .year-compact-course-info {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
     padding: 0.75rem 1rem;
   }
   
-  .semester-compact-course-details {
+  .year-compact-course-details {
     border-left: none;
     padding-left: 0;
     border-top: 1px solid #e5e7eb;
     padding-top: 0.5rem;
   }
   
-  .semester-compact-course-name {
+  .year-compact-course-name {
     font-size: 0.95rem;
   }
   
-  .semester-compact-course-details {
+  .year-compact-course-details {
     font-size: 0.7rem;
   }
   
   /* Grid Mobile */
-  .semester-semesters-grid {
+  .year-years-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
   
   /* Card Mobile */
-  .semester-card {
+  .year-card {
     padding: 1.2rem;
   }
   
-  .semester-number-circle {
+  .year-number-circle {
     width: 50px;
     height: 50px;
   }
   
-  .semester-number-text {
+  .year-number-text {
     font-size: 1.1rem;
   }
   
-  .semester-name {
+  .year-name {
     font-size: 1rem;
   }
   
   /* Badges Mobile */
-  .semester-materials-preview {
+  .year-materials-preview {
     gap: 0.3rem;
   }
   
-  .semester-material-badge {
+  .year-material-badge {
     font-size: 0.65rem;
     padding: 0.15rem 0.5rem;
   }
   
   /* Stats Mobile */
-  .semester-stats {
+  .year-stats {
     gap: 0.5rem;
   }
   
-  .semester-stat {
+  .year-stat {
     font-size: 0.7rem;
   }
   
   /* Button Mobile */
-  .semester-select-button {
+  .year-select-button {
     padding: 0.5rem;
     font-size: 0.8rem;
   }
   
   /* Footer Mobile */
-  .semester-simple-footer {
+  .year-simple-footer {
     font-size: 0.7rem;
     padding: 0.75rem;
   }
   
   /* Search Mobile */
-  .semester-search-input {
+  .year-search-input {
     font-size: 0.85rem;
     padding: 0.65rem 2.2rem 0.65rem 2.2rem;
   }
   
-  .semester-compact-back-button {
+  .year-compact-back-button {
     font-size: 0.75rem;
     padding: 0.35rem 0.8rem;
   }
@@ -459,59 +454,59 @@
 
 /* Extra Small Devices (max-width: 480px) */
 @media (max-width: 480px) {
-  .semester-container {
+  .year-container {
     padding: 0.75rem;
   }
   
-  .semester-card {
+  .year-card {
     padding: 1rem;
   }
   
-  .semester-number-circle {
+  .year-number-circle {
     width: 45px;
     height: 45px;
   }
   
-  .semester-number-text {
+  .year-number-text {
     font-size: 1rem;
   }
   
-  .semester-name {
+  .year-name {
     font-size: 0.9rem;
   }
   
-  .semester-material-badge {
+  .year-material-badge {
     font-size: 0.6rem;
   }
   
-  .semester-stat {
+  .year-stat {
     font-size: 0.65rem;
   }
   
-  .semester-select-button {
+  .year-select-button {
     font-size: 0.75rem;
   }
   
-  .semester-simple-footer {
+  .year-simple-footer {
     font-size: 0.65rem;
   }
   
-  .semester-compact-course-icon {
+  .year-compact-course-icon {
     font-size: 1rem;
   }
   
-  .semester-compact-course-name {
+  .year-compact-course-name {
     font-size: 0.85rem;
   }
 }
 
 /* Landscape Mode for Mobile */
 @media (max-width: 768px) and (orientation: landscape) {
-  .semester-semesters-grid {
+  .year-years-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
   
-  .semester-card {
+  .year-card {
     padding: 1rem;
   }
 }

@@ -1,8 +1,8 @@
-// src/pages/YearSelection.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCourseById, getCourseYears as getCourseYearsFromConfig } from '../config/config';
 import { getCourseYears as getCourseYearsFromAPI } from '../services/api';
+import './YearSelection.css';
 
 const YearSelection = () => {
   const { courseId } = useParams();
@@ -11,13 +11,20 @@ const YearSelection = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const coursesColorData = {
+    1: { name: "B.Tech", icon: "💻", color: "#4f46e5" },
+    2: { name: "BCA", icon: "📱", color: "#ec4899" },
+    3: { name: "BBA", icon: "📊", color: "#10b981" },
+    4: { name: "MBA", icon: "🎓", color: "#f59e0b" },
+    5: { name: "MCA", icon: "💼", color: "#8b5cf6" }
+  };
+
   useEffect(() => {
     fetchCourseData();
   }, [courseId]);
 
   const fetchCourseData = async () => {
     try {
-      // Use config for course data
       const courseData = getCourseById(courseId);
       
       if (!courseData) {
@@ -26,24 +33,19 @@ const YearSelection = () => {
 
       setCourse(courseData);
 
-      // Try to get years from API, fallback to config
       let yearsData;
       try {
         yearsData = await getCourseYearsFromAPI(courseId);
       } catch (apiError) {
         console.log('API failed, using config data');
-        // Use config function if API fails
         yearsData = getCourseYearsFromConfig(courseId);
       }
 
-      // IMPORTANT: Filter years based on course duration
-      
       const validYears = yearsData.filter(year => {
         const yearNum = typeof year === 'object' ? (year.id || year.year_id) : year;
         return yearNum <= courseData.duration;
       });
 
-      // Format years data
       const formattedYears = validYears.map(year => {
         const yearNum = typeof year === 'object' ? (year.id || year.year_id) : year;
         return {
@@ -71,10 +73,12 @@ const YearSelection = () => {
     navigate('/');
   };
 
+  const courseColor = coursesColorData[courseId] || { color: '#4f46e5', icon: '📚' };
+
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.loadingSpinner}></div>
+      <div className="year-loading-container">
+        <div className="year-loading-spinner"></div>
         <p>Loading course information...</p>
       </div>
     );
@@ -82,22 +86,23 @@ const YearSelection = () => {
 
   if (!course) {
     return (
-      <div style={styles.errorContainer}>
+      <div className="year-error-container">
+        <div className="year-error-icon">🔍</div>
         <h3>Course not found!</h3>
-        <button onClick={handleBack} style={styles.backButton}>
+        <button onClick={handleBack} className="year-error-back-button">
           ← Back to Courses
         </button>
       </div>
     );
   }
 
-  // If no years available for this course
   if (years.length === 0) {
     return (
-      <div style={styles.errorContainer}>
+      <div className="year-error-container">
+        <div className="year-error-icon">📭</div>
         <h3>No Years Available</h3>
         <p>No academic years found for {course.name}.</p>
-        <button onClick={handleBack} style={styles.backButton}>
+        <button onClick={handleBack} className="year-error-back-button">
           ← Back to Courses
         </button>
       </div>
@@ -105,60 +110,64 @@ const YearSelection = () => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="year-container">
       {/* Compact Header */}
-      <div style={styles.compactHeader}>
-        <button onClick={handleBack} style={styles.compactBackButton}>
+      <div className="year-compact-header">
+        <button onClick={handleBack} className="year-compact-back-button">
           ← Back to Courses
         </button>
-        <div style={styles.compactCourseInfo}>
-          <span style={styles.compactCourseIcon}>{course.icon}</span>
-          <span style={styles.compactCourseName}>{course.name}</span>
-          <span style={styles.compactCourseDetails}>
+        <div className="year-compact-course-info">
+          <span className="year-compact-course-icon">{courseColor.icon}</span>
+          <span className="year-compact-course-name">{course.name}</span>
+          <span className="year-compact-course-details">
             {course.duration} Years • {course.totalSemesters} Semesters
           </span>
         </div>
       </div>
 
-      {/* Years Grid  */}
-      <div style={styles.yearsGrid}>
+      {/* Years Grid */}
+      <div className="year-years-grid">
         {years.map((year) => (
           <div
             key={year.id}
-            style={styles.yearCard}
+            className="year-card"
             onClick={() => handleYearClick(year.id)}
           >
-            <div style={{
-              ...styles.yearNumberCircle,
-              background: `linear-gradient(135deg, ${course.color}40, ${course.color}80)`,
-              border: `3px solid ${course.color}`
-            }}>
-              <span style={styles.yearNumber}>{year.id}</span>
+            <div 
+              className="year-number-circle"
+              style={{
+                background: `linear-gradient(135deg, ${courseColor.color}40, ${courseColor.color}80)`,
+                border: `3px solid ${courseColor.color}`
+              }}
+            >
+              <span className="year-number-text">{year.id}</span>
             </div>
-            <h3 style={styles.yearName}>{year.name}</h3>
-            <p style={styles.yearDescription}>{year.description}</p>
+            <h3 className="year-name">{year.name}</h3>
+            <p className="year-description">{year.description}</p>
             
-            <div style={styles.materialsPreview}>
-              <span style={styles.materialBadge}>📋 Syllabus</span>
-              <span style={styles.materialBadge}>📚 Notes</span>
-              <span style={styles.materialBadge}>📝 PYQs</span>
+            <div className="year-materials-preview">
+              <span className="year-material-badge">📋 Syllabus</span>
+              <span className="year-material-badge">📚 Notes</span>
+              <span className="year-material-badge">📝 PYQs</span>
               {['1', '2', '5'].includes(courseId) ? (
-                <span style={styles.materialBadge}>🔬 Labs</span>
+                <span className="year-material-badge">🔬 Labs</span>
               ) : (
-                <span style={styles.materialBadge}>📊 Cases</span>
+                <span className="year-material-badge">📊 Cases</span>
               )}
             </div>
 
-            <div style={styles.stats}>
-              <span style={styles.stat}>📚 {year.subjects} Subjects</span>
-              <span style={styles.stat}>📄 {year.materials}+ Notes</span>
+            <div className="year-stats">
+              <span className="year-stat">📚 {year.subjects} Subjects</span>
+              <span className="year-stat">📄 {year.materials}+ Materials</span>
             </div>
 
-            <button style={{
-              ...styles.selectButton,
-              background: `linear-gradient(90deg, ${course.color}, ${course.color}DD)`,
-              border: `2px solid ${course.color}30`
-            }}>
+            <button 
+              className="year-select-button"
+              style={{
+                background: `linear-gradient(90deg, ${courseColor.color}, ${courseColor.color}DD)`,
+                border: `2px solid ${courseColor.color}30`
+              }}
+            >
               Select Year {year.id} →
             </button>
           </div>
@@ -166,189 +175,13 @@ const YearSelection = () => {
       </div>
 
       {/* Simple Footer */}
-      <div style={styles.simpleFooter}>
+      <div className="year-simple-footer">
         <p>
           <strong>{course.name}</strong> • {course.duration} Years • Complete study materials
         </p>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '1.5rem 1rem',
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
-  },
-  
-  // Compact Header
-  compactHeader: {
-    marginBottom: '2rem',
-  },
-  compactBackButton: {
-    padding: '0.4rem 1rem',
-    background: '#4f46e5',
-    color: 'white',
-    border: 'none',
-    borderRadius: '20px',
-    cursor: 'pointer',
-    fontSize: '0.85rem',
-    marginBottom: '1rem',
-    display: 'inline-block',
-    transition: 'all 0.3s'
-  },
-  compactCourseInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    background: 'white',
-    padding: '0.75rem 1.5rem',
-    borderRadius: '40px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-    width: 'fit-content',
-    margin: '0 auto'
-  },
-  compactCourseIcon: {
-    fontSize: '1.2rem',
-  },
-  compactCourseName: {
-    fontSize: '1.1rem',
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  compactCourseDetails: {
-    fontSize: '0.8rem',
-    color: '#6b7280',
-    borderLeft: '1px solid #e5e7eb',
-    paddingLeft: '0.75rem',
-  },
-  
-  // Years Grid
-  yearsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '1.5rem',
-    marginBottom: '2rem'
-  },
-  yearCard: {
-    background: 'white',
-    padding: '1.5rem',
-    borderRadius: '16px',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
-    textAlign: 'center',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    border: '1px solid #e5e7eb'
-  },
-  yearNumberCircle: {
-    width: '50px',
-    height: '50px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 0.8rem',
-    color: 'white',
-    fontSize: '1.2rem',
-    fontWeight: 'bold'
-  },
-  yearNumber: {
-    color: '#1f2937'
-  },
-  yearName: {
-    fontSize: '1.2rem',
-    marginBottom: '0.3rem',
-    color: '#1f2937',
-    fontWeight: '600'
-  },
-  yearDescription: {
-    color: '#6b7280',
-    marginBottom: '0.8rem',
-    fontSize: '0.8rem',
-  },
-  materialsPreview: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: '0.4rem',
-    margin: '0.8rem 0'
-  },
-  materialBadge: {
-    background: '#f3f4f6',
-    color: '#4b5563',
-    padding: '0.2rem 0.6rem',
-    borderRadius: '12px',
-    fontSize: '0.7rem',
-    border: '1px solid #e5e7eb',
-  },
-  stats: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '0.8rem',
-    margin: '0.8rem 0',
-    fontSize: '0.8rem',
-    color: '#666',
-    flexWrap: 'wrap'
-  },
-  stat: {
-    background: '#f3f4f6',
-    padding: '0.2rem 0.6rem',
-    borderRadius: '12px',
-  },
-  selectButton: {
-    marginTop: '0.8rem',
-    padding: '0.6rem 1rem',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '0.85rem',
-    width: '100%',
-    fontWeight: '500',
-    transition: 'all 0.3s'
-  },
-  
-  // Simple Footer
-  simpleFooter: {
-    textAlign: 'center',
-    padding: '1rem',
-    background: 'white',
-    borderRadius: '30px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-    color: '#6b7280',
-    fontSize: '0.85rem'
-  },
-  
-  loadingContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
-  },
-  loadingSpinner: {
-    width: '50px',
-    height: '50px',
-    border: '5px solid #e2e8f0',
-    borderTop: '5px solid #4f46e5',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-    marginBottom: '1rem'
-  },
-  errorContainer: {
-    textAlign: 'center',
-    padding: '3rem',
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
-  }
 };
 
 export default YearSelection;
