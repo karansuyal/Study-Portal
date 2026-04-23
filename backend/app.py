@@ -24,6 +24,7 @@ from flask import redirect
 from cloudinary_config import configure_cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import google.generativeai as genai
 import resend
 from google_drive import upload_to_drive
 
@@ -841,7 +842,167 @@ def verify_email():
         print(f"❌ Verification error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# ==================== AI CHATBOT (GEMINI API) ====================
+# Configure Gemini
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    print("✅ Gemini AI configured successfully")
+else:
+    print("⚠️ GEMINI_API_KEY not found, chatbot will be disabled")
 
+# Get user's enrolled subjects/courses (helper function)
+def get_user_context(user_id):
+    try:
+        user = db.session.get(User, int(user_id))
+        if not user:
+            return None
+        
+        # Get user's course
+        course = None
+        if user.branch:
+            course = user.branch
+        
+        # Get user's enrolled subjects (from notes they accessed or uploaded)
+        recent_subjects = db.session.execute(
+            db.select(Note.subject_id, db.func.count(Note.id))
+            .filter_by(user_id=user.id)
+            .group_by(Note.subject_id)
+            .limit(5)
+        ).all()
+        
+        subject_names = []
+        for sub_id, _ in recent_subjects:
+            if sub_id:
+                subject = db.session.get(Subject, sub_id)
+                if subject:
+                    subject_names.append(subject.name)
+        
+        return {
+            'name': user.name,
+            'course': course or 'General',
+            'semester': user.semester or 'Not specified',
+            'subjects': subject_names if subject_names else ['General Studies']
+        }
+    except Exception as e:
+        print(f"Error getting user context: {e}")
+        return None
+
+# Chatbot endpoint
+@app.route('/api/chat', methods=['POST', 'OPTIONS'])
+@jwt_required()
+def chat_with_ai():
+    # Handle preflight
+    if request.method == 'OPTIONS':
+        response = jsonify({'success': True})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response, 200
+    
+    try:
+        user_id = get_jwt_identity()
+        user = db.session.get(User, int(user_id))
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+        
+        data = request.get_json()
+        user_message = data.get('message', '')
+        
+        if not user_message:
+            return jsonify({'success': False, 'error': 'Message is required'}), 400
+        
+        # Get user context
+        user_context = get_user_context(user.id)
+        
+        # Check if Gemini is configured
+        if not GEMINI_API_KEY:
+            # Fallback response
+            return jsonify({
+                'success': True,
+                'response': f"Hi {user.name}! 👋\n\nI'm your AI study assistant. The AI feature is currently being set up. In the meantime, you can:\n\n📚 Browse study materials\n📝 Practice PYQs\n💬 Ask your teachers for help\n\nStay tuned for the AI assistant!"
+            })
+        
+        # Prepare prompt with user context
+        if user_context:
+            prompt = f"""
+You are a helpful study assistant for a college student.
+
+Student Profile:
+- Name: {user_context['name']}
+- Course/Branch: {user_context['course']}
+- Semester: {user_context['semester']}
+- Recent Subjects: {', '.join(user_context['subjects'])}
+
+The student is using a Study Portal where they can access notes, PYQs, syllabus, and study materials.
+
+Instructions:
+1. Be friendly and encouraging
+2. Give concise, accurate answers (max 150-200 words)
+3. If you don't know something, suggest checking their study materials or consulting their teacher
+4. Suggest relevant study resources from the portal if appropriate
+5. Keep responses educational and helpful
+
+Student's Question: {user_message}
+
+Your response:"""
+        else:
+            prompt = f"""
+You are a helpful study assistant for a college student.
+
+Study Portal Features: Notes, PYQs (Previous Year Questions), Syllabus, Lab Manuals, YouTube videos
+
+Instructions:
+1. Be friendly and encouraging
+2. Give concise answers (max 200 words)
+3. Help with study tips, exam preparation, and subject doubts
+
+Student's Question: {user_message}
+
+Your response:"""
+        
+        # Call Gemini API
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        
+        ai_response = response.text.strip()
+        
+        # Log chat for analytics (optional)
+        print(f"💬 {user.name}: {user_message[:50]}...")
+        print(f"🤖 AI: {ai_response[:50]}...")
+        
+        return jsonify({
+            'success': True,
+            'response': ai_response
+        })
+        
+    except Exception as e:
+        print(f"❌ Chat error: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            'success': True,  # Return true with fallback message
+            'response': "I'm having a bit of trouble right now. Please try again in a moment! 🙏"
+        })
+
+# Test chat endpoint (without auth - for testing)
+@app.route('/api/chat/test', methods=['POST'])
+def test_chat():
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        
+        if not GEMINI_API_KEY:
+            return jsonify({'response': 'Gemini API key not configured'})
+        
+        prompt = f"You are a helpful study assistant. Answer briefly: {user_message}"
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        
+        return jsonify({'success': True, 'response': response.text})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 # ==================== ADMIN ROUTES ====================
 
 @app.route('/api/admin/stats', methods=['GET'])
