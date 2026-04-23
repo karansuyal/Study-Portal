@@ -849,21 +849,16 @@ if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
     print("✅ Gemini AI configured successfully")
 else:
-    print("⚠️ GEMINI_API_KEY not found, chatbot will be disabled")
+    print("⚠️ GEMINI_API_KEY not found, chatbot will use fallback mode")
 
-# Get user's enrolled subjects/courses (helper function)
+# Helper function to get user context
 def get_user_context(user_id):
     try:
         user = db.session.get(User, int(user_id))
         if not user:
             return None
         
-        # Get user's course
-        course = None
-        if user.branch:
-            course = user.branch
-        
-        # Get user's enrolled subjects (from notes they accessed or uploaded)
+        # Get user's enrolled subjects
         recent_subjects = db.session.execute(
             db.select(Note.subject_id, db.func.count(Note.id))
             .filter_by(user_id=user.id)
@@ -880,7 +875,7 @@ def get_user_context(user_id):
         
         return {
             'name': user.name,
-            'course': course or 'General',
+            'course': user.branch or 'General',
             'semester': user.semester or 'Not specified',
             'subjects': subject_names if subject_names else ['General Studies']
         }
@@ -888,9 +883,50 @@ def get_user_context(user_id):
         print(f"Error getting user context: {e}")
         return None
 
+# Search database for relevant content
+def search_knowledge_base(query, user_id=None):
+    try:
+        query_terms = query.lower().split()
+        
+        # Search subjects
+        subjects = []
+        for term in query_terms[:3]:
+            subj = Subject.query.filter(Subject.name.ilike(f'%{term}%')).limit(3).all()
+            subjects.extend(subj)
+        
+        # Search notes
+        notes = []
+        for term in query_terms[:3]:
+            note = Note.query.filter(
+                Note.title.ilike(f'%{term}%'),
+                Note.status == 'approved'
+            ).limit(3).all()
+            notes.extend(note)
+        
+        # Search PYQs
+        pyqs = []
+        for term in query_terms[:3]:
+            pyq = Note.query.filter(
+                Note.note_type == 'pyq',
+                Note.title.ilike(f'%{term}%'),
+                Note.status == 'approved'
+            ).limit(2).all()
+            pyqs.extend(pyq)
+        
+        return {
+            'subjects': list(set(subjects))[:5],
+            'notes': list(set(notes))[:5],
+            'pyqs': list(set(pyqs))[:3]
+        }
+    except Exception as e:
+        print(f"Search error: {e}")
+        return {'subjects': [], 'notes': [], 'pyqs': []}
+
+# Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
-@jwt_required()
+@jwt_required(optional=True)
 def chat_with_ai():
+    # Handle preflight
     if request.method == 'OPTIONS':
         response = jsonify({'success': True})
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -900,10 +936,12 @@ def chat_with_ai():
     
     try:
         user_id = get_jwt_identity()
-        user = db.session.get(User, int(user_id))
+        user_context = None
         
-        if not user:
-            return jsonify({'success': False, 'error': 'User not found'}), 404
+        if user_id:
+            user = db.session.get(User, int(user_id))
+            if user:
+                user_context = get_user_context(user.id)
         
         data = request.get_json()
         user_message = data.get('message', '')
@@ -911,113 +949,112 @@ def chat_with_ai():
         if not user_message:
             return jsonify({'success': False, 'error': 'Message is required'}), 400
         
-        # ==================== STEP 1: SEARCH DATABASE ====================
-        query_terms = user_message.lower().split()
+        # Search database for relevant content
+        search_results = search_knowledge_base(user_message, user_id)
         
-        # Search for relevant subjects
-        relevant_subjects = []
-        for term in query_terms:
-            subjects = Subject.query.filter(
-                Subject.name.ilike(f'%{term}%'),
-                Subject.course_id == user.course_id if user.course_id else True
-            ).limit(3).all()
-            relevant_subjects.extend(subjects)
-        
-        # Search for relevant notes/materials
-        relevant_notes = []
-        for term in query_terms:
-            notes = Note.query.filter(
-                Note.title.ilike(f'%{term}%'),
-                Note.status == 'approved'
-            ).limit(5).all()
-            relevant_notes.extend(notes)
-        
-        # Search for PYQs
-        relevant_pyqs = []
-        for term in query_terms:
-            pyqs = Note.query.filter(
-                Note.note_type == 'pyq',
-                Note.title.ilike(f'%{term}%'),
-                Note.status == 'approved'
-            ).limit(3).all()
-            relevant_pyqs.extend(pyqs)
-        
-        # ==================== STEP 2: PREPARE CONTEXT ====================
+        # Prepare context from search results
         context = ""
+        if search_results['subjects']:
+            context += "\n📚 **Relevant Subjects:**\n"
+            for sub in search_results['subjects'][:3]:
+                context += f"- {sub.name}\n"
         
-        if relevant_subjects:
-            context += "\n📚 Relevant Subjects in Database:\n"
-            for sub in relevant_subjects[:5]:
-                context += f"- {sub.name} (Code: {sub.code})\n"
+        if search_results['notes']:
+            context += "\n📄 **Available Notes:**\n"
+            for note in search_results['notes'][:3]:
+                context += f"- {note.title}\n"
         
-        if relevant_notes:
-            context += "\n📄 Available Study Materials:\n"
-            for note in relevant_notes[:5]:
-                context += f"- {note.title} ({note.note_type})\n"
-        
-        if relevant_pyqs:
-            context += "\n📝 Previous Year Questions Available:\n"
-            for pyq in relevant_pyqs[:3]:
+        if search_results['pyqs']:
+            context += "\n📝 **PYQs Available:**\n"
+            for pyq in search_results['pyqs'][:2]:
                 context += f"- {pyq.title}\n"
         
-        # ==================== STEP 3: GET USER CONTEXT ====================
-        user_context = get_user_context(user.id)
-        
-        # ==================== STEP 4: PREPARE PROMPT ====================
-        prompt = f"""
+        # Prepare prompt
+        if user_context:
+            prompt = f"""
 You are a helpful study assistant for a college student.
 
-Student Profile:
+**Student Profile:**
 - Name: {user_context['name']}
-- Course/Branch: {user_context['course']}
+- Course: {user_context['course']}
 - Semester: {user_context['semester']}
 
-{context}
+**Relevant Materials from Portal:**
+{context if context else "No specific materials found in database for this query."}
 
-Student's Question: {user_message}
+**Student's Question:** {user_message}
 
-Instructions:
-1. If relevant information is available in the database context above, use it to answer
-2. Suggest specific study materials from the database if available
-3. If you don't know something, be honest and suggest checking the study portal
-4. Keep responses friendly, educational, and helpful (max 200 words)
-5. If the student asks about PYQs, tell them what's available
+**Instructions:**
+1. Be friendly and encouraging 😊
+2. Use the relevant materials from above if they help answer the question
+3. If specific notes/PYQs are mentioned, suggest them
+4. Keep response concise (max 150-200 words)
+5. If you don't know something, suggest checking the study portal or asking a teacher
 
-Your response:"""
+**Your Response:**"""
+        else:
+            prompt = f"""
+You are a helpful study assistant for a student.
+
+**Relevant Materials from Portal:**
+{context if context else "No specific materials found."}
+
+**Student's Question:** {user_message}
+
+**Instructions:**
+1. Be friendly and helpful 
+2. Give concise answers (max 150 words)
+3. Suggest checking the study portal for more resources
+
+**Your Response:**"""
+
+        # Call Gemini API or use fallback
+        if GEMINI_API_KEY:
+            try:
+                model = genai.GenerativeModel('gemini-1.5-flash')
+                response = model.generate_content(prompt)
+                ai_response = response.text.strip()
+            except Exception as e:
+                print(f"Gemini error: {e}")
+                ai_response = fallback_response(user_message, context)
+        else:
+            ai_response = fallback_response(user_message, context)
         
-        # ==================== STEP 5: CALL GEMINI ====================
-        if not GEMINI_API_KEY:
-            return jsonify({
-                'success': True,
-                'response': f"Hi {user.name}! 👋\n\nI can help you with:\n📚 Study materials\n📝 Previous year questions\n🎯 Exam preparation\n\nWhat would you like to know?"
-            })
-        
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
-        ai_response = response.text.strip()
-        
-        # ==================== STEP 6: ADD SUGGESTIONS ====================
-        if relevant_notes or relevant_pyqs:
-            ai_response += "\n\n💡 **Tip:** Check the Study Materials section for more resources!"
+        # Add helpful tip if materials found
+        if search_results['notes'] or search_results['pyqs']:
+            ai_response += "\n\n💡 **Tip:** Check the Materials section on the portal for more study resources!"
         
         return jsonify({
             'success': True,
-            'response': ai_response,
-            'debug': {
-                'subjects_found': len(relevant_subjects),
-                'notes_found': len(relevant_notes),
-                'pyqs_found': len(relevant_pyqs)
-            }
+            'response': ai_response
         })
         
     except Exception as e:
         print(f"❌ Chat error: {str(e)}")
-        traceback.print_exc()
         return jsonify({
             'success': True,
-            'response': "I'm having trouble connecting. Please try again! 🙏"
+            'response': "I'm having a bit of trouble right now. Please try again in a moment! 🙏"
         })
-        
+
+def fallback_response(question, context):
+    """Fallback when Gemini API is not available"""
+    question_lower = question.lower()
+    
+    if 'notes' in question_lower or 'study material' in question_lower:
+        return "📚 You can find study materials in the **Materials** section! Browse by course, year, and semester to access notes, PYQs, and syllabus."
+    
+    elif 'pyq' in question_lower or 'previous year' in question_lower:
+        return "📝 Previous Year Questions are available in the Materials section. Select your course and subject to find PYQs for exam preparation!"
+    
+    elif 'exam' in question_lower or 'prepare' in question_lower:
+        return "🎯 Exam preparation tips:\n• Review all PYQs\n• Make short notes\n• Practice regularly\n• Check the syllabus for important topics\n\nGood luck with your exams! 💪"
+    
+    elif 'syllabus' in question_lower:
+        return "📋 Syllabus for all courses is available in the Materials section. Select your course, year, and semester to find the complete syllabus."
+    
+    else:
+        return f"👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n\nWhat would you like to know about {question}?"
+    
 # ==================== ADMIN ROUTES ====================
 
 @app.route('/api/admin/stats', methods=['GET'])
