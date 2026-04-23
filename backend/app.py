@@ -1962,7 +1962,6 @@ def serve_admin():
        
         if os.path.exists('static/admin.html'):
             return send_from_directory('static', 'admin.html')
-        # Agar root folder mein hai toh
         elif os.path.exists('admin.html'):
             return send_file('admin.html')
         else:
