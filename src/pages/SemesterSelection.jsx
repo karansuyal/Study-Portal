@@ -258,25 +258,6 @@ const SemesterSelection = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="semester-search-section">
-        <div className="semester-search-container">
-          <span className="semester-search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Search semesters..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="semester-search-input"
-          />
-          {searchQuery && (
-            <button className="semester-clear-button" onClick={() => setSearchQuery('')}>
-              ✕
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* Semesters Grid */}
       <div className="semester-semesters-grid">
         {filteredSemesters.length === 0 ? (

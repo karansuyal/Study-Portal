@@ -1691,36 +1691,7 @@ const getCleanDescription = (desc) => {
               </div>
             </div>
           </div>
-          <div style={styles.laptopSearchContainer}>
-            <div style={styles.laptopSearchIcon}>
-              <FaSearch />
-            </div>
-            <input
-              type="text"
-              placeholder={`Search in ${subject.name} materials...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={styles.laptopSearchInput}
-            />
-            {searchQuery && (
-              <button
-                style={{
-                  position: "absolute",
-                  right: "20px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  color: "#9ca3af",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                }}
-                onClick={() => setSearchQuery("")}
-              >
-                ✕
-              </button>
-            )}
-          </div>
+          
           <div style={styles.laptopFiltersContainer}>
             <h3 style={styles.laptopFiltersTitle}>
               <FaFilter /> Filter by Material Type
@@ -1918,26 +1889,7 @@ const getCleanDescription = (desc) => {
             </div>
           </div>
         </div>
-        <div style={styles.mobileSearchContainer}>
-          <div style={styles.mobileSearchIcon}>
-            <FaSearch />
-          </div>
-          <input
-            type="text"
-            placeholder="Search materials..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.mobileSearchInput}
-          />
-          {searchQuery && (
-            <button
-              style={styles.mobileClearButton}
-              onClick={() => setSearchQuery("")}
-            >
-              ✕
-            </button>
-          )}
-        </div>
+       
         <button
           style={styles.mobileFilterToggle}
           onClick={() => setShowFilters(!showFilters)}

@@ -75,25 +75,6 @@ const SubjectSelection = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="subject-search-section">
-        <div className="subject-search-container">
-          <span className="subject-search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Search subjects by name or code..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="subject-search-input"
-          />
-          {searchQuery && (
-            <button className="subject-clear-button" onClick={() => setSearchQuery('')}>
-              ✕
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* Subjects Grid */}
       <div className="subject-subjects-grid">
         {filteredSubjects.length === 0 ? (

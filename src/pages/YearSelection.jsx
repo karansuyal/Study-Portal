@@ -10,7 +10,6 @@ const YearSelection = () => {
   const [years, setYears] = useState([]);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const coursesColorData = {
     1: { name: "B.Tech", icon: "💻", color: "#4f46e5" },
@@ -74,11 +73,6 @@ const YearSelection = () => {
     navigate('/');
   };
 
-  const filteredYears = years.filter(year =>
-    year.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    `Year ${year.id}`.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const courseColor = coursesColorData[courseId] || { color: '#4f46e5', icon: '📚' };
 
   if (loading) {
@@ -131,82 +125,53 @@ const YearSelection = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="year-search-section">
-        <div className="year-search-container">
-          <span className="year-search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Search years..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="year-search-input"
-          />
-          {searchQuery && (
-            <button className="year-clear-button" onClick={() => setSearchQuery('')}>
-              ✕
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* Years Grid */}
       <div className="year-years-grid">
-        {filteredYears.length === 0 ? (
-          <div className="year-empty-state">
-            <div className="year-empty-icon">📚</div>
-            <h3>No years found!</h3>
-            <p>Try a different search term</p>
-          </div>
-        ) : (
-          filteredYears.map((year) => (
-            <div
-              key={year.id}
-              className="year-card"
-              onClick={() => handleYearClick(year.id)}
+        {years.map((year) => (
+          <div
+            key={year.id}
+            className="year-card"
+            onClick={() => handleYearClick(year.id)}
+          >
+            <div 
+              className="year-number-circle"
+              style={{
+                background: `linear-gradient(135deg, ${courseColor.color}40, ${courseColor.color}80)`,
+                border: `3px solid ${courseColor.color}`
+              }}
             >
-              <div 
-                className="year-number-circle"
-                style={{
-                  background: `linear-gradient(135deg, ${courseColor.color}40, ${courseColor.color}80)`,
-                  border: `3px solid ${courseColor.color}`
-                }}
-              >
-                <span className="year-number-text">{year.id}</span>
-              </div>
-              <h3 className="year-name">{year.name}</h3>
-              <p className="year-description">{year.description}</p>
-              
-              {/* Material Types Preview */}
-              <div className="year-materials-preview">
-                <span className="year-material-badge">📋 Syllabus</span>
-                <span className="year-material-badge">📚 Notes</span>
-                <span className="year-material-badge">📝 PYQs</span>
-                {['1', '2', '5'].includes(courseId) ? (
-                  <span className="year-material-badge">🔬 Labs</span>
-                ) : (
-                  <span className="year-material-badge">📊 Cases</span>
-                )}
-              </div>
-
-              {/* Stats */}
-              <div className="year-stats">
-                <span className="year-stat">📚 {year.subjects} Subjects</span>
-                <span className="year-stat">📄 {year.materials}+ Materials</span>
-              </div>
-
-              <button 
-                className="year-select-button"
-                style={{
-                  background: `linear-gradient(90deg, ${courseColor.color}, ${courseColor.color}DD)`,
-                  border: `2px solid ${courseColor.color}30`
-                }}
-              >
-                Select Year {year.id} →
-              </button>
+              <span className="year-number-text">{year.id}</span>
             </div>
-          ))
-        )}
+            <h3 className="year-name">{year.name}</h3>
+            <p className="year-description">{year.description}</p>
+            
+            <div className="year-materials-preview">
+              <span className="year-material-badge">📋 Syllabus</span>
+              <span className="year-material-badge">📚 Notes</span>
+              <span className="year-material-badge">📝 PYQs</span>
+              {['1', '2', '5'].includes(courseId) ? (
+                <span className="year-material-badge">🔬 Labs</span>
+              ) : (
+                <span className="year-material-badge">📊 Cases</span>
+              )}
+            </div>
+
+            <div className="year-stats">
+              <span className="year-stat">📚 {year.subjects} Subjects</span>
+              <span className="year-stat">📄 {year.materials}+ Materials</span>
+            </div>
+
+            <button 
+              className="year-select-button"
+              style={{
+                background: `linear-gradient(90deg, ${courseColor.color}, ${courseColor.color}DD)`,
+                border: `2px solid ${courseColor.color}30`
+              }}
+            >
+              Select Year {year.id} →
+            </button>
+          </div>
+        ))}
       </div>
 
       {/* Simple Footer */}
