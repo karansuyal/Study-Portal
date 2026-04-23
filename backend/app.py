@@ -27,6 +27,7 @@ import cloudinary.api
 import google.generativeai as genai
 import resend
 from google_drive import upload_to_drive
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 configure_cloudinary()
 
@@ -924,7 +925,7 @@ def search_knowledge_base(query, user_id=None):
 
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
-# @jwt_required(optional=True)
+@jwt_required(optional=True)
 def chat_with_ai():
     # Handle preflight
     if request.method == 'OPTIONS':
