@@ -117,23 +117,23 @@ export const coursesData = {
         semesters: {
           7: [
             // THEORY SUBJECTS FIRST
-            { id: 153, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
-            { id: 154, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
-            { id: 155, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
-            { id: 156, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 157, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
+            { id: 169, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
+            { id: 170, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
+            { id: 171, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+            { id: 172, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 173, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
             
             // LAB SUBJECTS LAST
-            { id: 158, name: 'Mobile App Development Lab', code: 'PCS451', credits: 2, materials: 22, rating: 4.7, type: 'Lab' },
-            { id: 159, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
-            { id: 160, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
+            { id: 174, name: 'Mobile App Development Lab', code: 'PCS451', credits: 2, materials: 22, rating: 4.7, type: 'Lab' },
+            { id: 175, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
+            { id: 176, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
           ],
           8: [
             // FINAL SEMESTER - Major Project Focus
-            { id: 169, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
-            { id: 162, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
-            { id: 163, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
-            { id: 164, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
+            { id: 177, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
+            { id: 178, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
+            { id: 179, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
+            { id: 180, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
           ]
         }
       }
