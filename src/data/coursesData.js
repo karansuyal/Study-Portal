@@ -130,7 +130,7 @@ export const coursesData = {
           ],
           8: [
             // FINAL SEMESTER - Major Project Focus
-            { id: 161, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
+            { id: 169, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
             { id: 162, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
             { id: 163, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
             { id: 164, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
