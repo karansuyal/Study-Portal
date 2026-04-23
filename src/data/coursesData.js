@@ -18,9 +18,9 @@ export const coursesData = {
             { id: 106, name: 'Engineering Physics', code: 'TPH101', credits: 4, materials: 15, rating: 4.6, type: 'Theory' },
             
             // LAB SUBJECTS LAST
-            { id: 107, name: 'Python Programming Lab', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Lab' },
+            { id: 107, name: 'Mathematics for Core', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Theory' },
             { id: 108, name: 'Basic Electrical Engineering Lab', code: 'PEE151', credits: 1, materials: 12, rating: 4.5, type: 'Lab' },
-            { id: 109, name: 'Workshop and Manufacturing Practices', code: 'PME151', credits: 2, materials: 14, rating: 4.3, type: 'Lab' },
+            { id: 109, name: 'Python Programming Lab', code: 'PME151', credits: 2, materials: 14, rating: 4.3, type: 'Lab' },
             { id: 110, name: 'Physics Lab', code: 'PPH151', credits: 1, materials: 10, rating: 4.4, type: 'Lab' }
           ],
          
@@ -35,8 +35,8 @@ export const coursesData = {
   
   // LAB SUBJECTS LAST (Semester 1 - Actual)
   { id: 117, name: 'Programming in C', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Theory' },
-  { id: 118, name: 'Chemistry Lab', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Lab' },
-  { id: 119, name: 'Engineering Graphics and Design Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
+  { id: 118, name: 'Mathematics for Core  2', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
+  { id: 119, name: 'Chemistry Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
   { id: 120, name: 'Basic Electronics Engineering Lab', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
   
 ],
