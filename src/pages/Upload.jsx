@@ -243,14 +243,6 @@ const Upload = () => {
     }
   }, [formData.year]);
 
-  // Reset file/url when material type changes
-  useEffect(() => {
-    setFile(null);
-    setYoutubeUrl('');
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput) fileInput.value = '';
-  }, [formData.type]);
-
   const fetchCoursesFromBackend = async () => {
     try {
       setLoadingCourses(true);
