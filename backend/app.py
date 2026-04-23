@@ -1097,6 +1097,7 @@ def rate_note(note_id):
     except Exception as e:
         db.session.rollback()
         print(f"❌ Rating error: {str(e)}")
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
     
