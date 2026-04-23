@@ -933,32 +933,70 @@ def search_knowledge_base(query, user_id=None):
         return {'subjects': [], 'notes': [], 'pyqs': []}
 
 # Function to get Gemini response
-def get_gemini_response(prompt):
-    model_names = [
-        "models/gemini-2.0-flash",   
-        "models/gemini-2.5-flash",  
-        "models/gemini-2.5-pro"     
-    ]
-    
-    for model_name in model_names:
+
+MODEL_PRIORITY = [
+    "models/gemini-2.0-flash",
+    "models/gemini-2.5-flash",
+    "models/gemini-2.5-pro"
+]
+
+RATE_LIMIT_SECONDS = 1
+CACHE_TTL = 300
+
+cache = {}
+cache_time = {}
+
+def get_cache_key(prompt):
+    return hashlib.md5(prompt.encode()).hexdigest()
+
+def get_from_cache(prompt):
+    key = get_cache_key(prompt)
+    if key in cache:
+        if time.time() - cache_time[key] < CACHE_TTL:
+            return cache[key]
+    return None
+
+def save_to_cache(prompt, response):
+    key = get_cache_key(prompt)
+    cache[key] = response
+    cache_time[key] = time.time()
+
+last_request_time = defaultdict(float)
+
+def is_rate_limited(user_id="global"):
+    now = time.time()
+    if now - last_request_time[user_id] < RATE_LIMIT_SECONDS:
+        return True
+    last_request_time[user_id] = now
+    return False
+
+def get_gemini_response(prompt, user_id="global"):
+    if is_rate_limited(user_id):
+        return "⚠️ Too many requests. Please wait a second."
+
+    cached = get_from_cache(prompt)
+    if cached:
+        return cached
+
+    for model_name in MODEL_PRIORITY:
         try:
-            print(f"🔄 Trying model: {model_name}")
             model = genai.GenerativeModel(model_name)
             response = model.generate_content(prompt)
 
             if response and response.text:
-                print(f"✅ Success with model: {model_name}")
-                return response.text.strip()
+                result = response.text.strip()
+                save_to_cache(prompt, result)
+                return result
 
         except Exception as e:
-            print(f"❌ Model {model_name} failed: {str(e)[:100]}")
-            
-            # Stop retry if quota exceeded
-            if "429" in str(e):
-                print("🚫 Quota exceeded, stopping further attempts")
+            error_msg = str(e)
+
+            if "429" in error_msg:
                 break
 
-    return "⚠️ AI service temporarily unavailable. Please try later."
+            time.sleep(0.5)
+
+    return "⚠️ AI service busy or quota exceeded. Try again later."
 
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
