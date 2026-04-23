@@ -70,7 +70,7 @@ function App() {
                 {/* New Hierarchical Routes */}
                 <Route path="/course/:courseId" element={<YearSelection />} />
                 <Route path="/course/:courseId/year/:yearId" element={<SemesterSelection />} />
-                <Route path="/course/:courseId/year/:yearId/sem/:semId/subject/:subjectId" element={<MaterialsPage />} />
+                <Route path="/course/:courseId/year/:yearId/sem/:semId" element={<SubjectSelection />} />
                 <Route
                   path="/course/:courseId/year/:yearId/sem/:semId/subject/:subjectId"
                   element={<MaterialsPage />}
