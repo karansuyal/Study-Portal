@@ -1,4 +1,3 @@
-// src/pages/SemesterSelection.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getSemestersForYear, getCourseById } from '../config/config';
@@ -11,6 +10,15 @@ const SemesterSelection = () => {
   const [semesters, setSemesters] = useState([]);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const coursesColorData = {
+    1: { name: "B.Tech", icon: "💻", color: "#4f46e5" },
+    2: { name: "BCA", icon: "📱", color: "#ec4899" },
+    3: { name: "BBA", icon: "📊", color: "#10b981" },
+    4: { name: "MBA", icon: "🎓", color: "#f59e0b" },
+    5: { name: "MCA", icon: "💼", color: "#8b5cf6" }
+  };
 
   useEffect(() => {
     fetchSemestersData();
@@ -34,11 +42,6 @@ const SemesterSelection = () => {
       console.error(`Error getting data for sem ${semesterNumber}:`, error);
       return { subjects: 0, credits: 0 };
     }
-  };
-
-  const calculateTotalCredits = (subjects) => {
-    if (!subjects || !Array.isArray(subjects)) return 0;
-    return subjects.reduce((total, subject) => total + (subject.credits || 0), 0);
   };
 
   const calculateSemesterNumbers = (year, courseData) => {
@@ -153,6 +156,64 @@ const SemesterSelection = () => {
     navigate(`/course/${courseId}`);
   };
 
+  const filteredSemesters = semesters.filter(semester =>
+    semester.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    `Semester ${semester.displayNumber}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const courseColor = coursesColorData[courseId] || { color: '#4f46e5', icon: '📚' };
+
+  if (loading) {
+    return (
+      <div className="semester-loading-container">
+        <div className="semester-loading-spinner"></div>
+        <p>Loading semesters for Year {yearId}...</p>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="semester-error-container">
+        <div className="semester-error-icon">🔍</div>
+        <h3>Course not found!</h3>
+        <button onClick={handleBack} className="semester-error-back-button">
+          ← Back to Courses
+        </button>
+      </div>
+    );
+  }
+
+  const yearNum = parseInt(yearId);
+  if (yearNum > course.duration) {
+    return (
+      <div className="semester-error-container">
+        <div className="semester-error-icon">⚠️</div>
+        <h3>Invalid Year for {course.name}</h3>
+        <p>
+          <strong>{course.name}</strong> has only <strong>{course.duration} years</strong> 
+          ({course.totalSemesters} semesters).
+        </p>
+        <button onClick={handleBack} className="semester-error-back-button">
+          ← Back to Years
+        </button>
+      </div>
+    );
+  }
+
+  if (semesters.length === 0) {
+    return (
+      <div className="semester-error-container">
+        <div className="semester-error-icon">📭</div>
+        <h3>No Semesters Available</h3>
+        <p>No semesters found for Year {yearId} of {course.name}.</p>
+        <button onClick={handleBack} className="semester-error-back-button">
+          ← Back to Years
+        </button>
+      </div>
+    );
+  }
+
   const getSemesterRange = () => {
     if (!course) return '';
     
@@ -179,136 +240,113 @@ const SemesterSelection = () => {
     return { totalSubjects, totalCredits };
   };
 
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading semesters...</p>
-      </div>
-    );
-  }
-
-  if (!course) {
-    return (
-      <div className="error-container">
-        <h3>Course not found!</h3>
-        <button onClick={handleBack} className="back-button">
-          ← Back to Courses
-        </button>
-      </div>
-    );
-  }
-
-  const yearNum = parseInt(yearId);
-  if (yearNum > course.duration) {
-    return (
-      <div className="error-container">
-        <h3>Invalid Year for {course.name}</h3>
-        <p>
-          <strong>{course.name}</strong> has only <strong>{course.duration} years</strong> 
-          ({course.totalSemesters} semesters).
-        </p>
-        <button onClick={handleBack} className="back-button">
-          ← Back to Years
-        </button>
-      </div>
-    );
-  }
-
-  if (semesters.length === 0) {
-    return (
-      <div className="error-container">
-        <h3>No Semesters Available</h3>
-        <p>No semesters found for Year {yearId} of {course.name}.</p>
-        <button onClick={handleBack} className="back-button">
-          ← Back to Years
-        </button>
-      </div>
-    );
-  }
-
   const { totalSubjects, totalCredits } = getYearTotals();
 
   return (
     <div className="semester-container">
-      <div className="semester-header">
-        <button onClick={handleBack} className="back-button">
+      {/* Compact Header - Same as Year page */}
+      <div className="semester-compact-header">
+        <button onClick={handleBack} className="semester-compact-back-button">
           ← Back to Years
         </button>
-      </div>
-
-     
-      <div className="semesters-grid">
-        {semesters.map((semester) => (
-          <div
-            key={semester.id}
-            className="semester-card"
-            onClick={() => handleSemesterClick(semester.id)}
-          >
-            <div className="semester-header">
-              <div className="semester-number">{semester.displayNumber}</div>
-              <div>
-                <h3 className="semester-name">{semester.name}</h3>
-                <p className="semester-status">
-                  {semester.displayNumber <= course.totalSemesters ? 'Available' : 'Not Available'}
-                </p>
-              </div>
-            </div>
-
-            <div className="semester-info">
-              <div className="info-item">
-                <span className="info-label">Subjects:</span>
-                <span className="info-value">{semester.subjects}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Credits:</span>
-                <span className="info-value">{semester.credits}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Type:</span>
-                <span className="info-value">
-                  {['4', '5'].includes(courseId) ? 'Master\'s' : 'Bachelor\'s'}
-                </span>
-              </div>
-            </div>
-
-            <div className="materials-list">
-              <span className="material-badge">Syllabus</span>
-              <span className="material-badge">Notes</span>
-              <span className="material-badge">PYQs</span>
-              {['1', '2', '5'].includes(courseId) ? (
-                <span className="material-badge">Lab Files</span>
-              ) : (
-                <span className="material-badge">Case Studies</span>
-              )}
-            </div>
-
-            <button 
-              className="view-button"
-              disabled={semester.displayNumber > course.totalSemesters}
-            >
-              {semester.displayNumber <= course.totalSemesters 
-                ? 'View Subjects →' 
-                : 'Not Available'}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="year-info">
-        <h3>📚 Year {yearId} Information</h3>
-        <p>
-          Semesters: {getSemesterRange()} • 
-          Total Credits: {totalCredits} • 
-          Total Subjects: {totalSubjects}
-        </p>
-        <div className="semester-range">
-          <p><strong>Course Type:</strong> 
-            {['4', '5'].includes(courseId) ? ' Master\'s Program' : ' Bachelor\'s Program'}
-          </p>
-          <p><strong>Duration:</strong> {course.duration} Years ({course.totalSemesters} Semesters)</p>
-          <p><strong>Semesters per Year:</strong> {course.semestersPerYear}</p>
+        <div className="semester-compact-course-info">
+          <span className="semester-compact-course-icon">{courseColor.icon}</span>
+          <span className="semester-compact-course-name">{course.name} - Year {yearId}</span>
+          <span className="semester-compact-course-details">
+            {getSemesterRange()} • {semesters.length} Semesters
+          </span>
         </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="semester-search-section">
+        <div className="semester-search-container">
+          <span className="semester-search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Search semesters..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="semester-search-input"
+          />
+          {searchQuery && (
+            <button className="semester-clear-button" onClick={() => setSearchQuery('')}>
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Semesters Grid */}
+      <div className="semester-semesters-grid">
+        {filteredSemesters.length === 0 ? (
+          <div className="semester-empty-state">
+            <div className="semester-empty-icon">📚</div>
+            <h3>No semesters found!</h3>
+            <p>Try a different search term</p>
+          </div>
+        ) : (
+          filteredSemesters.map((semester) => (
+            <div
+              key={semester.id}
+              className="semester-card"
+              onClick={() => handleSemesterClick(semester.id)}
+            >
+              <div 
+                className="semester-number-circle"
+                style={{
+                  background: `linear-gradient(135deg, ${courseColor.color}40, ${courseColor.color}80)`,
+                  border: `3px solid ${courseColor.color}`
+                }}
+              >
+                <span className="semester-number-text">{semester.displayNumber}</span>
+              </div>
+              <h3 className="semester-name">{semester.name}</h3>
+              <p className="semester-status">
+                {semester.displayNumber <= course.totalSemesters ? 'Available' : 'Not Available'}
+              </p>
+              
+              {/* Stats */}
+              <div className="semester-stats">
+                <span className="semester-stat">📚 {semester.subjects} Subjects</span>
+                <span className="semester-stat">🎓 {semester.credits} Credits</span>
+              </div>
+
+              {/* Material Types Preview */}
+              <div className="semester-materials-preview">
+                <span className="semester-material-badge">📋 Syllabus</span>
+                <span className="semester-material-badge">📚 Notes</span>
+                <span className="semester-material-badge">📝 PYQs</span>
+                {['1', '2', '5'].includes(courseId) ? (
+                  <span className="semester-material-badge">🔬 Labs</span>
+                ) : (
+                  <span className="semester-material-badge">📊 Cases</span>
+                )}
+              </div>
+
+              <button 
+                className="semester-select-button"
+                style={{
+                  background: `linear-gradient(90deg, ${courseColor.color}, ${courseColor.color}DD)`,
+                  border: `2px solid ${courseColor.color}30`
+                }}
+                disabled={semester.displayNumber > course.totalSemesters}
+              >
+                {semester.displayNumber <= course.totalSemesters 
+                  ? 'View Subjects →' 
+                  : 'Not Available'}
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Year Info Footer */}
+      <div className="semester-simple-footer">
+        <p>
+          <strong>{course.name}</strong> • Year {yearId} • {getSemesterRange()} • 
+          {totalSubjects} Subjects • {totalCredits} Credits
+        </p>
       </div>
     </div>
   );

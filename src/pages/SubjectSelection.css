@@ -1,11 +1,11 @@
-/* src/pages/SemesterSelection.css */
+/* src/pages/SubjectSelection.css */
 
 /* ============================================
-   SEMESTER SELECTION PAGE STYLES
+   SUBJECT SELECTION PAGE STYLES
    ============================================ */
 
 /* Container */
-.semester-container {
+.subject-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1rem;
@@ -16,11 +16,11 @@
 /* ============================================
    COMPACT HEADER (Same as Year page)
    ============================================ */
-.semester-compact-header {
+.subject-compact-header {
   margin-bottom: 2rem;
 }
 
-.semester-compact-back-button {
+.subject-compact-back-button {
   padding: 0.4rem 1rem;
   background: #4f46e5;
   color: white;
@@ -33,12 +33,12 @@
   transition: all 0.3s;
 }
 
-.semester-compact-back-button:hover {
+.subject-compact-back-button:hover {
   background: #4338ca;
   transform: translateX(-3px);
 }
 
-.semester-compact-course-info {
+.subject-compact-course-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -50,17 +50,17 @@
   margin: 0 auto;
 }
 
-.semester-compact-course-icon {
+.subject-compact-course-icon {
   font-size: 1.2rem;
 }
 
-.semester-compact-course-name {
+.subject-compact-course-name {
   font-size: 1.1rem;
-  fontWeight: 600;
+  font-weight: 600;
   color: #1f2937;
 }
 
-.semester-compact-course-details {
+.subject-compact-course-details {
   font-size: 0.8rem;
   color: #6b7280;
   border-left: 1px solid #e5e7eb;
@@ -70,17 +70,17 @@
 /* ============================================
    SEARCH SECTION
    ============================================ */
-.semester-search-section {
+.subject-search-section {
   margin-bottom: 2rem;
 }
 
-.semester-search-container {
+.subject-search-container {
   position: relative;
   max-width: 500px;
   margin: 0 auto;
 }
 
-.semester-search-icon {
+.subject-search-icon {
   position: absolute;
   left: 15px;
   top: 50%;
@@ -89,7 +89,7 @@
   color: #9ca3af;
 }
 
-.semester-search-input {
+.subject-search-input {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 2.5rem;
   font-size: 0.9rem;
@@ -100,12 +100,12 @@
   background: white;
 }
 
-.semester-search-input:focus {
+.subject-search-input:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.semester-clear-button {
+.subject-clear-button {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -120,9 +120,9 @@
 }
 
 /* ============================================
-   SEMESTERS GRID
+   SUBJECTS GRID
    ============================================ */
-.semester-semesters-grid {
+.subject-subjects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -130,9 +130,9 @@
 }
 
 /* ============================================
-   SEMESTER CARD (Same as Year card)
+   SUBJECT CARD (Same as Year card)
    ============================================ */
-.semester-card {
+.subject-card {
   background: white;
   padding: 1.5rem;
   border-radius: 16px;
@@ -143,13 +143,13 @@
   border: 1px solid #e5e7eb;
 }
 
-.semester-card:hover {
+.subject-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   border-color: #4f46e5;
 }
 
-.semester-number-circle {
+.subject-number-circle {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -157,50 +157,33 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 0.8rem;
-}
-
-.semester-number-text {
-  color: #1f2937;
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 
-.semester-name {
+.subject-code {
+  color: #1f2937;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.subject-name {
   font-size: 1.2rem;
   margin-bottom: 0.3rem;
   color: #1f2937;
   font-weight: 600;
 }
 
-.semester-status {
+.subject-credits {
   color: #6b7280;
   margin-bottom: 0.8rem;
   font-size: 0.8rem;
 }
 
 /* ============================================
-   STATS
-   ============================================ */
-.semester-stats {
-  display: flex;
-  justify-content: center;
-  gap: 0.8rem;
-  margin: 0.8rem 0;
-  font-size: 0.8rem;
-  color: #666;
-  flex-wrap: wrap;
-}
-
-.semester-stat {
-  background: #f3f4f6;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-}
-
-/* ============================================
    MATERIALS PREVIEW
    ============================================ */
-.semester-materials-preview {
+.subject-materials-preview {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -208,7 +191,7 @@
   margin: 0.8rem 0;
 }
 
-.semester-material-badge {
+.subject-material-badge {
   background: #f3f4f6;
   color: #4b5563;
   padding: 0.2rem 0.6rem;
@@ -218,9 +201,28 @@
 }
 
 /* ============================================
+   STATS
+   ============================================ */
+.subject-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 0.8rem 0;
+  font-size: 0.8rem;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.subject-stat {
+  background: #f3f4f6;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+}
+
+/* ============================================
    SELECT BUTTON
    ============================================ */
-.semester-select-button {
+.subject-select-button {
   margin-top: 0.8rem;
   padding: 0.6rem 1rem;
   color: white;
@@ -233,20 +235,15 @@
   transition: all 0.3s;
 }
 
-.semester-select-button:hover:not(:disabled) {
+.subject-select-button:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
-}
-
-.semester-select-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 /* ============================================
    FOOTER
    ============================================ */
-.semester-simple-footer {
+.subject-simple-footer {
   text-align: center;
   padding: 1rem;
   background: white;
@@ -259,7 +256,7 @@
 /* ============================================
    EMPTY STATE
    ============================================ */
-.semester-empty-state {
+.subject-empty-state {
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
@@ -268,72 +265,25 @@
   border: 1px solid #e5e7eb;
 }
 
-.semester-empty-icon {
+.subject-empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
 
-.semester-empty-state h3 {
+.subject-empty-state h3 {
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
 
-.semester-empty-state p {
+.subject-empty-state p {
   color: #6b7280;
-}
-
-/* ============================================
-   ERROR STATE
-   ============================================ */
-.semester-error-container {
-  text-align: center;
-  padding: 3rem;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-}
-
-.semester-error-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.semester-error-container h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #1f2937;
-}
-
-.semester-error-container p {
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-}
-
-.semester-error-back-button {
-  padding: 0.75rem 1.5rem;
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
-
-.semester-error-back-button:hover {
-  background: #4338ca;
-  transform: translateX(-5px);
 }
 
 /* ============================================
    LOADING STATE
    ============================================ */
-.semester-loading-container {
+.subject-loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -342,17 +292,17 @@
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.semester-loading-spinner {
+.subject-loading-spinner {
   width: 50px;
   height: 50px;
   border: 5px solid #e2e8f0;
   border-top: 5px solid #4f46e5;
   border-radius: 50%;
-  animation: semester-spin 1s linear infinite;
+  animation: subject-spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
-@keyframes semester-spin {
+@keyframes subject-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
@@ -363,95 +313,99 @@
 
 /* Tablet and Mobile (max-width: 768px) */
 @media (max-width: 768px) {
-  .semester-container {
+  .subject-container {
     padding: 1rem;
   }
   
   /* Compact Header Mobile */
-  .semester-compact-course-info {
+  .subject-compact-course-info {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
     padding: 0.75rem 1rem;
   }
   
-  .semester-compact-course-details {
+  .subject-compact-course-details {
     border-left: none;
     padding-left: 0;
     border-top: 1px solid #e5e7eb;
     padding-top: 0.5rem;
   }
   
-  .semester-compact-course-name {
+  .subject-compact-course-name {
     font-size: 0.95rem;
   }
   
-  .semester-compact-course-details {
+  .subject-compact-course-details {
     font-size: 0.7rem;
   }
   
   /* Grid Mobile */
-  .semester-semesters-grid {
+  .subject-subjects-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
   
   /* Card Mobile */
-  .semester-card {
+  .subject-card {
     padding: 1.2rem;
   }
   
-  .semester-number-circle {
+  .subject-number-circle {
     width: 50px;
     height: 50px;
   }
   
-  .semester-number-text {
-    font-size: 1.1rem;
+  .subject-code {
+    font-size: 0.9rem;
   }
   
-  .semester-name {
+  .subject-name {
     font-size: 1rem;
   }
   
+  .subject-credits {
+    font-size: 0.7rem;
+  }
+  
   /* Badges Mobile */
-  .semester-materials-preview {
+  .subject-materials-preview {
     gap: 0.3rem;
   }
   
-  .semester-material-badge {
+  .subject-material-badge {
     font-size: 0.65rem;
     padding: 0.15rem 0.5rem;
   }
   
   /* Stats Mobile */
-  .semester-stats {
+  .subject-stats {
     gap: 0.5rem;
   }
   
-  .semester-stat {
+  .subject-stat {
     font-size: 0.7rem;
   }
   
   /* Button Mobile */
-  .semester-select-button {
+  .subject-select-button {
     padding: 0.5rem;
     font-size: 0.8rem;
   }
   
   /* Footer Mobile */
-  .semester-simple-footer {
+  .subject-simple-footer {
     font-size: 0.7rem;
     padding: 0.75rem;
   }
   
   /* Search Mobile */
-  .semester-search-input {
+  .subject-search-input {
     font-size: 0.85rem;
     padding: 0.65rem 2.2rem 0.65rem 2.2rem;
   }
   
-  .semester-compact-back-button {
+  .subject-compact-back-button {
     font-size: 0.75rem;
     padding: 0.35rem 0.8rem;
   }
@@ -459,59 +413,59 @@
 
 /* Extra Small Devices (max-width: 480px) */
 @media (max-width: 480px) {
-  .semester-container {
+  .subject-container {
     padding: 0.75rem;
   }
   
-  .semester-card {
+  .subject-card {
     padding: 1rem;
   }
   
-  .semester-number-circle {
+  .subject-number-circle {
     width: 45px;
     height: 45px;
   }
   
-  .semester-number-text {
-    font-size: 1rem;
+  .subject-code {
+    font-size: 0.8rem;
   }
   
-  .semester-name {
+  .subject-name {
     font-size: 0.9rem;
   }
   
-  .semester-material-badge {
+  .subject-material-badge {
     font-size: 0.6rem;
   }
   
-  .semester-stat {
+  .subject-stat {
     font-size: 0.65rem;
   }
   
-  .semester-select-button {
+  .subject-select-button {
     font-size: 0.75rem;
   }
   
-  .semester-simple-footer {
+  .subject-simple-footer {
     font-size: 0.65rem;
   }
   
-  .semester-compact-course-icon {
+  .subject-compact-course-icon {
     font-size: 1rem;
   }
   
-  .semester-compact-course-name {
+  .subject-compact-course-name {
     font-size: 0.85rem;
   }
 }
 
 /* Landscape Mode for Mobile */
 @media (max-width: 768px) and (orientation: landscape) {
-  .semester-semesters-grid {
+  .subject-subjects-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
   
-  .semester-card {
+  .subject-card {
     padding: 1rem;
   }
 }
