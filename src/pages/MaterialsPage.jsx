@@ -58,51 +58,71 @@ const MaterialsPage = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ RATING COMPONENT - with useNoteStats
-  const Rating = ({materialId, currentRating}) => {
-    const stats = useNoteStats(materialId, {rating: currentRating});
-    const [hover, setHover] = useState(0);
-    const [isRated, setIsRated] = useState(false);
+  // RATING COMPONENT - with useNoteStats
+const Rating = ({ materialId, currentRating }) => {
+  const stats = useNoteStats(materialId, { rating: currentRating });
+  const [hover, setHover] = useState(0);
+  const [isRated, setIsRated] = useState(false);
 
-    const handleRating = async (value) => {
-      if (isRated) return;
-      setIsRated(true);
+  const handleRating = async (value) => {
+    if (isRated) return;
+    setIsRated(true);
+    try {
       await stats.updateRating(value);
-      setTimeout(() => setIsRated(false), 2000);
-    };
-
-    return (
-      <div
-        style={isMobile ? styles.mobileRatingContainer : styles.ratingContainer}
-      >
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onClick={() => handleRating(star)}
-            onMouseEnter={() => !isMobile && setHover(star)}
-            onMouseLeave={() => !isMobile && setHover(0)}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: isMobile ? "16px" : "20px",
-              color: (hover || stats.rating) >= star ? "#ffc107" : "#e4e5e9",
-              padding: isMobile ? "2px" : "0",
-            }}
-          >
-            ★
-          </button>
-        ))}
-        {!isMobile && (
-          <span style={{fontSize: "14px", color: "#6c757d", marginLeft: "5px"}}>
-            ({stats.rating?.toFixed(1) || "0"}) • {stats.ratingCount} ratings
-          </span>
-        )}
-      </div>
-    );
+    } catch (error) {
+      console.error('Rating error:', error);
+    }
+    setTimeout(() => setIsRated(false), 2000);
   };
 
-  // ✅ MATERIAL TYPES - FIXED: 'youtube' id (lowercase, no space)
+  
+  const handleTouchStart = (star) => {
+    if (isMobile) {
+      handleRating(star);
+    }
+  };
+
+  return (
+    <div
+      style={isMobile ? styles.mobileRatingContainer : styles.ratingContainer}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+         
+          onClick={() => handleRating(star)}
+          
+          onTouchStart={() => handleTouchStart(star)}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onMouseEnter={() => !isMobile && setHover(star)}
+          onMouseLeave={() => !isMobile && setHover(0)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: isMobile ? "22px" : "20px",  
+            color: (hover || stats.rating) >= star ? "#ffc107" : "#e4e5e9",
+            padding: isMobile ? "8px" : "0",  
+            margin: isMobile ? "0 2px" : "0",
+            minWidth: isMobile ? "44px" : "auto",  
+            minHeight: isMobile ? "44px" : "auto",
+          }}
+        >
+          ★
+        </button>
+      ))}
+      {!isMobile && (
+        <span style={{ fontSize: "14px", color: "#6c757d", marginLeft: "5px" }}>
+          ({stats.rating?.toFixed(1) || "0"}) • {stats.ratingCount} ratings
+        </span>
+      )}
+    </div>
+  );
+};
   const materialTypes = [
     {id: "all", name: "All Materials", icon: <FaFilter />, color: "#6b7280"},
     {id: "syllabus", name: "Syllabus", icon: <FaBook />, color: "#3B82F6"},
