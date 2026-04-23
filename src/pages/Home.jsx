@@ -382,7 +382,7 @@ const Home = () => {
         <div className="banner-content">
           <span className="banner-icon">📚</span>
           <span className="banner-text">
-            <strong>Study Portal में आपका स्वागत है!</strong> Notes, PYQs, Syllabus aur Study Materials upload karo aur doosron ki madad karo! 🚀
+            <strong>Welcome to Study Portal!</strong> Upload Notes, PYQs, Syllabus and Study Materials to help others!
           </span>
           <button className="banner-close" onClick={handleCloseBanner}>✕</button>
         </div>
