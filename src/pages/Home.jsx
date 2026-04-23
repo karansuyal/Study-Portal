@@ -13,7 +13,13 @@ const Home = () => {
   const [backendCourses, setBackendCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  
+   const [showBanner, setShowBanner] = useState(() => {
+   return localStorage.getItem('bannerShown') !== 'true';
+  });
+  const handleCloseBanner = () => {
+    setShowBanner(false);
+    localStorage.setItem('bannerShown', 'true');
+  };
   const [stats, setStats] = useState([
     { title: 'Total Notes', value: 'Loading...', icon: '📄', key: 'notes' },
     { title: 'PYQs', value: 'Loading...', icon: '📝', key: 'pyqs' },
@@ -371,6 +377,17 @@ const Home = () => {
   return (
     <div className="home-page">
       {/* Hero Section */}
+      {showBanner && (
+      <div className="upload-banner">
+        <div className="banner-content">
+          <span className="banner-icon">📚</span>
+          <span className="banner-text">
+            <strong>Study Portal में आपका स्वागत है!</strong> Notes, PYQs, Syllabus aur Study Materials upload karo aur doosron ki madad karo! 🚀
+          </span>
+          <button className="banner-close" onClick={handleCloseBanner}>✕</button>
+        </div>
+      </div>
+    )}
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">
