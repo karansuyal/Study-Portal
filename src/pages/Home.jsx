@@ -458,7 +458,7 @@ const Home = () => {
       {showBanner && (
         <div className="upload-banner">
           <div className="banner-content">
-            <span className="banner-icon"></span>
+            <span className="banner-icon">📚</span>
             <span className="banner-text">
               <strong>Welcome to Study Portal!</strong> Upload Notes, PYQs,
               Syllabus and Study Materials to help others!
