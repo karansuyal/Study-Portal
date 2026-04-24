@@ -216,7 +216,9 @@ export const coursesData = {
             { id: 239, name: 'Computer Graphics', code: 'TBCA601', credits: 8, materials: 30, rating: 4.9, type: 'Theory' },
             { id: 240, name: 'Network Security And Cyber Laws', code: 'TBC602', credits: 4, materials: 18, rating: 4.7, type: 'Theory' },
             { id: 241, name: 'Fundamentals Of Machine Learning', code: 'TBC603', credits: 2, materials: 10, rating: 4.3, type: 'Theory' },
-            { id: 242, name: 'Major Project', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Project' }
+            { id: 242, name: 'Major Project', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Project' },
+            { id: 243, name: 'New subject', code: 'TBC605', credits: 3, materials: 14, rating: 4.5, type: 'Project' }
+          
           ]
         }
       }
