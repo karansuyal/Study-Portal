@@ -153,8 +153,8 @@ export const coursesData = {
             { id: 201, name: 'Computational Thinking & Fundamentals of IT', code: 'TBC101', credits: 3, materials: 12, rating: 4.3, type: 'Theory' },
             { id: 202, name: 'C Programming', code: 'TBC102', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
             { id: 203, name: 'Mathematical Foundations of Computer Science', code: 'TBC103', credits: 3, materials: 15, rating: 4.2, type: 'Theory' },
-            { id: 204, name: 'Professional Communication', code: 'THU101', credits: 3, materials: 10, rating: 4.1, type: 'Theory' },
-            { id: 205, name: 'C Programming  Lab', code: 'PBC101', credits: 2, materials: 12, rating: 4.0, type: 'Lab' },
+            { id: 204, name: 'Professional Communication 1', code: 'THU101', credits: 3, materials: 10, rating: 4.1, type: 'Theory' },
+            { id: 205, name: 'Mathematical Foundations For AI', code: 'PBC101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' },
             { id: 206, name: 'Digital Productivity Tools for Modern Workplaces(Lab)', code: 'PBC102', credits: 2, materials: 12, rating: 4.0, type: 'Lab' }
 
           ],
@@ -163,8 +163,9 @@ export const coursesData = {
             { id: 208, name: 'Introduction to Object-Oriented Programming(C++) ', code: 'TBC202', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
             { id: 209, name: 'Introduction to Operating Systems', code: 'TBC203', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
             { id: 210, name: 'Discrete Mathematics', code: 'TBC204', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
-            { id: 211, name: 'Data Structures Lab', code: 'PBC201', credits: 2, materials: 14, rating: 4.2, type: 'Lab' },
-            { id: 212, name: 'Object-Oriented Programming Lab(C++)', code: 'PBC202', credits: 2, materials: 14, rating: 4.2, type: 'Lab' }
+            { id: 243, name: 'Foundations of AI', code: 'THN101', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 211, name: 'Probability and Statistics', code: 'PBC201', credits: 2, materials: 14, rating: 4.2, type: 'Theory' },
+            { id: 212, name: 'Programming For Problem Solving', code: 'PBC202', credits: 2, materials: 14, rating: 4.2, type: 'Theory' }
           ]
         }
       },
@@ -216,8 +217,7 @@ export const coursesData = {
             { id: 239, name: 'Computer Graphics', code: 'TBCA601', credits: 8, materials: 30, rating: 4.9, type: 'Theory' },
             { id: 240, name: 'Network Security And Cyber Laws', code: 'TBC602', credits: 4, materials: 18, rating: 4.7, type: 'Theory' },
             { id: 241, name: 'Fundamentals Of Machine Learning', code: 'TBC603', credits: 2, materials: 10, rating: 4.3, type: 'Theory' },
-            { id: 242, name: 'Major Project', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Project' },
-            { id: 243, name: 'New subject', code: 'TBC605', credits: 3, materials: 14, rating: 4.5, type: 'Project' }
+            { id: 242, name: 'Major Project', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Project' }
           
           ]
         }
