@@ -882,9 +882,6 @@
                 <div class="tab active" onclick="switchTab('dashboard')">
                     <i class="fas fa-chart-pie"></i> Dashboard
                 </div>
-                <div class="tab" onclick="switchTab('upload')">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload
-                </div>
                 <div class="tab" onclick="switchTab('pending')">
                     <i class="fas fa-clock"></i> Pending (<span id="pendingCount">0</span>)
                 </div>
@@ -894,9 +891,7 @@
                 <div class="tab" onclick="switchTab('users')">
                     <i class="fas fa-users"></i> Users
                 </div>
-                <div class="tab danger-tab" onclick="switchTab('delete')">
-                    <i class="fas fa-trash-alt"></i> Delete Data
-                </div>
+                
             </div>
             
             <!-- Dashboard Tab -->
@@ -943,106 +938,6 @@
                 </div>
             </div>
             
-            <!-- Upload Tab -->
-            <div id="uploadTab" class="tab-content">
-                <div class="content-card">
-                    <h2><i class="fas fa-cloud-upload-alt"></i> Upload Study Material</h2>
-                    
-                    <form id="uploadForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Title <span class="required">*</span></label>
-                                <input type="text" id="title" placeholder="e.g., DBMS Notes Unit 1" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Course <span class="required">*</span></label>
-                                <select id="course" required>
-                                    <option value="">Select Course</option>
-                                    <option value="BTECH">BTECH</option>
-                                    <option value="BCA">BCA</option>
-                                    <option value="BBA">BBA</option>
-                                    <option value="MBA">MBA</option>
-                                    <option value="MCA">MCA</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Subject <span class="required">*</span></label>
-                                <input type="text" id="subject" placeholder="e.g., Database Management" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Type <span class="required">*</span></label>
-                                <select id="type" required>
-                                    <option value="">Select Type</option>
-                                    <option value="notes">📄 Notes</option>
-                                    <option value="pyq">📝 Previous Year Questions</option>
-                                    <option value="syllabus">📋 Syllabus</option>
-                                    <option value="imp_questions">❓ Important Questions</option>
-                                    <option value="lab">🔬 Lab Manual</option>
-                                    <option value="assignment">📑 Assignment</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Year</label>
-                                <select id="year">
-                                    <option value="1">Year 1</option>
-                                    <option value="2">Year 2</option>
-                                    <option value="3">Year 3</option>
-                                    <option value="4">Year 4</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Semester</label>
-                                <select id="semester">
-                                    <option value="1">Semester 1</option>
-                                    <option value="2">Semester 2</option>
-                                    <option value="3">Semester 3</option>
-                                    <option value="4">Semester 4</option>
-                                    <option value="5">Semester 5</option>
-                                    <option value="6">Semester 6</option>
-                                    <option value="7">Semester 7</option>
-                                    <option value="8">Semester 8</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="description" placeholder="Enter description of the material..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>File <span class="required">*</span></label>
-                            <div class="file-upload" id="fileUploadArea">
-                                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p><strong>Click to upload or drag and drop</strong></p>
-                                <p>PDF, DOC, PPT, Images (Max 10MB)</p>
-                                <small>Supported formats: PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, PNG</small>
-                            </div>
-                            <div id="fileInfo" class="file-info" style="display: none;"></div>
-                        </div>
-                        
-                        <div class="progress-bar" id="progressBar">
-                            <div class="progress-fill" id="progressFill"></div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-block" id="uploadBtn">
-                            <i class="fas fa-upload"></i> Upload & Approve
-                        </button>
-                    </form>
-                    
-                    <div id="uploadMessage"></div>
-                </div>
-            </div>
             
             <!-- Pending Tab -->
             <div id="pendingTab" class="tab-content">
@@ -1123,116 +1018,7 @@
                 </div>
             </div>
             
-            <!-- Delete Tab -->
-            <div id="deleteTab" class="tab-content">
-                <div class="content-card">
-                    <h2><i class="fas fa-trash-alt" style="color: #dc3545;"></i> Delete Data</h2>
-                    
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                        <h3 style="margin-bottom: 15px;">Quick Delete Options</h3>
-                        
-                        <div class="form-row">
-                            <button class="btn btn-warning" onclick="showDeleteModal('pending')">
-                                <i class="fas fa-clock"></i> Delete All Pending
-                            </button>
-                            <button class="btn btn-success" onclick="showDeleteModal('approved')">
-                                <i class="fas fa-check-circle"></i> Delete All Approved
-                            </button>
-                            <button class="btn btn-danger" onclick="showDeleteModal('all')">
-                                <i class="fas fa-database"></i> Delete ALL Notes
-                            </button>
-                            <button class="btn btn-info" onclick="showDeleteModal('old')">
-                                <i class="fas fa-history"></i> Delete Older than 30 Days
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                        <h3 style="margin-bottom: 15px;">Delete by Semester</h3>
-                        
-                        <div class="form-row">
-                            <select id="deleteCourse" class="filter-select">
-                                <option value="BTECH">BTECH</option>
-                                <option value="BCA">BCA</option>
-                                <option value="BBA">BBA</option>
-                                <option value="MBA">MBA</option>
-                                <option value="MCA">MCA</option>
-                            </select>
-                            
-                            <select id="deleteYear" class="filter-select">
-                                <option value="1">Year 1</option>
-                                <option value="2">Year 2</option>
-                                <option value="3">Year 3</option>
-                                <option value="4">Year 4</option>
-                            </select>
-                            
-                            <select id="deleteSemester" class="filter-select">
-                                <option value="1">Semester 1</option>
-                                <option value="2">Semester 2</option>
-                                <option value="3">Semester 3</option>
-                                <option value="4">Semester 4</option>
-                                <option value="5">Semester 5</option>
-                                <option value="6">Semester 6</option>
-                                <option value="7">Semester 7</option>
-                                <option value="8">Semester 8</option>
-                            </select>
-                            
-                            <button class="btn btn-warning" onclick="deleteBySemester()">
-                                <i class="fas fa-trash-alt"></i> Delete Semester
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                        <h3 style="margin-bottom: 15px;">Search and Delete</h3>
-                        
-                        <div class="form-group">
-                            <input type="text" id="deleteSearch" class="search-box" placeholder="Search by title, subject...">
-                        </div>
-                        
-                        <div class="filter-options">
-                            <select id="deleteCourseFilter" class="filter-select">
-                                <option value="">All Courses</option>
-                                <option value="BTECH">BTECH</option>
-                                <option value="BCA">BCA</option>
-                                <option value="BBA">BBA</option>
-                                <option value="MBA">MBA</option>
-                                <option value="MCA">MCA</option>
-                            </select>
-                            
-                            <select id="deleteStatusFilter" class="filter-select">
-                                <option value="">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                            
-                            <button class="btn btn-info" onclick="searchAndDelete()">
-                                <i class="fas fa-search"></i> Search
-                            </button>
-                        </div>
-                        
-                        <div id="deleteSearchResults"></div>
-                    </div>
-                    
-                    <div id="deleteMessage"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header" id="modalHeader">Confirm Delete</div>
-            <div class="modal-body" id="modalBody">Are you sure you want to delete?</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="hideDeleteModal()">Cancel</button>
-                <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-            </div>
-        </div>
-    </div>
-    
+            
     <script>
         // ==================== CONFIGURATION ====================
         const API_URL = 'https://study-portal-ill8.onrender.com/api';
@@ -1949,106 +1735,6 @@
             }
         }
         
-        // ==================== DELETE FUNCTIONS ====================
-        function showDeleteModal(type) {
-            currentDeleteType = type;
-            const modal = document.getElementById('deleteModal');
-            const header = document.getElementById('modalHeader');
-            const body = document.getElementById('modalBody');
-            
-            switch(type) {
-                case 'pending':
-                    header.textContent = 'Delete Pending Notes';
-                    body.textContent = 'Are you sure you want to delete ALL pending notes? This action cannot be undone.';
-                    break;
-                case 'approved':
-                    header.textContent = 'Delete Approved Notes';
-                    body.textContent = 'Are you sure you want to delete ALL approved notes? This action cannot be undone.';
-                    break;
-                case 'all':
-                    header.textContent = 'Delete All Notes';
-                    body.textContent = 'Are you sure you want to delete ALL notes? This action cannot be undone.';
-                    break;
-                case 'old':
-                    header.textContent = 'Delete Old Notes';
-                    body.textContent = 'Are you sure you want to delete all notes older than 30 days? This action cannot be undone.';
-                    break;
-            }
-            
-            modal.classList.add('active');
-        }
-        
-        function hideDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('active');
-        }
-        
-        document.getElementById('confirmDeleteBtn').onclick = async function() {
-            hideDeleteModal();
-            
-            try {
-                let endpoint = '';
-                let message = '';
-                
-                switch(currentDeleteType) {
-                    case 'pending':
-                        endpoint = '/admin/delete/pending';
-                        message = 'Deleting pending notes...';
-                        break;
-                    case 'approved':
-                        endpoint = '/admin/delete/approved';
-                        message = 'Deleting approved notes...';
-                        break;
-                    case 'all':
-                        endpoint = '/admin/delete/all';
-                        message = 'Deleting all notes...';
-                        break;
-                    case 'old':
-                        endpoint = '/admin/delete/old';
-                        message = 'Deleting old notes...';
-                        break;
-                }
-                
-                showMessage(message, 'loading', 'deleteMessage');
-                
-                const response = await fetch(`${API_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showMessage(`✅ ${data.message}`, 'success', 'deleteMessage');
-                    loadStats();
-                    loadPendingNotes();
-                    loadApprovedNotes();
-                } else {
-                    showMessage('❌ Error: ' + data.error, 'error', 'deleteMessage');
-                }
-            } catch (error) {
-                showMessage('❌ Error: ' + error.message, 'error', 'deleteMessage');
-            }
-        };
-        
-        function deleteBySemester() {
-            const course = document.getElementById('deleteCourse').value;
-            const year = document.getElementById('deleteYear').value;
-            const semester = document.getElementById('deleteSemester').value;
-            
-            if (!confirm(`Delete all notes for ${course} Year ${year} Semester ${semester}?`)) return;
-            
-            // Implement semester delete API call
-            showMessage(`Deleting ${course} Year ${year} Sem ${semester}...`, 'loading', 'deleteMessage');
-        }
-        
-        function searchAndDelete() {
-            const search = document.getElementById('deleteSearch').value;
-            const course = document.getElementById('deleteCourseFilter').value;
-            const status = document.getElementById('deleteStatusFilter').value;
-            
-            // Implement search and delete
-            console.log('Search:', { search, course, status });
-        }
         
         // ==================== MESSAGE FUNCTIONS ====================
         function showMessage(text, type, containerId = 'messageContainer') {
