@@ -846,6 +846,7 @@ def verify_email():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==================== AI CHATBOT (GEMINI API) ====================
+import time
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
