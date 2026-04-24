@@ -70,7 +70,8 @@ const ForgotPassword = () => {
           marginBottom: '2rem',
           fontSize: '0.95rem'
         }}>
-          Enter your email address and we'll send you instructions to reset your password.
+          Enter your email address and we'll send you instructions to reset your password check Spam Folder.
+          
         </p>
         
         {error && (
