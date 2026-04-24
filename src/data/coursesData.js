@@ -68,12 +68,10 @@ export const coursesData = {
       { id: 137, name: 'Java Programming', code: 'TCS408', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 138, name: 'Design and Analysis of Algorithms', code: 'TCS409', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 139, name: 'Career Skills', code: 'XCS401', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-      
-      // LAB SUBJECTS LAST (Semester 4 - Actual)
-      { id: 140, name: 'Microprocessors Lab', code: 'PCS403', credits: 2, materials: 16, rating: 4.5, type: 'Lab' },
-      { id: 141, name: 'Java Programming Lab', code: 'PCS408', credits: 2, materials: 18, rating: 4.4, type: 'Lab' },
-      { id: 142, name: 'DAA Lab', code: 'PCS409', credits: 2, materials: 20, rating: 4.6, type: 'Lab' },
-      { id: 143, name: 'Career Skills Lab', code: 'XCS410', credits: 1, materials: 10, rating: 4.0, type: 'Lab' }
+      { id: 140, name: 'Deep Learning', code: 'PCS403', credits: 2, materials: 16, rating: 4.5, type: 'Theory' },
+      { id: 141, name: 'Fundamental Of Cyber Security', code: 'PCS408', credits: 2, materials: 18, rating: 4.4, type: 'Theory' },
+      { id: 142, name: 'R Programming', code: 'PCS409', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 143, name: 'Virtualization And Cloud Computing', code: 'XCS410', credits: 1, materials: 10, rating: 4.0, type: 'Theory' }
       
     ]
   }
