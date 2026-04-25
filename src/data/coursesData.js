@@ -117,21 +117,21 @@ export const coursesData = {
             // THEORY SUBJECTS FIRST
             { id: 169, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
             { id: 170, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
-            { id: 171, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
             { id: 172, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 173, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
             
             // LAB SUBJECTS LAST
-            { id: 174, name: 'Mobile App Development Lab', code: 'PCS451', credits: 2, materials: 22, rating: 4.7, type: 'Lab' },
             { id: 175, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
             { id: 176, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
           ],
           8: [
             // FINAL SEMESTER - Major Project Focus
-            { id: 177, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
+            { id: 177, name: 'Disaster Management', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Theory' },
+            { id: 171, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
             { id: 178, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
-            { id: 179, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
-            { id: 180, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
+            { id: 179, name: 'Mobile Computing', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
+            { id: 180, name: 'Comprehensive Viva-Voce', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' },
+              { id: 181, name: 'Project Phase-II', code: 'PCS457', credits: 8, materials: 40, rating: 4.9, type: 'Project' }
           ]
         }
       }
@@ -239,16 +239,22 @@ export const coursesData = {
             { id: 304, name: 'Computer Application In Management', code: 'BBA104', credits: 3, materials: 20, rating: 4.6, type: 'Lab' },
             { id: 305, name: 'Economics For Life', code: 'BBA105', credits: 3, materials: 14, rating: 4.1, type: 'Theory' },
             { id: 306, name: 'Financial Accounting', code: 'BBA106', credits: 4, materials: 22, rating: 4.7, type: 'Theory' },
-            { id: 307, name: 'Principles Of Management', code: 'BBA107', credits: 4, materials: 18, rating: 4.4, type: 'Theory' }
+            { id: 307, name: 'Principles Of Management', code: 'BBA107', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
+            { id: 358, name: 'Environmental Science', code: 'BBA258', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 359, name: 'Indian Knowledge System', code: 'BBA259', credits: 2, materials: 12, rating: 4.2, type: 'Theory' }
           ],
           2: [
             { id: 308, name: 'Business Communication 2', code: 'BBA108', credits: 3, materials: 16, rating: 4.5, type: 'Theory' },
             { id: 309, name: 'Economics For Life 2', code: 'BBA109', credits: 3, materials: 14, rating: 4.3, type: 'Theory' },
             { id: 310, name: 'Environmental Science', code: 'BBA110', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 311, name: 'Financial Management', code: 'BBA111', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
-            { id: 312, name: 'Human Resource Management', code: 'BBA112', credits: 4, materials: 22, rating: 4.7, type: 'Theory' },
+            { id: 312, name: 'Indian Constitution', code: 'BBA112', credits: 4, materials: 22, rating: 4.7, type: 'Theory' },
             { id: 313, name: 'Organizational Behaviour', code: 'BBA113', credits: 4, materials: 20, rating: 4.6, type: 'Theory' },
-            { id: 314, name: 'Principles Of Marketing', code: 'BBA114', credits: 4, materials: 24, rating: 4.9, type: 'Theory' }
+            { id: 314, name: 'Principles Of Marketing', code: 'BBA114', credits: 4, materials: 24, rating: 4.9, type: 'Theory' },
+            { id: 347, name: 'Business Environment', code: 'BBA115', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 348, name: 'Business Statistics', code: 'BBA116', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 349, name: 'Computer Applications In Business', code: 'BBA117', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 350, name: 'Marketing Management', code: 'BBA118', credits: 2, materials: 12, rating: 4.2, type: 'Theory' }
           ]
         }
       },
@@ -261,7 +267,12 @@ export const coursesData = {
             { id: 317, name: 'Business Statistics', code: 'BBA203', credits: 4, materials: 18, rating: 4.5, type: 'Theory' },
             { id: 318, name: 'Career Skills', code: 'BBA204', credits: 2, materials: 12, rating: 4.2, type: 'Skill' },
             { id: 319, name: 'Entrepreneurship', code: 'BBA205', credits: 3, materials: 16, rating: 4.4, type: 'Theory' },
-            { id: 320, name: 'Macro Economics', code: 'BBA206', credits: 4, materials: 17, rating: 4.3, type: 'Theory' }
+            { id: 320, name: 'Macro Economics', code: 'BBA206', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 351, name: 'Human Resource Management', code: 'BBA251', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 352, name: 'Consumer Protection Act', code: 'BBA252', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 353, name: 'Legal And Ethical Issues In Business', code: 'BBA253', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 354, name: 'Management Accounting', code: 'BBA254', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 355, name: 'Management Information Systems', code: 'BBA255', credits: 4, materials: 17, rating: 4.3, type: 'Theory' }
           ],
           4: [
             { id: 321, name: 'Business Research', code: 'BBA207', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
@@ -270,7 +281,9 @@ export const coursesData = {
             { id: 324, name: 'International Business', code: 'BBA210', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
             { id: 325, name: 'Logistics And Supply Chain Management', code: 'BBA211', credits: 3, materials: 16, rating: 4.5, type: 'Theory' },
             { id: 326, name: 'Production Management', code: 'BBA212', credits: 3, materials: 15, rating: 4.3, type: 'Theory' },
-            { id: 327, name: 'Wellness And Stress Management', code: 'BBA213', credits: 2, materials: 10, rating: 4.2, type: 'Theory' }
+            { id: 327, name: 'Wellness And Stress Management', code: 'BBA213', credits: 2, materials: 10, rating: 4.2, type: 'Theory' },
+            { id: 356, name: 'Entrepreneurship And Startup Ecosystem', code: 'BBA256', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 357, name: 'Management Accounting', code: 'BBA257', credits: 4, materials: 17, rating: 4.3, type: 'Theory' }
           ]
         }
       },
