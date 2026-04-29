@@ -15,10 +15,11 @@ export const coursesData = {
             { id: 104, name: 'Professional Communication', code: 'THU101', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 105, name: ' Engineering Mathematics 1', code: 'TMA102', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
             { id: 106, name: 'Engineering Physics', code: 'TPH101', credits: 4, materials: 15, rating: 4.6, type: 'Theory' },
+            { id: 107, name: 'Mathematics for AI-1', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Theory' },
             { id: 101, name: 'Design Thinking', code: 'HSMC101', credits: 3, materials: 15, rating: 4.5, type: 'Theory' },
             
             // LAB SUBJECTS LAST
-            { id: 107, name: 'Mathematics for AI-1', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Theory' },
+           
             { id: 108, name: 'Basic Electrical Engineering Lab', code: 'PEE151', credits: 1, materials: 12, rating: 4.5, type: 'Lab' },
             { id: 109, name: 'Python Programming Lab', code: 'PME151', credits: 2, materials: 14, rating: 4.3, type: 'Lab' },
             { id: 110, name: 'Physics Lab', code: 'PPH151', credits: 1, materials: 10, rating: 4.4, type: 'Lab' }
