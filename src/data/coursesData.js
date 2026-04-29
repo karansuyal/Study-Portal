@@ -186,14 +186,14 @@ export const coursesData = {
           
           
           4: [
-            { id: 221, name: 'Introduction to Design and Analysis of Algorithms', code: 'TBC401', credits: 3, materials: 26, rating: 4.8, type: 'Theory' },
-            { id: 222, name: 'Introduction to Software Engineering ', code: 'TBC402', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
+            { id: 221, name: 'Design and Analysis of Algorithms', code: 'TBC401', credits: 3, materials: 26, rating: 4.8, type: 'Theory' },
+            { id: 222, name: 'Software Engineering ', code: 'TBC402', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
             { id: 223, name: 'Computer Organization', code: 'TBC403', credits: 3, materials: 15, rating: 4.3, type: 'Theory' },
             { id: 224, name: 'Data Communication and Computer Networks', code: 'TBC404', credits: 3, materials: 14, rating: 4.4, type: 'Theory' },
             { id: 225, name: 'Big Data Analytics', code: 'TBC405', credits: 3, materials: 20, rating: 4.8, type: 'Theory' },
             { id: 226, name: 'Career Skills- 2', code: 'TBC406', credits: 1, materials: 20, rating: 4.8, type: 'Theory' },
-            { id: 227, name: 'Design and Analysis of Algorithms Laboratory', code: 'PBC401', credits: 2, materials: 20, rating: 4.8, type: 'Lab' },
-            { id: 228, name: 'Data Communications and Computer Networks Laboratory', code: 'PBC402', credits: 2, materials: 20, rating: 4.8, type: 'Lab' }
+            { id: 227, name: 'Data Analytics Using Python', code: 'PBC401', credits: 2, materials: 20, rating: 4.8, type: 'Theory' },
+            { id: 228, name: 'Microprocessor', code: 'PBC402', credits: 2, materials: 20, rating: 4.8, type: 'Theory' }
 
           ]
         }
