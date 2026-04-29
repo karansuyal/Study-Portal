@@ -36,7 +36,7 @@ export const coursesData = {
   
   // LAB SUBJECTS LAST (Semester 1 - Actual)
   { id: 117, name: 'Programming in C', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Theory' },
-  { id: 118, name: 'Mathematics for Core  2', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
+  { id: 118, name: 'Mathematics for AI-2', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
   { id: 119, name: 'Chemistry Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
   { id: 120, name: 'Basic Electronics Engineering Lab', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
   
