@@ -177,9 +177,10 @@ export const coursesData = {
             { id: 213, name: 'Web Application Development', code: 'TBC301', credits: 3, materials: 24, rating: 4.7, type: 'Theory' },
             { id: 214, name: 'Database Management Systems', code: 'TBC302', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
             { id: 215, name: 'Digital Logic Design', code: 'TBC303', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
+            { id: 245, name: 'Soft Computing', code: 'TBD311', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
             { id: 217, name: 'R Programming ', code: 'TBC305', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 218, name: 'Career Skills-I', code: 'TBC306', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 219, name: 'Database Management Systems Laboratory ', code: 'PBC301', credits: 2, materials: 12, rating: 4.2, type: 'Lab' },
+            { id: 219, name: 'Probability and Statistics', code: 'PBC301', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 220, name: 'Web Application Development Laboratory ', code: 'PBC302', credits: 2, materials: 12, rating: 4.2, type: 'Lab' }
           ],
           
