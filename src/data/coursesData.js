@@ -158,9 +158,9 @@ export const coursesData = {
 
           ],
           2: [
-            { id: 207, name: 'Introduction to Data Structures ', code: 'TBC106', credits: 4, materials: 14, rating: 4.4, type: 'Theory' },
-            { id: 208, name: 'Introduction to Object-Oriented Programming(C++) ', code: 'TBC202', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
-            { id: 209, name: 'Introduction to Operating Systems', code: 'TBC203', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
+            { id: 244, name: 'Introduction to Data Science ', code: 'TBD303', credits: 4, materials: 14, rating: 4.4, type: 'Theory' },
+            { id: 208, name: 'OOPS Using (C++) ', code: 'TBC202', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
+            { id: 209, name: 'Operating Systems', code: 'TBC203', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
             { id: 210, name: 'Discrete Mathematics', code: 'TBC204', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
             { id: 243, name: 'Foundations of AI', code: 'THN101', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 211, name: 'Probability and Statistics', code: 'PBC201', credits: 2, materials: 14, rating: 4.2, type: 'Theory' },
@@ -172,8 +172,9 @@ export const coursesData = {
         name: "Second Year",
         semesters: {
           3: [
+            { id: 207, name: 'Data Structures ', code: 'TBC106', credits: 4, materials: 14, rating: 4.4, type: 'Theory' },
             { id: 213, name: 'Web Application Development', code: 'TBC301', credits: 3, materials: 24, rating: 4.7, type: 'Theory' },
-            { id: 214, name: 'Introduction to Database Management Systems', code: 'TBC302', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
+            { id: 214, name: 'Database Management Systems', code: 'TBC302', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
             { id: 215, name: 'Digital Logic Design', code: 'TBC303', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
             { id: 216, name: 'Python Programming', code: 'TBC304', credits: 3, materials: 16, rating: 4.3, type: 'Theory' },
             { id: 217, name: 'R Programming ', code: 'TBC305', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
