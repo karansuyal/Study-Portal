@@ -210,7 +210,7 @@ export const coursesData = {
             { id: 234, name: 'Introduction To AI', code: 'TBC506', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 235, name: 'Object Oriented Analysis And Design', code: 'TBCA507', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 236, name: 'Criptography', code: 'TBC508', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
-            { id: 237, name: 'Object Oriented Analysis And Design Laboratory', code: 'PBCA501', credits: 2, materials: 15, rating: 4.4, type: 'Lab' },
+            { id: 237, name: 'Programming With Dotnet C Sharp', code: 'PBCA501', credits: 2, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 238, name: 'Introduction To AI Laboratory', code: 'PBC502', credits: 2, materials: 15, rating: 4.4, type: 'Lab' }
 
           ],
