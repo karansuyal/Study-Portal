@@ -124,14 +124,13 @@ export const coursesData = {
         semesters: {
           7: [
             // THEORY SUBJECTS FIRST
-            { id: 169, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
-            { id: 170, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
-            { id: 172, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 173, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
-            
-            // LAB SUBJECTS LAST
-            { id: 175, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
-            { id: 176, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
+            { id: 169, name: 'Advanced Computer Architecture', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
+            { id: 170, name: 'Artificial Intelligence', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
+            { id: 172, name: 'Cryptography And Network Security', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 173, name: 'Data Warehousing And Data Mining', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+            { id: 174, name: 'Computer Graphics', code: 'TEL402', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+            { id: 175, name: 'Human Computer Interaction', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Theory' },
+            { id: 176, name: 'Computer Forensics', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Theory' }
           ],
           8: [
             // FINAL SEMESTER - Major Project Focus
