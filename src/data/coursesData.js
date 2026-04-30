@@ -27,7 +27,7 @@ export const coursesData = {
          
       2: [
   // THEORY SUBJECTS FIRST (Semester 1 - Actual)
-  { id: 111, name: 'Professional Communication', code: 'THU201', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+  { id: 111, name: 'Advanced Professional Communication', code: 'THU201', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
   { id: 112, name: 'Engineering Chemistry', code: 'TCH201', credits: 4, materials: 18, rating: 4.3, type: 'Theory' },
   { id: 113, name: 'Engineering Mathematics-II', code: 'TMA201', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
   { id: 114, name: 'Basic Electronics Engineering', code: 'TEC201', credits: 3, materials: 20, rating: 4.2, type: 'Theory' },
@@ -51,15 +51,18 @@ export const coursesData = {
       { id: 121, name: 'Discrete Structures and Combinatorics', code: 'TMA316', credits: 4, materials: 16, rating: 4.4, type: 'Theory' },
       { id: 122, name: 'Data Structures with C', code: 'TCS302', credits: 4, materials: 28, rating: 4.7, type: 'Theory' },
       { id: 123, name: 'Logic Design & Computer Organization', code: 'TCS308', credits: 3, materials: 18, rating: 4.3, type: 'Theory' },
-      { id: 124, name: 'Object Oriented Programming with C++', code: 'TCS307', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+      { id: 124, name: 'OOPS with C++', code: 'TCS307', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
       { id: 125, name: 'Introduction to Cryptography', code: 'TCS392', credits: 3, materials: 14, rating: 4.1, type: 'Theory' },
       { id: 126, name: 'Career Skills', code: 'XCS301', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
       
       // LAB SUBJECTS LAST (Semester 3 - Actual)
-      { id: 127, name: 'Data Structures Lab', code: 'PCS302', credits: 2, materials: 20, rating: 4.6, type: 'Lab' },
-      { id: 128, name: 'OOPS with C++ Lab', code: 'PCS307', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
-      { id: 129, name: 'Logic Design & Computer Organization Lab', code: 'PCS308', credits: 1, materials: 12, rating: 4.3, type: 'Lab' },
-      { id: 130, name: 'Career Skills Lab', code: 'XCS310', credits: 1, materials: 10, rating: 4.0, type: 'Lab' }
+      { id: 127, name: 'Python Programming', code: 'PCS302', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 128, name: 'Fundamentals Of Information Security And Block Chain', code: 'PCS307', credits: 2, materials: 18, rating: 4.5, type: 'Theory' },
+      { id: 129, name: 'Fundamentals Of Iot', code: 'PCS308', credits: 1, materials: 12, rating: 4.3, type: 'Theory' },
+      { id: 130, name: 'Fundamentals Of Ai & Ml', code: 'XCS310', credits: 1, materials: 10, rating: 4.0, type: 'Theory' },
+      { id: 131, name: 'Introduction To Statistical Data Science', code: 'XCS311', credits: 1, materials: 10, rating: 4.0, type: 'Theory' },
+      { id: 132, name: 'Mathematical Foundation For Artificial Intelligence', code: 'XCS312', credits: 1, materials: 10, rating: 4.0, type: 'Theory' }
+
     ],
     4: [
       // THEORY SUBJECTS FIRST (Semester 4 - Actual)
@@ -84,9 +87,10 @@ export const coursesData = {
       // THEORY SUBJECTS FIRST (Semester 5 - Actual)
       { id: 147, name: 'Operating Systems', code: 'TCS502', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
       { id: 148, name: 'Database Management Systems', code: 'TCS503', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
+      { id: 160, name: 'Computer Networks-I', code: 'TCS604', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 149, name: 'Machine Learning', code: 'TCS509', credits: 4, materials: 28, rating: 4.9, type: 'Theory' },
       { id: 150, name: 'Communication Model and Protocols', code: 'TCS531', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
-      { id: 151, name: 'Computer-Based Numerical & Statistical Techniques', code: 'TMA502', credits: 3, materials: 20, rating: 4.5, type: 'Theory' },
+      { id: 151, name: 'CBNST', code: 'TMA502', credits: 3, materials: 20, rating: 4.5, type: 'Theory' },
       { id: 152, name: 'Career Skills', code: 'XCS501', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
       
       // LAB SUBJECTS LAST (Semester 5 - Actual)
@@ -97,7 +101,7 @@ export const coursesData = {
     6: [
       // THEORY SUBJECTS FIRST (Semester 6 - Actual)
       { id: 159, name: 'Compiler Design', code: 'TCS601', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
-      { id: 160, name: 'Computer Networks-I', code: 'TCS604', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
+      
       { id: 161, name: 'Software Engineering', code: 'TCS611', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
       { id: 162, name: 'Network & System Security', code: 'TCS619', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 163, name: 'Full Stack Web Development', code: 'TCS693', credits: 4, materials: 30, rating: 4.9, type: 'Theory' },
