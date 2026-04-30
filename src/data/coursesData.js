@@ -105,16 +105,17 @@ export const coursesData = {
     6: [
       // THEORY SUBJECTS FIRST (Semester 6 - Actual)
       { id: 159, name: 'Compiler Design', code: 'TCS601', credits: 4, materials: 22, rating: 4.6, type: 'Theory' }, 
+      { id: 184, name: 'Computer Networks-2', code: 'TCS604', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 161, name: 'Software Engineering', code: 'TCS611', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
       { id: 162, name: 'Network & System Security', code: 'TCS619', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 163, name: 'Full Stack Web Development', code: 'TCS693', credits: 4, materials: 30, rating: 4.9, type: 'Theory' },
       { id: 164, name: 'Career Skills', code: 'XCS601', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-      
-      // LAB SUBJECTS LAST (Semester 6 - Actual)
-      { id: 165, name: 'Compiler Design Lab', code: 'PCS601', credits: 2, materials: 20, rating: 4.6, type: 'Lab' },
-      { id: 166, name: 'Computer Networks Lab', code: 'PCS604', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
-      { id: 167, name: 'Web Development Lab', code: 'PCS693', credits: 2, materials: 25, rating: 4.8, type: 'Lab' },
-      { id: 168, name: 'Employability Skill Enhancement Lab', code: 'PESE600', credits: 1, materials: 15, rating: 4.3, type: 'Lab' }
+      { id: 165, name: 'Advanced Machine Learning', code: 'PCS601', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 166, name: 'Security Audit And Compilance 2', code: 'PCS604', credits: 2, materials: 18, rating: 4.5, type: 'Theory' },
+      { id: 167, name: 'LLM And Generative AI', code: 'PCS693', credits: 2, materials: 25, rating: 4.8, type: 'Theory' },
+      { id: 168, name: 'Introduction to Virtual Reality', code: 'PESE600', credits: 1, materials: 15, rating: 4.3, type: 'Theory' },
+      { id: 185, name: 'Image processing And Computer Vision', code: 'PESE601', credits: 1, materials: 15, rating: 4.3, type: 'Theory' },
+      { id: 186, name: 'Bigdata Storage And Processing', code: 'PESE602', credits: 1, materials: 15, rating: 4.3, type: 'Theory' }
     ]
   }
 },
