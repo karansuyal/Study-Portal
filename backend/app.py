@@ -2276,6 +2276,27 @@ def serve_admin_static(filename):
             return jsonify({'error': 'File not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+# ==================== DATABASE KEEP-ALIVE (Prevent Neon Suspend) ====================
+import threading
+import time
+
+def keep_database_alive():
+    """Ping database every 4 minutes to prevent Neon from suspending"""
+    with app.app_context():
+        while True:
+            try:
+                db.session.execute(text('SELECT 1'))
+                print(f"✅ Database keep-alive pinged at {datetime.now(timezone.utc)}")
+            except Exception as e:
+                print(f"❌ Keep-alive error: {e}")
+            time.sleep(240)  # 4 minutes
+
+# Start keep-alive thread
+keep_alive_thread = threading.Thread(target=keep_database_alive, daemon=True)
+keep_alive_thread.start()
+print("🔄 Database keep-alive thread started - Neon will stay awake!")
+
 # ==================== START APP ====================
 
 if __name__ == '__main__':
