@@ -2222,7 +2222,52 @@ def debug_files():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
+# ==================== EDIT NOTE ROUTE ====================
+@app.route('/api/admin/notes/<int:note_id>/edit', methods=['PUT', 'OPTIONS'])
+@jwt_required()
+def edit_note(note_id):
+    # Handle preflight OPTIONS request (CORS)
+    if request.method == 'OPTIONS':
+        response = jsonify({'success': True})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'PUT,OPTIONS')
+        return response, 200
+    
+    try:
+        user_id = get_jwt_identity()
+        user = db.session.get(User, int(user_id))
+        
+        if not user or user.role != 'admin':
+            return jsonify({'error': 'Admin access required'}), 403
+        
+        note = db.session.get(Note, note_id)
+        if not note:
+            return jsonify({'error': 'Note not found'}), 404
+        
+        data = request.get_json()
+        
+        # Update fields
+        if 'title' in data:
+            note.title = data['title']
+        if 'description' in data:
+            note.description = data['description']
+        if 'note_type' in data:
+            note.note_type = data['note_type']
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Note updated successfully',
+            'note': note.to_dict()
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Edit error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    
 # ==================== ROOT ROUTE ====================
 
 @app.route('/')
