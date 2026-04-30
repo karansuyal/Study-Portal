@@ -92,16 +92,19 @@ export const coursesData = {
       { id: 150, name: 'Communication Model and Protocols', code: 'TCS531', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
       { id: 151, name: 'CBNST', code: 'TMA502', credits: 3, materials: 20, rating: 4.5, type: 'Theory' },
       { id: 152, name: 'Career Skills', code: 'XCS501', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-      
-      // LAB SUBJECTS LAST (Semester 5 - Actual)
-      { id: 153, name: 'CBNST Lab', code: 'PMA502', credits: 2, materials: 16, rating: 4.5, type: 'Lab' },
-      { id: 154, name: 'DBMS Lab', code: 'PCS503', credits: 2, materials: 18, rating: 4.4, type: 'Lab' },
-      { id: 155, name: 'Operating Systems Lab', code: 'PCS506', credits: 2, materials: 20, rating: 4.6, type: 'Lab' }
+      { id: 153, name: 'Cloud Based Application Development', code: 'PMA502', credits: 2, materials: 16, rating: 4.5, type: 'Theory' },
+      { id: 154, name: 'Computer System Security', code: 'PCS503', credits: 2, materials: 18, rating: 4.4, type: 'Theory' },
+      { id: 155, name: 'Security Audit And Compilance 1', code: 'PCS506', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 156, name: 'AI And Ml', code: 'PCS507', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 157, name: 'Indian Knowledge System', code: 'PCS508', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 158, name: 'NLP And Computer Vision', code: 'PCS509', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 182, name: 'Deep Learning Fundamentals', code: 'PCS510', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 183, name: 'System Software', code: 'PCS511', credits: 2, materials: 20, rating: 4.6, type: 'Theory' }
+
     ],
     6: [
       // THEORY SUBJECTS FIRST (Semester 6 - Actual)
-      { id: 159, name: 'Compiler Design', code: 'TCS601', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
-      
+      { id: 159, name: 'Compiler Design', code: 'TCS601', credits: 4, materials: 22, rating: 4.6, type: 'Theory' }, 
       { id: 161, name: 'Software Engineering', code: 'TCS611', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
       { id: 162, name: 'Network & System Security', code: 'TCS619', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 163, name: 'Full Stack Web Development', code: 'TCS693', credits: 4, materials: 30, rating: 4.9, type: 'Theory' },
@@ -136,7 +139,7 @@ export const coursesData = {
             { id: 178, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
             { id: 179, name: 'Mobile Computing', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
             { id: 180, name: 'Comprehensive Viva-Voce', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' },
-              { id: 181, name: 'Project Phase-II', code: 'PCS457', credits: 8, materials: 40, rating: 4.9, type: 'Project' }
+            { id: 181, name: 'Project Phase-II', code: 'PCS457', credits: 8, materials: 40, rating: 4.9, type: 'Project' }
           ]
         }
       }
