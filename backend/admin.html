@@ -1136,54 +1136,69 @@
         
         // ==================== VIEW NOTE FUNCTION ====================
         async function viewNote(noteId) {
-            try {
-                const response = await fetch(`${API_URL}/notes/${noteId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    const note = data.note;
-                    const modalBody = document.getElementById('viewModalBody');
-                    const cleanDesc = cleanDescription(note.description);
-                    
-                    let content = `
-                        <div style="padding: 20px;">
-                            <h3>${escapeHtml(note.title)}</h3>
-                            <p><strong>Type:</strong> ${note.note_type} | <strong>Status:</strong> ${note.status}</p>
-                            <p><strong>Course:</strong> ${escapeHtml(note.course_name)} | <strong>Subject:</strong> ${escapeHtml(note.subject_name)}</p>
-                            <p><strong>Uploaded by:</strong> ${escapeHtml(note.user_name)} on ${new Date(note.uploaded_at).toLocaleString()}</p>
-                            <hr>
-                            <p><strong>Description:</strong></p>
-                            <div class="clean-description">${escapeHtml(cleanDesc)}</div>
-                            <hr>
-                    `;
-                    
-                    if (note.is_youtube && note.youtube_url) {
-                        const videoId = note.youtube_id;
-                        content += `
-                            <div style="text-align: center; margin-top: 20px;">
-                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-                                <p><a href="${note.youtube_url}" target="_blank">Open in YouTube →</a></p>
-                            </div>
-                        `;
-                    } else if (note.cloudinary_url) {
-                        content += `
-                            <div style="margin-top: 20px;">
-                                <iframe src="${note.cloudinary_url}" class="pdf-preview" style="width: 100%; height: 500px; border: none;"></iframe>
-                                <p style="margin-top: 10px;"><a href="${note.cloudinary_url}" download class="btn btn-primary">Download File</a></p>
-                            </div>
-                        `;
-                    }
-                    
-                    content += `</div>`;
-                    modalBody.innerHTML = content;
-                    document.getElementById('viewModal').classList.add('active');
+    try {
+        const response = await fetch(`${API_URL}/notes/${noteId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            const note = data.note;
+            const modalBody = document.getElementById('viewModalBody');
+            const cleanDesc = cleanDescription(note.description);
+            
+            let content = `
+                <div style="padding: 20px;">
+                    <h3>${escapeHtml(note.title)}</h3>
+                    <p><strong>Type:</strong> ${note.note_type} | <strong>Status:</strong> ${note.status}</p>
+                    <p><strong>Course:</strong> ${escapeHtml(note.course_name)} | <strong>Subject:</strong> ${escapeHtml(note.subject_name)}</p>
+                    <p><strong>Uploaded by:</strong> ${escapeHtml(note.user_name)} on ${new Date(note.uploaded_at).toLocaleString()}</p>
+                    <hr>
+                    <p><strong>Description:</strong></p>
+                    <div class="clean-description">${escapeHtml(cleanDesc)}</div>
+                    <hr>
+            `;
+            
+            // YouTube Video
+            if (note.is_youtube && note.youtube_url) {
+                const videoId = note.youtube_id;
+                content += `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+                        <p><a href="${note.youtube_url}" target="_blank" class="btn btn-primary">Open in YouTube →</a></p>
+                    </div>
+                `;
+            } 
+            // ✅ PDF FILE - FIXED (Inline display)
+            else if (note.cloudinary_url) {
+                let pdfUrl = note.cloudinary_url;
+                // Add flag to display inline instead of download
+                if (pdfUrl && pdfUrl.includes('cloudinary')) {
+                    pdfUrl = pdfUrl + '?fl_attachment=0';
                 }
-            } catch (error) {
-                alert('Error loading note: ' + error.message);
+                content += `
+                    <div style="margin-top: 20px;">
+                        <div style="text-align: center; margin-bottom: 10px;">
+                            <a href="${note.cloudinary_url}" download class="btn btn-success">
+                                <i class="fas fa-download"></i> Download PDF
+                            </a>
+                            <a href="${note.cloudinary_url}" target="_blank" class="btn btn-info">
+                                <i class="fas fa-external-link-alt"></i> Open in New Tab
+                            </a>
+                        </div>
+                        <iframe src="${pdfUrl}" class="pdf-preview" style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px;"></iframe>
+                    </div>
+                `;
             }
+            
+            content += `</div>`;
+            modalBody.innerHTML = content;
+            document.getElementById('viewModal').classList.add('active');
         }
+    } catch (error) {
+        alert('Error loading note: ' + error.message);
+    }
+}
         
         // ==================== NOTE ACTIONS ====================
         async function approveNote(noteId) {
