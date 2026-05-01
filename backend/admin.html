@@ -1279,15 +1279,26 @@
         if (data.success) {
             const note = data.note;
             const modalBody = document.getElementById('viewModalBody');
+            const cleanDesc = cleanDescription(note.description);
             
-            let content = '';
+            let content = `
+                <div style="padding: 20px;">
+                    <h3>${escapeHtml(note.title)}</h3>
+                    <p><strong>Type:</strong> ${note.note_type} | <strong>Status:</strong> ${note.status}</p>
+                    <p><strong>Course:</strong> ${escapeHtml(note.course_name)} | <strong>Subject:</strong> ${escapeHtml(note.subject_name)}</p>
+                    <p><strong>Uploaded by:</strong> ${escapeHtml(note.user_name)} on ${new Date(note.uploaded_at).toLocaleString()}</p>
+                    <hr>
+                    <p><strong>Description:</strong></p>
+                    <div class="clean-description">${escapeHtml(cleanDesc)}</div>
+                    <hr>
+            `;
             
             // 🎥 YouTube Video
             if (note.is_youtube && note.youtube_url) {
                 const videoId = note.youtube_id;
-                content = `
-                    <div style="text-align: center; padding: 20px;">
-                        <iframe width="100%" height="500" 
+                content += `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <iframe width="100%" height="400" 
                             src="https://www.youtube.com/embed/${videoId}" 
                             frameborder="0" allowfullscreen>
                         </iframe>
@@ -1295,30 +1306,25 @@
                 `;
             } 
             
+            // 📄 PDF VIEW (ONLY VIEWER - NO BUTTONS)
             else if (note.cloudinary_url) {
                 let pdfUrl = note.cloudinary_url;
-                
-                // Cloudinary inline display
-                if (pdfUrl.includes('cloudinary')) {
-                    pdfUrl = pdfUrl + '?fl_attachment=0';
-                }
-                
-                content = `
-                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 1001;">
-                        <button onclick="closeViewModal()" style="position: fixed; top: 10px; right: 10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; z-index: 1002;">
-                            ✕
-                        </button>
-                        <embed 
-                            src="${pdfUrl}"
-                            type="application/pdf"
-                            width="100%" 
-                            height="100%"
-                            style="border: none;"
-                        />
+
+                let pdfViewer = `https://docs.google.com/gview?url=${pdfUrl}&embedded=true`;
+
+                content += `
+                    <div style="margin-top: 20px;">
+                        <iframe 
+                            src="${pdfViewer}" 
+                            style="width:100%; height:70vh; border:1px solid #ddd; border-radius:8px; opacity:0; transition:0.3s;"
+                            onload="this.style.opacity=1"
+                        ></iframe>
                     </div>
                 `;
             }
-            
+
+            content += `</div>`;
+
             modalBody.innerHTML = content;
             document.getElementById('viewModal').classList.add('active');
         }
