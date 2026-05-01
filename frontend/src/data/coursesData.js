@@ -209,23 +209,24 @@ export const coursesData = {
         name: "Final Year",
         semesters: {
           5: [
-            { id: 229, name: 'Mobile Application Development', code: 'TBC501', credits: 4, materials: 24, rating: 4.7, type: 'Theory' },
+            { id: 242, name: 'Data Wharehousing and Data Mining', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Theory' },
             { id: 230, name: 'Cloud Computing', code: 'TBC502', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
             { id: 231, name: 'Java Programming', code: 'TBC503', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
             { id: 232, name: 'Career Skills', code: 'TBC504', credits: 1, materials: 25, rating: 4.9, type: 'Theory' },
             { id: 233, name: 'Microcontroller', code: 'TBC505', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 234, name: 'Introduction To AI', code: 'TBC506', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 235, name: 'Object Oriented Analysis And Design', code: 'TBCA507', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
-            { id: 236, name: 'Criptography', code: 'TBC508', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+            { id: 240, name: 'Network Security And Cyber Laws', code: 'TBC602', credits: 4, materials: 18, rating: 4.7, type: 'Theory' },
             { id: 237, name: 'Programming With Dotnet C Sharp', code: 'PBCA501', credits: 2, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 238, name: 'Introduction To AI Laboratory', code: 'PBC502', credits: 2, materials: 15, rating: 4.4, type: 'Lab' }
 
           ],
           6: [
             { id: 239, name: 'Computer Graphics', code: 'TBCA601', credits: 8, materials: 30, rating: 4.9, type: 'Theory' },
-            { id: 240, name: 'Network Security And Cyber Laws', code: 'TBC602', credits: 4, materials: 18, rating: 4.7, type: 'Theory' },
+            { id: 229, name: 'Mobile Application Development', code: 'TBC501', credits: 4, materials: 24, rating: 4.7, type: 'Theory' },
             { id: 241, name: 'Fundamentals Of Machine Learning', code: 'TBC603', credits: 2, materials: 10, rating: 4.3, type: 'Theory' },
-            { id: 242, name: 'Data Wharehousing and Data Mining', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Theory' }
+            { id: 236, name: 'Criptography', code: 'TBC508', credits: 3, materials: 15, rating: 4.4, type: 'Theory' }
+            
           
           ]
         }
