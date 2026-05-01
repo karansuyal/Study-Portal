@@ -223,7 +223,7 @@ export const coursesData = {
           ],
           6: [
             { id: 229, name: 'Mobile Application Development', code: 'TBC501', credits: 4, materials: 24, rating: 4.7, type: 'Theory' },
-            { id: 239, name: 'Computer Graphics', code: 'TBCA601', credits: 8, materials: 30, rating: 4.9, type: 'Theory' },
+            { id: 239, name: 'Computer Graphics', code: 'TBF601', credits: 8, materials: 30, rating: 4.9, type: 'Theory' },
             { id: 241, name: 'Fundamentals Of Machine Learning', code: 'TBC603', credits: 2, materials: 10, rating: 4.3, type: 'Theory' },
             { id: 236, name: 'Criptography', code: 'TBC508', credits: 3, materials: 15, rating: 4.4, type: 'Theory' }
             
