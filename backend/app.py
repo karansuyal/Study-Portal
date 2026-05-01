@@ -1428,30 +1428,27 @@ def get_user_rating(note_id):
 
 
 # ==================== MATERIALS ROUTE (PUBLIC) ====================
-
 @app.route('/api/materials', methods=['GET'])
 def get_all_materials():
     try:
         print("\n📦 FETCHING ALL MATERIALS")
-
-        notes = db.session.execute(
-            db.select(Note).filter_by(status='approved').order_by(Note.uploaded_at.desc())
-        ).scalars().all()
+        
+        notes = db.session.query(Note).options(
+            db.joinedload(Note.course_ref),
+            db.joinedload(Note.subject_ref),
+            db.joinedload(Note.uploader)
+        ).filter(Note.status == 'approved').order_by(Note.uploaded_at.desc()).all()
 
         materials_list = []
         for note in notes:
-            course = db.session.get(Course, note.course_id)
-            subject = db.session.get(Subject, note.subject_id) if note.subject_id else None
-            user = db.session.get(User, note.user_id)
-
             materials_list.append({
                 'id': note.id,
                 'title': note.title,
                 'description': note.description,
                 'type': note.note_type,
-                'course': course.name if course else 'Unknown',
+                'course': note.course_ref.name if note.course_ref else 'Unknown',
                 'course_id': note.course_id,
-                'subject': subject.name if subject else 'General',
+                'subject': note.subject_ref.name if note.subject_ref else 'General',
                 'subject_id': note.subject_id,
                 'file_name': note.file_name,
                 'file_size': format_bytes(note.file_size),
@@ -1459,22 +1456,64 @@ def get_all_materials():
                 'downloads': note.downloads,
                 'views': note.views,
                 'uploaded_at': note.uploaded_at.isoformat() if note.uploaded_at else None,
-                'user_name': user.name if user else 'Unknown',
+                'user_name': note.uploader.name if note.uploader else 'Unknown',
                 'cloudinary_url': note.cloudinary_url,
                 'download_url': f'/api/notes/{note.id}/download'
             })
 
         print(f"✅ Found {len(materials_list)} materials")
-
-        return jsonify({
-            'success': True,
-            'materials': materials_list,
-            'total': len(materials_list)
-        })
+        return jsonify({'success': True, 'materials': materials_list, 'total': len(materials_list)})
 
     except Exception as e:
         print(f"❌ Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+# @app.route('/api/materials', methods=['GET'])
+# def get_all_materials():
+#     try:
+#         print("\n📦 FETCHING ALL MATERIALS")
+
+#         notes = db.session.execute(
+#             db.select(Note).filter_by(status='approved').order_by(Note.uploaded_at.desc())
+#         ).scalars().all()
+
+#         materials_list = []
+#         for note in notes:
+#             course = db.session.get(Course, note.course_id)
+#             subject = db.session.get(Subject, note.subject_id) if note.subject_id else None
+#             user = db.session.get(User, note.user_id)
+
+#             materials_list.append({
+#                 'id': note.id,
+#                 'title': note.title,
+#                 'description': note.description,
+#                 'type': note.note_type,
+#                 'course': course.name if course else 'Unknown',
+#                 'course_id': note.course_id,
+#                 'subject': subject.name if subject else 'General',
+#                 'subject_id': note.subject_id,
+#                 'file_name': note.file_name,
+#                 'file_size': format_bytes(note.file_size),
+#                 'file_type': note.file_type,
+#                 'downloads': note.downloads,
+#                 'views': note.views,
+#                 'uploaded_at': note.uploaded_at.isoformat() if note.uploaded_at else None,
+#                 'user_name': user.name if user else 'Unknown',
+#                 'cloudinary_url': note.cloudinary_url,
+#                 'download_url': f'/api/notes/{note.id}/download'
+#             })
+
+#         print(f"✅ Found {len(materials_list)} materials")
+
+#         return jsonify({
+#             'success': True,
+#             'materials': materials_list,
+#             'total': len(materials_list)
+#         })
+
+#     except Exception as e:
+#         print(f"❌ Error: {str(e)}")
+#         return jsonify({'success': False, 'error': str(e)}), 500
     
     
 # ==================== UPLOAD ROUTE (WITH YOUTUBE SUPPORT) ====================
