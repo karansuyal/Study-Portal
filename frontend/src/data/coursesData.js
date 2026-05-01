@@ -13,12 +13,13 @@ export const coursesData = {
             { id: 102, name: 'Introduction to Python Programming', code: 'TCS102', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
             { id: 103, name: 'Basic Electrical Engineering', code: 'TEE101', credits: 3, materials: 20, rating: 4.3, type: 'Theory' },
             { id: 104, name: 'Professional Communication', code: 'THU101', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 105, name: 'Mathematics for AI-I', code: 'TMA102', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
+            { id: 105, name: ' Engineering Mathematics 1', code: 'TMA102', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
             { id: 106, name: 'Engineering Physics', code: 'TPH101', credits: 4, materials: 15, rating: 4.6, type: 'Theory' },
+            { id: 107, name: 'Mathematics for AI-1', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Theory' },
             { id: 101, name: 'Design Thinking', code: 'HSMC101', credits: 3, materials: 15, rating: 4.5, type: 'Theory' },
             
             // LAB SUBJECTS LAST
-            { id: 107, name: 'Mathematics for Core', code: 'PCS152', credits: 2, materials: 16, rating: 4.8, type: 'Theory' },
+           
             { id: 108, name: 'Basic Electrical Engineering Lab', code: 'PEE151', credits: 1, materials: 12, rating: 4.5, type: 'Lab' },
             { id: 109, name: 'Python Programming Lab', code: 'PME151', credits: 2, materials: 14, rating: 4.3, type: 'Lab' },
             { id: 110, name: 'Physics Lab', code: 'PPH151', credits: 1, materials: 10, rating: 4.4, type: 'Lab' }
@@ -26,7 +27,7 @@ export const coursesData = {
          
       2: [
   // THEORY SUBJECTS FIRST (Semester 1 - Actual)
-  { id: 111, name: 'Professional Communication', code: 'THU201', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+  { id: 111, name: 'Advanced Professional Communication', code: 'THU201', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
   { id: 112, name: 'Engineering Chemistry', code: 'TCH201', credits: 4, materials: 18, rating: 4.3, type: 'Theory' },
   { id: 113, name: 'Engineering Mathematics-II', code: 'TMA201', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
   { id: 114, name: 'Basic Electronics Engineering', code: 'TEC201', credits: 3, materials: 20, rating: 4.2, type: 'Theory' },
@@ -35,7 +36,7 @@ export const coursesData = {
   
   // LAB SUBJECTS LAST (Semester 1 - Actual)
   { id: 117, name: 'Programming in C', code: 'PEC251', credits: 1, materials: 14, rating: 4.3, type: 'Theory' },
-  { id: 118, name: 'Mathematics for Core  2', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
+  { id: 118, name: 'Mathematics for AI-2', code: 'PCH251', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
   { id: 119, name: 'Chemistry Lab', code: 'PME253', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
   { id: 120, name: 'Basic Electronics Engineering Lab', code: 'PCS251', credits: 2, materials: 20, rating: 4.7, type: 'Theory' },
   
@@ -50,15 +51,18 @@ export const coursesData = {
       { id: 121, name: 'Discrete Structures and Combinatorics', code: 'TMA316', credits: 4, materials: 16, rating: 4.4, type: 'Theory' },
       { id: 122, name: 'Data Structures with C', code: 'TCS302', credits: 4, materials: 28, rating: 4.7, type: 'Theory' },
       { id: 123, name: 'Logic Design & Computer Organization', code: 'TCS308', credits: 3, materials: 18, rating: 4.3, type: 'Theory' },
-      { id: 124, name: 'Object Oriented Programming with C++', code: 'TCS307', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
+      { id: 124, name: 'OOPS with C++', code: 'TCS307', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
       { id: 125, name: 'Introduction to Cryptography', code: 'TCS392', credits: 3, materials: 14, rating: 4.1, type: 'Theory' },
       { id: 126, name: 'Career Skills', code: 'XCS301', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
       
       // LAB SUBJECTS LAST (Semester 3 - Actual)
-      { id: 127, name: 'Data Structures Lab', code: 'PCS302', credits: 2, materials: 20, rating: 4.6, type: 'Lab' },
-      { id: 128, name: 'OOPS with C++ Lab', code: 'PCS307', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
-      { id: 129, name: 'Logic Design & Computer Organization Lab', code: 'PCS308', credits: 1, materials: 12, rating: 4.3, type: 'Lab' },
-      { id: 130, name: 'Career Skills Lab', code: 'XCS310', credits: 1, materials: 10, rating: 4.0, type: 'Lab' }
+      { id: 127, name: 'Python Programming', code: 'PCS302', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 128, name: 'Fundamentals Of Information Security And Block Chain', code: 'PCS307', credits: 2, materials: 18, rating: 4.5, type: 'Theory' },
+      { id: 129, name: 'Fundamentals Of Iot', code: 'PCS308', credits: 1, materials: 12, rating: 4.3, type: 'Theory' },
+      { id: 130, name: 'Fundamentals Of Ai & Ml', code: 'XCS310', credits: 1, materials: 10, rating: 4.0, type: 'Theory' },
+      { id: 131, name: 'Introduction To Statistical Data Science', code: 'XCS311', credits: 1, materials: 10, rating: 4.0, type: 'Theory' },
+      { id: 132, name: 'Mathematical Foundation For Artificial Intelligence', code: 'XCS312', credits: 1, materials: 10, rating: 4.0, type: 'Theory' }
+
     ],
     4: [
       // THEORY SUBJECTS FIRST (Semester 4 - Actual)
@@ -68,12 +72,10 @@ export const coursesData = {
       { id: 137, name: 'Java Programming', code: 'TCS408', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 138, name: 'Design and Analysis of Algorithms', code: 'TCS409', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 139, name: 'Career Skills', code: 'XCS401', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-      
-      // LAB SUBJECTS LAST (Semester 4 - Actual)
-      { id: 140, name: 'Microprocessors Lab', code: 'PCS403', credits: 2, materials: 16, rating: 4.5, type: 'Lab' },
-      { id: 141, name: 'Java Programming Lab', code: 'PCS408', credits: 2, materials: 18, rating: 4.4, type: 'Lab' },
-      { id: 142, name: 'DAA Lab', code: 'PCS409', credits: 2, materials: 20, rating: 4.6, type: 'Lab' },
-      { id: 143, name: 'Career Skills Lab', code: 'XCS410', credits: 1, materials: 10, rating: 4.0, type: 'Lab' }
+      { id: 140, name: 'Deep Learning', code: 'PCS403', credits: 2, materials: 16, rating: 4.5, type: 'Theory' },
+      { id: 141, name: 'Fundamental Of Cyber Security', code: 'PCS408', credits: 2, materials: 18, rating: 4.4, type: 'Theory' },
+      { id: 142, name: 'R Programming', code: 'PCS409', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 143, name: 'Virtualization And Cloud Computing', code: 'XCS410', credits: 1, materials: 10, rating: 4.0, type: 'Theory' }
       
     ]
   }
@@ -85,30 +87,35 @@ export const coursesData = {
       // THEORY SUBJECTS FIRST (Semester 5 - Actual)
       { id: 147, name: 'Operating Systems', code: 'TCS502', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
       { id: 148, name: 'Database Management Systems', code: 'TCS503', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
+      { id: 160, name: 'Computer Networks-I', code: 'TCS604', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 149, name: 'Machine Learning', code: 'TCS509', credits: 4, materials: 28, rating: 4.9, type: 'Theory' },
       { id: 150, name: 'Communication Model and Protocols', code: 'TCS531', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
-      { id: 151, name: 'Computer-Based Numerical & Statistical Techniques', code: 'TMA502', credits: 3, materials: 20, rating: 4.5, type: 'Theory' },
+      { id: 151, name: 'CBNST', code: 'TMA502', credits: 3, materials: 20, rating: 4.5, type: 'Theory' },
       { id: 152, name: 'Career Skills', code: 'XCS501', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-      
-      // LAB SUBJECTS LAST (Semester 5 - Actual)
-      { id: 153, name: 'CBNST Lab', code: 'PMA502', credits: 2, materials: 16, rating: 4.5, type: 'Lab' },
-      { id: 154, name: 'DBMS Lab', code: 'PCS503', credits: 2, materials: 18, rating: 4.4, type: 'Lab' },
-      { id: 155, name: 'Operating Systems Lab', code: 'PCS506', credits: 2, materials: 20, rating: 4.6, type: 'Lab' }
+      { id: 153, name: 'Cloud Based Application Development', code: 'PMA502', credits: 2, materials: 16, rating: 4.5, type: 'Theory' },
+      { id: 154, name: 'Computer System Security', code: 'PCS503', credits: 2, materials: 18, rating: 4.4, type: 'Theory' },
+      { id: 155, name: 'Security Audit And Compilance 1', code: 'PCS506', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 156, name: 'AI And Ml', code: 'PCS507', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 157, name: 'Indian Knowledge System', code: 'PCS508', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 158, name: 'NLP And Computer Vision', code: 'PCS509', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 182, name: 'Deep Learning Fundamentals', code: 'PCS510', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 183, name: 'System Software', code: 'PCS511', credits: 2, materials: 20, rating: 4.6, type: 'Theory' }
+
     ],
     6: [
       // THEORY SUBJECTS FIRST (Semester 6 - Actual)
-      { id: 159, name: 'Compiler Design', code: 'TCS601', credits: 4, materials: 22, rating: 4.6, type: 'Theory' },
-      { id: 160, name: 'Computer Networks-I', code: 'TCS604', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
+      { id: 159, name: 'Compiler Design', code: 'TCS601', credits: 4, materials: 22, rating: 4.6, type: 'Theory' }, 
+      { id: 184, name: 'Computer Networks-2', code: 'TCS604', credits: 4, materials: 24, rating: 4.8, type: 'Theory' },
       { id: 161, name: 'Software Engineering', code: 'TCS611', credits: 3, materials: 18, rating: 4.4, type: 'Theory' },
       { id: 162, name: 'Network & System Security', code: 'TCS619', credits: 4, materials: 25, rating: 4.7, type: 'Theory' },
       { id: 163, name: 'Full Stack Web Development', code: 'TCS693', credits: 4, materials: 30, rating: 4.9, type: 'Theory' },
       { id: 164, name: 'Career Skills', code: 'XCS601', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
-      
-      // LAB SUBJECTS LAST (Semester 6 - Actual)
-      { id: 165, name: 'Compiler Design Lab', code: 'PCS601', credits: 2, materials: 20, rating: 4.6, type: 'Lab' },
-      { id: 166, name: 'Computer Networks Lab', code: 'PCS604', credits: 2, materials: 18, rating: 4.5, type: 'Lab' },
-      { id: 167, name: 'Web Development Lab', code: 'PCS693', credits: 2, materials: 25, rating: 4.8, type: 'Lab' },
-      { id: 168, name: 'Employability Skill Enhancement Lab', code: 'PESE600', credits: 1, materials: 15, rating: 4.3, type: 'Lab' }
+      { id: 165, name: 'Advanced Machine Learning', code: 'PCS601', credits: 2, materials: 20, rating: 4.6, type: 'Theory' },
+      { id: 166, name: 'Security Audit And Compilance 2', code: 'PCS604', credits: 2, materials: 18, rating: 4.5, type: 'Theory' },
+      { id: 167, name: 'LLM And Generative AI', code: 'PCS693', credits: 2, materials: 25, rating: 4.8, type: 'Theory' },
+      { id: 168, name: 'Introduction to Virtual Reality', code: 'PESE600', credits: 1, materials: 15, rating: 4.3, type: 'Theory' },
+      { id: 185, name: 'Image processing And Computer Vision', code: 'PESE601', credits: 1, materials: 15, rating: 4.3, type: 'Theory' },
+      { id: 186, name: 'Bigdata Storage And Processing', code: 'PESE602', credits: 1, materials: 15, rating: 4.3, type: 'Theory' }
     ]
   }
 },
@@ -117,23 +124,22 @@ export const coursesData = {
         semesters: {
           7: [
             // THEORY SUBJECTS FIRST
-            { id: 169, name: 'Big Data Analytics', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
-            { id: 170, name: 'Cyber Security', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
-            { id: 171, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
-            { id: 172, name: 'Project Management', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 173, name: 'Elective-II', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Elective' },
-            
-            // LAB SUBJECTS LAST
-            { id: 174, name: 'Mobile App Development Lab', code: 'PCS451', credits: 2, materials: 22, rating: 4.7, type: 'Lab' },
-            { id: 175, name: 'Cyber Security Lab', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Lab' },
-            { id: 176, name: 'Project Work-I', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Project' }
+            { id: 169, name: 'Advanced Computer Architecture', code: 'TCS401', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
+            { id: 170, name: 'Artificial Intelligence', code: 'TCS402', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
+            { id: 172, name: 'Cryptography And Network Security', code: 'TME301', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 173, name: 'Data Warehousing And Data Mining', code: 'TEL401', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+            { id: 174, name: 'Computer Graphics', code: 'TEL402', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
+            { id: 175, name: 'Human Computer Interaction', code: 'PCS452', credits: 1, materials: 16, rating: 4.5, type: 'Theory' },
+            { id: 176, name: 'Computer Forensics', code: 'PCS453', credits: 4, materials: 30, rating: 4.9, type: 'Theory' }
           ],
           8: [
             // FINAL SEMESTER - Major Project Focus
-            { id: 177, name: 'Major Project', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Project' },
+            { id: 177, name: 'Disaster Management', code: 'PCS454', credits: 12, materials: 50, rating: 4.9, type: 'Theory' },
+            { id: 171, name: 'Mobile Application Development', code: 'TCS403', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
             { id: 178, name: 'Seminar', code: 'PCS455', credits: 2, materials: 15, rating: 4.3, type: 'Seminar' },
-            { id: 179, name: 'Industrial Training', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Training' },
-            { id: 180, name: 'Elective-III', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' }
+            { id: 179, name: 'Mobile Computing', code: 'PCS456', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
+            { id: 180, name: 'Comprehensive Viva-Voce', code: 'TEL402', credits: 3, materials: 18, rating: 4.5, type: 'Elective' },
+            { id: 181, name: 'Project Phase-II', code: 'PCS457', credits: 8, materials: 40, rating: 4.9, type: 'Project' }
           ]
         }
       }
@@ -150,21 +156,23 @@ export const coursesData = {
         name: "First Year",
         semesters: {
           1: [
+            { id: 216, name: 'Python Programming', code: 'TBC304', credits: 3, materials: 16, rating: 4.3, type: 'Theory' },
             { id: 201, name: 'Computational Thinking & Fundamentals of IT', code: 'TBC101', credits: 3, materials: 12, rating: 4.3, type: 'Theory' },
             { id: 202, name: 'C Programming', code: 'TBC102', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
             { id: 203, name: 'Mathematical Foundations of Computer Science', code: 'TBC103', credits: 3, materials: 15, rating: 4.2, type: 'Theory' },
-            { id: 204, name: 'Professional Communication', code: 'THU101', credits: 3, materials: 10, rating: 4.1, type: 'Theory' },
-            { id: 205, name: 'C Programming  Lab', code: 'PBC101', credits: 2, materials: 12, rating: 4.0, type: 'Lab' },
+            { id: 204, name: 'Professional Communication 1', code: 'THU101', credits: 3, materials: 10, rating: 4.1, type: 'Theory' },
+            { id: 205, name: 'Mathematical Foundations For AI', code: 'PBC101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' },
             { id: 206, name: 'Digital Productivity Tools for Modern Workplaces(Lab)', code: 'PBC102', credits: 2, materials: 12, rating: 4.0, type: 'Lab' }
 
           ],
           2: [
-            { id: 207, name: 'Introduction to Data Structures ', code: 'TBC106', credits: 4, materials: 14, rating: 4.4, type: 'Theory' },
-            { id: 208, name: 'Introduction to Object-Oriented Programming(C++) ', code: 'TBC202', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
-            { id: 209, name: 'Introduction to Operating Systems', code: 'TBC203', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
+            { id: 244, name: 'Introduction to Data Science ', code: 'TBD303', credits: 4, materials: 14, rating: 4.4, type: 'Theory' },
+            { id: 208, name: 'OOPS Using (C++) ', code: 'TBC202', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
+            { id: 209, name: 'Operating Systems', code: 'TBC203', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
             { id: 210, name: 'Discrete Mathematics', code: 'TBC204', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
-            { id: 211, name: 'Data Structures Lab', code: 'PBC201', credits: 2, materials: 14, rating: 4.2, type: 'Lab' },
-            { id: 212, name: 'Object-Oriented Programming Lab(C++)', code: 'PBC202', credits: 2, materials: 14, rating: 4.2, type: 'Lab' }
+            { id: 243, name: 'Foundations of AI', code: 'THN101', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 211, name: 'Probability and Statistics', code: 'PBC201', credits: 2, materials: 14, rating: 4.2, type: 'Theory' },
+            { id: 212, name: 'Programming For Problem Solving', code: 'PBC202', credits: 2, materials: 14, rating: 4.2, type: 'Theory' }
           ]
         }
       },
@@ -172,26 +180,27 @@ export const coursesData = {
         name: "Second Year",
         semesters: {
           3: [
+            { id: 207, name: 'Data Structures ', code: 'TBC106', credits: 4, materials: 14, rating: 4.4, type: 'Theory' },
             { id: 213, name: 'Web Application Development', code: 'TBC301', credits: 3, materials: 24, rating: 4.7, type: 'Theory' },
-            { id: 214, name: 'Introduction to Database Management Systems', code: 'TBC302', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
+            { id: 214, name: 'Database Management Systems', code: 'TBC302', credits: 3, materials: 18, rating: 4.5, type: 'Theory' },
             { id: 215, name: 'Digital Logic Design', code: 'TBC303', credits: 3, materials: 20, rating: 4.6, type: 'Theory' },
-            { id: 216, name: 'Python Programming', code: 'TBC304', credits: 3, materials: 16, rating: 4.3, type: 'Theory' },
+            { id: 245, name: 'Soft Computing', code: 'TBD311', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
             { id: 217, name: 'R Programming ', code: 'TBC305', credits: 3, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 218, name: 'Career Skills-I', code: 'TBC306', credits: 1, materials: 12, rating: 4.2, type: 'Theory' },
-            { id: 219, name: 'Database Management Systems Laboratory ', code: 'PBC301', credits: 2, materials: 12, rating: 4.2, type: 'Lab' },
+            { id: 219, name: 'Probability and Statistics', code: 'PBC301', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 220, name: 'Web Application Development Laboratory ', code: 'PBC302', credits: 2, materials: 12, rating: 4.2, type: 'Lab' }
           ],
           
           
           4: [
-            { id: 221, name: 'Introduction to Design and Analysis of Algorithms', code: 'TBC401', credits: 3, materials: 26, rating: 4.8, type: 'Theory' },
-            { id: 222, name: 'Introduction to Software Engineering ', code: 'TBC402', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
+            { id: 221, name: 'Design and Analysis of Algorithms', code: 'TBC401', credits: 3, materials: 26, rating: 4.8, type: 'Theory' },
+            { id: 222, name: 'Software Engineering ', code: 'TBC402', credits: 3, materials: 22, rating: 4.7, type: 'Theory' },
             { id: 223, name: 'Computer Organization', code: 'TBC403', credits: 3, materials: 15, rating: 4.3, type: 'Theory' },
             { id: 224, name: 'Data Communication and Computer Networks', code: 'TBC404', credits: 3, materials: 14, rating: 4.4, type: 'Theory' },
             { id: 225, name: 'Big Data Analytics', code: 'TBC405', credits: 3, materials: 20, rating: 4.8, type: 'Theory' },
             { id: 226, name: 'Career Skills- 2', code: 'TBC406', credits: 1, materials: 20, rating: 4.8, type: 'Theory' },
-            { id: 227, name: 'Design and Analysis of Algorithms Laboratory', code: 'PBC401', credits: 2, materials: 20, rating: 4.8, type: 'Lab' },
-            { id: 228, name: 'Data Communications and Computer Networks Laboratory', code: 'PBC402', credits: 2, materials: 20, rating: 4.8, type: 'Lab' }
+            { id: 227, name: 'Data Analytics Using Python', code: 'PBC401', credits: 2, materials: 20, rating: 4.8, type: 'Theory' },
+            { id: 228, name: 'Microprocessor', code: 'PBC402', credits: 2, materials: 20, rating: 4.8, type: 'Theory' }
 
           ]
         }
@@ -208,7 +217,7 @@ export const coursesData = {
             { id: 234, name: 'Introduction To AI', code: 'TBC506', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 235, name: 'Object Oriented Analysis And Design', code: 'TBCA507', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 236, name: 'Criptography', code: 'TBC508', credits: 3, materials: 15, rating: 4.4, type: 'Theory' },
-            { id: 237, name: 'Object Oriented Analysis And Design Laboratory', code: 'PBCA501', credits: 2, materials: 15, rating: 4.4, type: 'Lab' },
+            { id: 237, name: 'Programming With Dotnet C Sharp', code: 'PBCA501', credits: 2, materials: 15, rating: 4.4, type: 'Theory' },
             { id: 238, name: 'Introduction To AI Laboratory', code: 'PBC502', credits: 2, materials: 15, rating: 4.4, type: 'Lab' }
 
           ],
@@ -216,7 +225,8 @@ export const coursesData = {
             { id: 239, name: 'Computer Graphics', code: 'TBCA601', credits: 8, materials: 30, rating: 4.9, type: 'Theory' },
             { id: 240, name: 'Network Security And Cyber Laws', code: 'TBC602', credits: 4, materials: 18, rating: 4.7, type: 'Theory' },
             { id: 241, name: 'Fundamentals Of Machine Learning', code: 'TBC603', credits: 2, materials: 10, rating: 4.3, type: 'Theory' },
-            { id: 242, name: 'Major Project', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Project' }
+            { id: 242, name: 'Data Wharehousing and Data Mining', code: 'TBC604', credits: 3, materials: 14, rating: 4.5, type: 'Theory' }
+          
           ]
         }
       }
@@ -239,16 +249,22 @@ export const coursesData = {
             { id: 304, name: 'Computer Application In Management', code: 'BBA104', credits: 3, materials: 20, rating: 4.6, type: 'Lab' },
             { id: 305, name: 'Economics For Life', code: 'BBA105', credits: 3, materials: 14, rating: 4.1, type: 'Theory' },
             { id: 306, name: 'Financial Accounting', code: 'BBA106', credits: 4, materials: 22, rating: 4.7, type: 'Theory' },
-            { id: 307, name: 'Principles Of Management', code: 'BBA107', credits: 4, materials: 18, rating: 4.4, type: 'Theory' }
+            { id: 307, name: 'Principles Of Management', code: 'BBA107', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
+            { id: 358, name: 'Environmental Science', code: 'BBA258', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 359, name: 'Indian Knowledge System', code: 'BBA259', credits: 2, materials: 12, rating: 4.2, type: 'Theory' }
           ],
           2: [
             { id: 308, name: 'Business Communication 2', code: 'BBA108', credits: 3, materials: 16, rating: 4.5, type: 'Theory' },
             { id: 309, name: 'Economics For Life 2', code: 'BBA109', credits: 3, materials: 14, rating: 4.3, type: 'Theory' },
             { id: 310, name: 'Environmental Science', code: 'BBA110', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
             { id: 311, name: 'Financial Management', code: 'BBA111', credits: 4, materials: 25, rating: 4.8, type: 'Theory' },
-            { id: 312, name: 'Human Resource Management', code: 'BBA112', credits: 4, materials: 22, rating: 4.7, type: 'Theory' },
+            { id: 312, name: 'Indian Constitution', code: 'BBA112', credits: 4, materials: 22, rating: 4.7, type: 'Theory' },
             { id: 313, name: 'Organizational Behaviour', code: 'BBA113', credits: 4, materials: 20, rating: 4.6, type: 'Theory' },
-            { id: 314, name: 'Principles Of Marketing', code: 'BBA114', credits: 4, materials: 24, rating: 4.9, type: 'Theory' }
+            { id: 314, name: 'Principles Of Marketing', code: 'BBA114', credits: 4, materials: 24, rating: 4.9, type: 'Theory' },
+            { id: 347, name: 'Business Environment', code: 'BBA115', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 348, name: 'Business Statistics', code: 'BBA116', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 349, name: 'Computer Applications In Business', code: 'BBA117', credits: 2, materials: 12, rating: 4.2, type: 'Theory' },
+            { id: 350, name: 'Marketing Management', code: 'BBA118', credits: 2, materials: 12, rating: 4.2, type: 'Theory' }
           ]
         }
       },
@@ -261,7 +277,12 @@ export const coursesData = {
             { id: 317, name: 'Business Statistics', code: 'BBA203', credits: 4, materials: 18, rating: 4.5, type: 'Theory' },
             { id: 318, name: 'Career Skills', code: 'BBA204', credits: 2, materials: 12, rating: 4.2, type: 'Skill' },
             { id: 319, name: 'Entrepreneurship', code: 'BBA205', credits: 3, materials: 16, rating: 4.4, type: 'Theory' },
-            { id: 320, name: 'Macro Economics', code: 'BBA206', credits: 4, materials: 17, rating: 4.3, type: 'Theory' }
+            { id: 320, name: 'Macro Economics', code: 'BBA206', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 351, name: 'Human Resource Management', code: 'BBA251', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 352, name: 'Consumer Protection Act', code: 'BBA252', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 353, name: 'Legal And Ethical Issues In Business', code: 'BBA253', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 354, name: 'Management Accounting', code: 'BBA254', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 355, name: 'Management Information Systems', code: 'BBA255', credits: 4, materials: 17, rating: 4.3, type: 'Theory' }
           ],
           4: [
             { id: 321, name: 'Business Research', code: 'BBA207', credits: 4, materials: 20, rating: 4.7, type: 'Theory' },
@@ -270,7 +291,9 @@ export const coursesData = {
             { id: 324, name: 'International Business', code: 'BBA210', credits: 4, materials: 18, rating: 4.6, type: 'Theory' },
             { id: 325, name: 'Logistics And Supply Chain Management', code: 'BBA211', credits: 3, materials: 16, rating: 4.5, type: 'Theory' },
             { id: 326, name: 'Production Management', code: 'BBA212', credits: 3, materials: 15, rating: 4.3, type: 'Theory' },
-            { id: 327, name: 'Wellness And Stress Management', code: 'BBA213', credits: 2, materials: 10, rating: 4.2, type: 'Theory' }
+            { id: 327, name: 'Wellness And Stress Management', code: 'BBA213', credits: 2, materials: 10, rating: 4.2, type: 'Theory' },
+            { id: 356, name: 'Entrepreneurship And Startup Ecosystem', code: 'BBA256', credits: 4, materials: 17, rating: 4.3, type: 'Theory' },
+            { id: 357, name: 'Management Accounting', code: 'BBA257', credits: 4, materials: 17, rating: 4.3, type: 'Theory' }
           ]
         }
       },
