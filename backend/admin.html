@@ -1293,7 +1293,6 @@
                     <hr>
             `;
             
-            // 🎥 YouTube Video
             if (note.is_youtube && note.youtube_url) {
                 const videoId = note.youtube_id;
                 content += `
@@ -1311,17 +1310,16 @@
                 `;
             } 
             
-            // 📄 PDF VIEW (🔥 FIXED WITH GOOGLE VIEWER)
             else if (note.cloudinary_url) {
                 let pdfUrl = note.cloudinary_url;
 
-                // 🔥 Google PDF Viewer (BEST UX FIX)
                 let pdfViewer = `https://docs.google.com/gview?url=${pdfUrl}&embedded=true`;
 
                 content += `
                     <div style="margin-top: 20px;">
                         
                         <div style="text-align: center; margin-bottom: 10px;">
+                            
                             <a href="${pdfUrl}" download class="btn btn-success">
                                 <i class="fas fa-download"></i> Download PDF
                             </a>
@@ -1329,11 +1327,16 @@
                             <a href="${pdfUrl}" target="_blank" class="btn btn-info">
                                 <i class="fas fa-external-link-alt"></i> Open in New Tab
                             </a>
+
+                            <a href="${pdfUrl}" target="_blank" class="btn btn-dark">
+                                🔍 Full Screen
+                            </a>
+
                         </div>
 
                         <iframe 
                             src="${pdfViewer}" 
-                            style="width:100%; height:600px; border:1px solid #ddd; border-radius:8px; opacity:0; transition:0.3s;"
+                            style="width:100%; height:70vh; border:1px solid #ddd; border-radius:8px; opacity:0; transition:0.3s;"
                             onload="this.style.opacity=1"
                         ></iframe>
 
