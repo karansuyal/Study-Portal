@@ -6,7 +6,7 @@ export const useNoteStats = (noteId, initialStats = {}) => {
   const [localStats, setLocalStats] = useState(initialStats);
 
   useEffect(() => {
-    // Initial load - agar counter mein nahi hai to fetch karo
+    
     if (noteId && !counters[noteId]) {
       refreshStats(noteId);
     }
