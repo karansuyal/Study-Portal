@@ -1510,31 +1510,6 @@
         }
       }
 
-      async function deleteUser(userId) {
-        if (
-          !confirm(
-            "Delete this user permanently? This will also delete all their uploads.",
-          )
-        )
-          return;
-        try {
-          const response = await fetch(`${API_URL}/admin/users/${userId}`, {
-            method: "DELETE",
-            headers: {Authorization: `Bearer ${token}`},
-          });
-          const data = await response.json();
-          if (data.success) {
-            alert("✅ User deleted successfully");
-            loadUsers();
-            loadStats();
-          } else {
-            alert("❌ Error: " + data.error);
-          }
-        } catch (error) {
-          alert("❌ Error: " + error.message);
-        }
-      }
-
       // ==================== UTILITY FUNCTIONS ====================
       function escapeHtml(text) {
         if (!text) return "";
