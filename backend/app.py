@@ -63,6 +63,16 @@ print("="*60)
 print(" Using SendGrid for emails")
 print("="*60 + "\n")
 
+# ==================== EMAIL CONFIGURATION (BREVO SMTP) ====================
+app.config['MAIL_SERVER'] = 'smtp-relay.brevo.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', 'studyportal02@gmail.com')
+
+mail = Mail(app)
+
 #  POSTGRESQL CONNECTION WITH RENDER 
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith('postgres://'):
@@ -561,7 +571,7 @@ def register():
             branch=data['branch'],
             semester=int(data['semester']),
             role=data.get('role', 'student'),
-            is_verified=True
+            is_verified=False
         )
         user.set_password(data['password'])
 
