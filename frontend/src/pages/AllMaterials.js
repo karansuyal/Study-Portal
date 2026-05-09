@@ -100,10 +100,10 @@ const AllMaterials = () => {
         if (response.ok) {
           window.open(testUrl, '_blank');
         } else {
-          alert('❌ File not found');
+          alert(' File not found');
         }
       })
-      .catch(() => alert('❌ File not found'));
+      .catch(() => alert(' File not found'));
     };
 
     const handleDownload = async () => {
@@ -156,7 +156,7 @@ const AllMaterials = () => {
           window.URL.revokeObjectURL(url);
         }
       } catch (error) {
-        console.error('❌ Download error:', error);
+        console.error(' Download error:', error);
         alert(`Download failed: ${error.message}`);
       } finally {
         setDownloading(false);
@@ -251,7 +251,7 @@ const AllMaterials = () => {
   if (error) {
     return (
       <div className="error-container">
-        <div className="error-icon">❌</div>
+        <div className="error-icon"></div>
         <h3>Error</h3>
         <p>{error}</p>
         <button onClick={fetchAllMaterials} className="retry-btn">

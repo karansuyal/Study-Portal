@@ -58,12 +58,12 @@ app.config['JWT_ALGORITHM'] = 'HS256'
 app.config['JWT_DECODE_ALGORITHMS'] = ['HS256']
 
 print("\n" + "="*60)
-print("📧 MAIL CONFIGURATION")
+print(" MAIL CONFIGURATION")
 print("="*60)
-print("📧 Using SendGrid for emails")
+print(" Using SendGrid for emails")
 print("="*60 + "\n")
 
-# ✅ POSTGRESQL CONNECTION WITH RENDER 
+#  POSTGRESQL CONNECTION WITH RENDER 
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
@@ -320,7 +320,7 @@ def send_verification_email(to_email, token, name):
                         <div style="text-align: center; margin: 35px 0;">
                             <a href="{verification_link}"
                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-                                ✅ Verify Email
+                                 Verify Email
                             </a>
                         </div>
 
@@ -332,7 +332,7 @@ def send_verification_email(to_email, token, name):
                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
 
                         <p style="color: #999; font-size: 12px; margin: 0;">
-                            ⏰ This link will expire in 24 hours.<br>
+                             This link will expire in 24 hours.<br>
                             If you didn't create an account, please ignore this email.
                         </p>
                     </td>
@@ -359,16 +359,16 @@ def send_verification_email(to_email, token, name):
         mail = Mail(from_email, to_email, subject, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         
-        print(f"📧 SendGrid response: {response.status_code}")
+        print(f" SendGrid response: {response.status_code}")
         if response.status_code == 202:
-            print(f"✅ Email sent successfully to {to_email}")
+            print(f" Email sent successfully to {to_email}")
             return True
         else:
-            print(f"❌ SendGrid error: {response.status_code}")
+            print(f" SendGrid error: {response.status_code}")
             return False
             
     except Exception as e:
-        print(f"❌ Email sending failed: {str(e)}")
+        print(f" Email sending failed: {str(e)}")
         traceback.print_exc()
         return False
 
@@ -379,7 +379,7 @@ def init_database():
     """Initialize database with sample data"""
     with app.app_context():
         db.create_all()
-        print("✅ Database tables created/verified")
+        print(" Database tables created/verified")
 
         # Create admin if not exists
         admin = db.session.execute(
@@ -396,7 +396,7 @@ def init_database():
             )
             admin.set_password('admin123')
             db.session.add(admin)
-            print("✅ Admin user created")
+            print(" Admin user created")
 
         # Create test student if not exists
         student = db.session.execute(
@@ -413,7 +413,7 @@ def init_database():
             )
             student.set_password('student123')
             db.session.add(student)
-            print("✅ Test student created")
+            print(" Test student created")
 
         # Create courses if not exist
         if db.session.execute(db.select(Course)).first() is None:
@@ -427,7 +427,7 @@ def init_database():
             for c in courses:
                 course = Course(**c)
                 db.session.add(course)
-            print("✅ Sample courses created")
+            print(" Sample courses created")
 
         db.session.commit()
 
@@ -561,16 +561,16 @@ def register():
             branch=data['branch'],
             semester=int(data['semester']),
             role=data.get('role', 'student'),
-            is_verified=False
+            is_verified=True
         )
         user.set_password(data['password'])
 
         token = user.generate_verification_token()
-        print(f"🔑 Generated token: {token}")
+        print(f" Generated token: {token}")
 
         db.session.add(user)
         db.session.commit()
-        print(f"✅ User saved with ID: {user.id}")
+        print(f" User saved with ID: {user.id}")
 
         send_verification_email(user.email, token, user.name)
 
@@ -582,7 +582,7 @@ def register():
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ ERROR in register: {str(e)}")
+        print(f" ERROR in register: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
@@ -592,15 +592,15 @@ def send_password_reset_email(to_email, token, name):
     try:
         reset_link = f"https://study-portal-app.vercel.app/reset-password?token={token}"
         
-        print(f"📧 Preparing password reset email for: {to_email}")
+        print(f" Preparing password reset email for: {to_email}")
         print(f"🔗 Reset link: {reset_link}")
         
         SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
         if not SENDGRID_API_KEY:
-            print("❌ SENDGRID_API_KEY not found in environment variables")
+            print(" SENDGRID_API_KEY not found in environment variables")
             return False
             
-        print(f"✅ SendGrid API Key found (length: {len(SENDGRID_API_KEY)})")
+        print(f" SendGrid API Key found (length: {len(SENDGRID_API_KEY)})")
         
         import sendgrid
         from sendgrid.helpers.mail import Mail, Email, To, Content
@@ -629,7 +629,7 @@ def send_password_reset_email(to_email, token, name):
                         <div style="text-align: center; margin: 35px 0;">
                             <a href="{reset_link}"
                                style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-                                🔑 Reset Password
+                                 Reset Password
                             </a>
                         </div>
 
@@ -641,7 +641,7 @@ def send_password_reset_email(to_email, token, name):
                         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
 
                         <p style="color: #999; font-size: 12px; margin: 0;">
-                            ⏰ This link will expire in 1 hour.<br>
+                             This link will expire in 1 hour.<br>
                             If you didn't request this, please ignore this email.
                         </p>
                     </td>
@@ -669,19 +669,19 @@ def send_password_reset_email(to_email, token, name):
         
         response = sg.client.mail.send.post(request_body=mail.get())
         
-        print(f"📧 SendGrid response status: {response.status_code}")
-        print(f"📧 SendGrid response body: {response.body}")
-        print(f"📧 SendGrid response headers: {response.headers}")
+        print(f" SendGrid response status: {response.status_code}")
+        print(f" SendGrid response body: {response.body}")
+        print(f" SendGrid response headers: {response.headers}")
         
         if response.status_code == 202:
-            print(f"✅ Password reset email sent to {to_email}")
+            print(f" Password reset email sent to {to_email}")
             return True
         else:
-            print(f"❌ SendGrid error: {response.status_code}")
+            print(f" SendGrid error: {response.status_code}")
             return False
             
     except Exception as e:
-        print(f"❌ Password reset email failed: {str(e)}")
+        print(f" Password reset email failed: {str(e)}")
         traceback.print_exc()
         return False
 
@@ -730,7 +730,7 @@ def forgot_password():
         }), 200
         
     except Exception as e:
-        print(f"❌ Forgot password error: {str(e)}")
+        print(f" Forgot password error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -781,7 +781,7 @@ def reset_password():
         }), 200
         
     except Exception as e:
-        print(f"❌ Reset password error: {str(e)}")
+        print(f" Reset password error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -834,7 +834,7 @@ def verify_email():
         user.verification_token_expiry = None
         db.session.commit()
 
-        print(f"✅ User {user.email} verified successfully")
+        print(f" User {user.email} verified successfully")
 
         return jsonify({
             'success': True,
@@ -842,7 +842,7 @@ def verify_email():
         })
 
     except Exception as e:
-        print(f"❌ Verification error: {str(e)}")
+        print(f" Verification error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==================== AI CHATBOT (GEMINI API) ====================
@@ -850,7 +850,7 @@ import time
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    print("✅ Gemini AI configured successfully")
+    print(" Gemini AI configured successfully")
     
     # Test available models
     try:
@@ -858,9 +858,9 @@ if GEMINI_API_KEY:
         gemini_models = [m.name for m in available_models if 'gemini' in m.name]
         print(f"📋 Available Gemini models: {gemini_models[:5]}")
     except:
-        print("⚠️ Could not list models")
+        print(" Could not list models")
 else:
-    print("⚠️ GEMINI_API_KEY not found, chatbot will use fallback mode")
+    print(" GEMINI_API_KEY not found, chatbot will use fallback mode")
 
 # Helper function to get user context
 def get_user_context(user_id):
@@ -973,7 +973,7 @@ def is_rate_limited(user_id="global"):
 
 def get_gemini_response(prompt, user_id="global"):
     if is_rate_limited(user_id):
-        return "⚠️ Too many requests. Please wait a second."
+        return " Too many requests. Please wait a second."
 
     cached = get_from_cache(prompt)
     if cached:
@@ -997,7 +997,7 @@ def get_gemini_response(prompt, user_id="global"):
 
             time.sleep(0.5)
 
-    return "⚠️ AI service busy or quota exceeded. Try again later."
+    return " AI service busy or quota exceeded. Try again later."
 
 # Chatbot endpoint
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
@@ -1103,7 +1103,7 @@ def chat_with_ai():
         })
         
     except Exception as e:
-        print(f"❌ Chat error: {str(e)}")
+        print(f" Chat error: {str(e)}")
         traceback.print_exc()
         return jsonify({
             'success': True,
@@ -1175,7 +1175,7 @@ def get_pending_notes():
             'notes': [note.to_dict() for note in notes]
         })
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f" Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/admin/approved-notes', methods=['GET'])
@@ -1196,7 +1196,7 @@ def get_approved_notes():
             'notes': [note.to_dict() for note in notes]
         })
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f" Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -1275,7 +1275,7 @@ def get_notes():
 
         notes = db.session.execute(query).scalars().all()
 
-        print(f"✅ Found {len(notes)} notes")
+        print(f" Found {len(notes)} notes")
 
         return jsonify({
             'success': True,
@@ -1284,7 +1284,7 @@ def get_notes():
         })
 
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f" Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -1296,7 +1296,7 @@ def get_note_detail(note_id):
 
         note = db.session.get(Note, note_id)
         if not note:
-            print(f"❌ Note {note_id} not found!")
+            print(f" Note {note_id} not found!")
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
         print(f"📢 Current views before increment: {note.views}")
@@ -1304,7 +1304,7 @@ def get_note_detail(note_id):
         note.views += 1
         db.session.commit()
 
-        print(f"✅ Views after increment: {note.views}")
+        print(f" Views after increment: {note.views}")
         print(f"{'='*50}\n")
 
         return jsonify({
@@ -1314,7 +1314,7 @@ def get_note_detail(note_id):
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Error in views increment: {str(e)}")
+        print(f" Error in views increment: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -1389,7 +1389,7 @@ def rate_note(note_id):
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Rating error: {str(e)}")
+        print(f" Rating error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
@@ -1423,7 +1423,7 @@ def get_user_rating(note_id):
         })
         
     except Exception as e:
-        print(f"❌ Error fetching user rating: {str(e)}")
+        print(f" Error fetching user rating: {str(e)}")
         return jsonify({'success': False, 'rating': 0}), 200
 
 
@@ -1461,11 +1461,11 @@ def get_all_materials():
                 'download_url': f'/api/notes/{note.id}/download'
             })
 
-        print(f"✅ Found {len(materials_list)} materials")
+        print(f" Found {len(materials_list)} materials")
         return jsonify({'success': True, 'materials': materials_list, 'total': len(materials_list)})
 
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f" Error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
     
 # @app.route('/api/materials', methods=['GET'])
@@ -1503,7 +1503,7 @@ def get_all_materials():
 #                 'download_url': f'/api/notes/{note.id}/download'
 #             })
 
-#         print(f"✅ Found {len(materials_list)} materials")
+#         print(f" Found {len(materials_list)} materials")
 
 #         return jsonify({
 #             'success': True,
@@ -1512,7 +1512,7 @@ def get_all_materials():
 #         })
 
 #     except Exception as e:
-#         print(f"❌ Error: {str(e)}")
+#         print(f" Error: {str(e)}")
 #         return jsonify({'success': False, 'error': str(e)}), 500
     
     
@@ -1536,7 +1536,7 @@ def upload_note():
         if not user:
             return jsonify({'success': False, 'error': 'User not found'}), 404
 
-        # ✅ CHECK IF IT'S A YOUTUBE VIDEO
+        #  CHECK IF IT'S A YOUTUBE VIDEO
         is_youtube = request.form.get('is_youtube') == 'true'
         
         title = request.form.get('title', '').strip()
@@ -1609,7 +1609,7 @@ def upload_note():
             db.session.add(note)
             db.session.commit()
             
-            print(f"✅ YouTube video saved with ID: {note.id}")
+            print(f" YouTube video saved with ID: {note.id}")
             print(f"🎥 YouTube ID: {youtube_id}")
             
             return jsonify({
@@ -1631,7 +1631,7 @@ def upload_note():
             if not allowed_file(file.filename):
                 return jsonify({'success': False, 'error': 'File type not allowed'}), 400
 
-            print(f"✅ Course found: {course.name}")
+            print(f" Course found: {course.name}")
 
             # ==================== PREPARE FILENAME ====================
             import cloudinary.uploader
@@ -1680,7 +1680,7 @@ def upload_note():
                 overwrite=False
             )
 
-            print("✅ Cloudinary upload successful!")
+            print(" Cloudinary upload successful!")
 
             cloudinary_url = upload_result['secure_url']
             cloudinary_public_id = upload_result['public_id']
@@ -1709,12 +1709,12 @@ def upload_note():
                 )
                 
                 os.remove(tmp_path)
-                print(f"✅ Google Drive backup complete")
+                print(f" Google Drive backup complete")
                 
             except ImportError:
-                print("⚠️ Google Drive module not found, skipping backup")
+                print(" Google Drive module not found, skipping backup")
             except Exception as e:
-                print(f"⚠️ Google Drive backup failed: {e}")
+                print(f" Google Drive backup failed: {e}")
 
             # ==================== DATABASE SAVE ====================
             is_admin = user.role == 'admin'
@@ -1743,7 +1743,7 @@ def upload_note():
             db.session.add(note)
             db.session.commit()
 
-            print(f"✅ Note saved with ID: {note.id}")
+            print(f" Note saved with ID: {note.id}")
 
             return jsonify({
                 'success': True,
@@ -1755,7 +1755,7 @@ def upload_note():
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Upload Error: {str(e)}")
+        print(f" Upload Error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
@@ -1802,7 +1802,7 @@ def get_all_users():
         })
 
     except Exception as e:
-        print(f"❌ ERROR in get_all_users: {str(e)}")
+        print(f" ERROR in get_all_users: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -1952,10 +1952,10 @@ def delete_user(user_id):
             if note.file_path and os.path.exists(note.file_path):
                 try:
                     os.remove(note.file_path)
-                    print(f"✅ Deleted file: {note.file_path}")
+                    print(f" Deleted file: {note.file_path}")
                     deleted_files += 1
                 except Exception as e:
-                    print(f"⚠️ Could not delete file {note.file_path}: {str(e)}")
+                    print(f" Could not delete file {note.file_path}: {str(e)}")
 
         for note in notes:
             db.session.delete(note)
@@ -1963,7 +1963,7 @@ def delete_user(user_id):
         db.session.delete(user)
         db.session.commit()
 
-        print(f"✅ User {user.name} deleted successfully")
+        print(f" User {user.name} deleted successfully")
         print(f"   Files deleted: {deleted_files}")
         print(f"   Notes deleted: {len(notes)}")
 
@@ -1978,7 +1978,7 @@ def delete_user(user_id):
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ ERROR deleting user: {str(e)}")
+        print(f" ERROR deleting user: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -2037,17 +2037,17 @@ def get_file(filepath):
         for path_type, full_path in possible_paths:
             print(f"🔍 Trying {path_type}: {full_path}")
             if os.path.exists(full_path):
-                print(f"✅ Found at: {full_path}")
+                print(f" Found at: {full_path}")
                 if directory:
                     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], directory), filename)
                 else:
                     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
         
-        print(f"❌ File not found in any location")
+        print(f" File not found in any location")
         return jsonify({'success': False, 'error': 'File not found'}), 404
         
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f" Error: {str(e)}")
         return jsonify({'success': False, 'error': 'File not found'}), 404
     
     
@@ -2059,7 +2059,7 @@ def download_note(note_id):
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
         if note.cloudinary_url:
-            print(f"✅ Redirecting to Cloudinary: {note.cloudinary_url}")
+            print(f" Redirecting to Cloudinary: {note.cloudinary_url}")
             return redirect(note.cloudinary_url)
         
         # Debug - check file path
@@ -2083,7 +2083,7 @@ def download_note(note_id):
                 if os.path.exists(alt_path):
                     note.file_path = alt_path
                     db.session.commit()
-                    print(f"✅ Found at alternative path")
+                    print(f" Found at alternative path")
                     found = True
                     break
             
@@ -2113,7 +2113,7 @@ def download_note(note_id):
         )
 
     except Exception as e:
-        print(f"❌ Download error: {str(e)}")
+        print(f" Download error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
@@ -2156,7 +2156,7 @@ def increment_download_count(note_id):
         
         note = db.session.get(Note, note_id)
         if not note:
-            print(f"❌ Note {note_id} not found!")
+            print(f" Note {note_id} not found!")
             return jsonify({'success': False, 'error': 'Note not found'}), 404
 
         print(f"📊 Current downloads before increment: {note.downloads}")
@@ -2164,7 +2164,7 @@ def increment_download_count(note_id):
         note.downloads += 1
         db.session.commit()
 
-        print(f"✅ Downloads after increment: {note.downloads}")
+        print(f" Downloads after increment: {note.downloads}")
         print(f"{'='*50}\n")
 
         return jsonify({
@@ -2175,7 +2175,7 @@ def increment_download_count(note_id):
 
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Error in download increment: {str(e)}")
+        print(f" Error in download increment: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -2304,7 +2304,7 @@ def edit_note(note_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Edit error: {str(e)}")
+        print(f" Edit error: {str(e)}")
         return jsonify({'error': str(e)}), 500
     
 # ==================== ROOT ROUTE ====================

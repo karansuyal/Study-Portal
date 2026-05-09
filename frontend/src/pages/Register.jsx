@@ -135,7 +135,7 @@ const Register = () => {
     return (
       <div className="register-container">
         <div className="verification-card">
-          <div className="verification-icon">📧</div>
+          <div className="verification-icon"></div>
           <h2 className="verification-title">Verify Your Email</h2>
           <p className="verification-text">
             We've sent a verification link to:<br />
@@ -190,14 +190,14 @@ const Register = () => {
 
         {/* Info Note */}
         <div className="info-note">
-          <span className="info-icon">📧</span>
+          <span className="info-icon"></span>
           <p>After registration, please verify your email before logging in.</p>
         </div>
 
         {/* Error Message */}
         {error && (
           <div className="error-message">
-            <span>❌</span>
+            <span></span>
             <span>{error}</span>
           </div>
         )}

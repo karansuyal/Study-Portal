@@ -4,7 +4,7 @@ import config from '../config/config';
 
 const AuthContext = createContext();
 
-// ✅ FIX: Safer useAuth hook
+//  FIX: Safer useAuth hook
 export const useAuth = () => {
   try {
     const context = useContext(AuthContext);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ FIX: Simpler login function
+  //  FIX: Simpler login function
   const login = async (userData, token) => {
     try {
       setAuthError(null);

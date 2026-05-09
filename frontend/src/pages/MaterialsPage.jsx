@@ -46,7 +46,7 @@ const MaterialsPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // ✅ FLAG for one-time view increment
+  //  FLAG for one-time view increment
   const [viewsIncremented, setViewsIncremented] = useState(false);
 
   // Check mobile on resize
@@ -118,7 +118,7 @@ const MaterialsPage = () => {
     {id: "youtube", name: "YouTube", icon: <FaYoutube />, color: "#FF0000"},
   ];
 
-  // ✅ NOTIFICATION HELPER
+  //  NOTIFICATION HELPER
   const showNotification = (title, message, type = "success") => {
     const notification = document.createElement("div");
     notification.style.cssText = `
@@ -138,7 +138,7 @@ const MaterialsPage = () => {
     `;
 
     notification.innerHTML = `
-      <div style="font-size: 20px;">${type === "success" ? "✅" : "❌"}</div>
+      <div style="font-size: 20px;">${type === "success" ? "" : ""}</div>
       <div>
         <div style="font-weight: 600;">${title}</div>
         <div style="font-size: 12px; opacity: 0.9;">${message}</div>
@@ -190,7 +190,7 @@ const getCleanDescription = (desc) => {
   return desc || 'No description available';
 };
 
-  // ✅ YOUTUBE CARD COMPONENT
+  //  YOUTUBE CARD COMPONENT
   const YouTubeCard = ({material}) => {
     const stats = useNoteStats(material.id, {
       views: material.views || 0,
@@ -341,7 +341,7 @@ const getCleanDescription = (desc) => {
     );
   };
 
-  // ✅ REGULAR MATERIAL CARD COMPONENT
+  //  REGULAR MATERIAL CARD COMPONENT
   const MaterialCard = ({material, typeInfo}) => {
     const [downloading, setDownloading] = useState(false);
 
@@ -368,7 +368,7 @@ const getCleanDescription = (desc) => {
           link.click();
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
-          showNotification("✅ Download Complete!", material.title, "success");
+          showNotification(" Download Complete!", material.title, "success");
         } else {
           const token = localStorage.getItem("study_portal_token");
           if (!token) {
@@ -394,10 +394,10 @@ const getCleanDescription = (desc) => {
             link.download = material.file_name || `${material.title}.pdf`;
             link.click();
           }
-          showNotification("✅ Download Complete!", material.title, "success");
+          showNotification(" Download Complete!", material.title, "success");
         }
       } catch (error) {
-        console.error("❌ Download error:", error);
+        console.error(" Download error:", error);
         showNotification("Download Failed", error.message, "error");
       } finally {
         setDownloading(false);
@@ -627,7 +627,7 @@ const getCleanDescription = (desc) => {
     );
   };
 
-  // ✅ FETCH MATERIALS FUNCTION
+  //  FETCH MATERIALS FUNCTION
   const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) setRefreshing(true);
 
@@ -731,7 +731,7 @@ const getCleanDescription = (desc) => {
     return <FaFileAlt style={{color: "#6b7280"}} />;
   };
 
-  // ✅ INITIAL LOAD
+  //  INITIAL LOAD
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -761,7 +761,7 @@ const getCleanDescription = (desc) => {
     loadData();
   }, [courseId, yearId, semId, subjectId]);
 
-  // ✅ VIEW INCREMENT ON FIRST PAGE LOAD
+  //  VIEW INCREMENT ON FIRST PAGE LOAD
   useEffect(() => {
     const incrementViewsOnce = async () => {
       if (viewsIncremented) return;
@@ -777,10 +777,10 @@ const getCleanDescription = (desc) => {
             method: "GET",
             headers: token ? {Authorization: `Bearer ${token}`} : {},
           });
-          console.log(`✅ View incremented for ${material.title}`);
+          console.log(` View incremented for ${material.title}`);
         } catch (error) {
           console.error(
-            `❌ Error incrementing view for ${material.id}:`,
+            ` Error incrementing view for ${material.id}:`,
             error,
           );
         }
@@ -796,7 +796,7 @@ const getCleanDescription = (desc) => {
     navigate(`/course/${courseId}/year/${yearId}/sem/${semId}`);
   const handleRefresh = () => fetchMaterialsFromBackend(true);
 
-  // ✅ FILTER MATERIALS
+  //  FILTER MATERIALS
   const filteredMaterials = materials.filter((material) => {
     const matchesType =
       selectedType === "all" || material.type === selectedType;
@@ -1541,7 +1541,7 @@ const getCleanDescription = (desc) => {
     },
   };
 
-  // ✅ LOADING STATE
+  //  LOADING STATE
   if (loading) {
     return (
       <div style={styles.loadingContainer}>
@@ -1551,7 +1551,7 @@ const getCleanDescription = (desc) => {
     );
   }
 
-  // ✅ SUBJECT NOT FOUND
+  //  SUBJECT NOT FOUND
   if (!subject) {
     return (
       <div style={styles.errorContainer}>
@@ -1570,7 +1570,7 @@ const getCleanDescription = (desc) => {
     );
   }
 
-  // ✅ LAPTOP VIEW
+  //  LAPTOP VIEW
   if (!isMobile) {
     return (
       <div style={styles.container}>
@@ -1616,7 +1616,7 @@ const getCleanDescription = (desc) => {
                 textAlign: "center",
               }}
             >
-              ⚠️ {error}
+               {error}
             </div>
           )}
           <div style={styles.laptopLastRefreshed}>
@@ -1858,7 +1858,7 @@ const getCleanDescription = (desc) => {
     );
   }
 
-  // ✅ MOBILE VIEW
+  //  MOBILE VIEW
   return (
     <div style={styles.container}>
       <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
@@ -1917,7 +1917,7 @@ const getCleanDescription = (desc) => {
             ))}
           </div>
         )}
-        {error && <div style={styles.mobileErrorMessage}>⚠️ {error}</div>}
+        {error && <div style={styles.mobileErrorMessage}> {error}</div>}
         {filteredMaterials.length === 0 ? (
           <div style={styles.mobileEmptyState}>
             <div style={styles.mobileEmptyIcon}>📭</div>

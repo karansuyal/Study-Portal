@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './Upload.css';
 import { coursesData } from '../data/coursesData';
 
-// ✅ FIXED: Use Render backend URL
+//  FIXED: Use Render backend URL
 const API_URL = 'https://study-portal-ill8.onrender.com/api';
 
 const Upload = () => {
@@ -84,14 +84,14 @@ const Upload = () => {
   // Get current material type config
   const currentMaterialType = materialTypes.find(t => t.value === formData.type);
 
-  // ✅ FIXED: Clean YouTube URL - remove tracking parameters
+  //  FIXED: Clean YouTube URL - remove tracking parameters
   const cleanYoutubeUrl = (url) => {
     if (!url) return '';
     // Remove ?si=, &si=, &t=, etc. parameters
     return url.split('?')[0].split('&')[0];
   };
 
-  // ✅ FIXED: Extract YouTube video ID
+  //  FIXED: Extract YouTube video ID
   const extractYoutubeId = (url) => {
     if (!url) return null;
     
@@ -120,13 +120,13 @@ const Upload = () => {
     return null;
   };
 
-  // ✅ FIXED: Validate YouTube URL
+  //  FIXED: Validate YouTube URL
   const validateYoutubeUrl = (url) => {
     if (!url) return false;
     return extractYoutubeId(url) !== null;
   };
 
-  // ✅ FIXED: Get YouTube thumbnail URL
+  //  FIXED: Get YouTube thumbnail URL
   const getYoutubeThumbnail = (videoId) => {
     return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   };
@@ -316,7 +316,7 @@ const Upload = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       if (selectedFile.size > 10 * 1024 * 1024) {
-        alert('❌ File size exceeds 10MB limit');
+        alert(' File size exceeds 10MB limit');
         e.target.value = '';
         return;
       }
@@ -333,7 +333,7 @@ const Upload = () => {
       ];
       
       if (!allowedTypes.includes(selectedFile.type)) {
-        alert('❌ File type not supported. Please upload PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, or PNG files.');
+        alert(' File type not supported. Please upload PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, or PNG files.');
         e.target.value = '';
         return;
       }
@@ -342,7 +342,7 @@ const Upload = () => {
     }
   };
 
-  // ✅ FIXED: Handle YouTube URL change with cleaning
+  //  FIXED: Handle YouTube URL change with cleaning
   const handleYoutubeUrlChange = (e) => {
     let url = e.target.value;
     
@@ -352,13 +352,13 @@ const Upload = () => {
       const videoId = extractYoutubeId(cleanUrl);
       
       if (videoId) {
-        console.log('✅ Valid YouTube URL, Video ID:', videoId);
+        console.log(' Valid YouTube URL, Video ID:', videoId);
         // Update with cleaned URL
         setYoutubeUrl(cleanUrl);
       } else {
         setYoutubeUrl(url);
         if (formData.type === 'youtube' && url.trim()) {
-          alert('⚠️ Please enter a valid YouTube URL');
+          alert(' Please enter a valid YouTube URL');
         }
       }
     } else {
@@ -397,30 +397,30 @@ const Upload = () => {
     if (formData.type === 'youtube') {
       // YouTube video validation
       if (!youtubeUrl.trim()) {
-        alert('❌ Please enter YouTube video URL');
+        alert(' Please enter YouTube video URL');
         return;
       }
       
       const videoId = extractYoutubeId(youtubeUrl);
       if (!videoId) {
-        alert('❌ Invalid YouTube URL. Please enter a valid YouTube link.');
+        alert(' Invalid YouTube URL. Please enter a valid YouTube link.');
         return;
       }
     } else {
       // File upload validation
       if (!file) {
-        alert('❌ Please select a file');
+        alert(' Please select a file');
         return;
       }
     }
     
     if (!formData.title.trim()) {
-      alert('❌ Please enter title');
+      alert(' Please enter title');
       return;
     }
     
     if (!formData.subject) {
-      alert('❌ Please select subject');
+      alert(' Please select subject');
       return;
     }
 
@@ -527,18 +527,18 @@ Upload Date: ${new Date().toLocaleDateString()}
       
       if (response.ok) {
         if (formData.type === 'youtube') {
-          alert(`✅ YouTube video added successfully!\n\n` +
+          alert(` YouTube video added successfully!\n\n` +
             `🎥 Video: ${formData.title}\n` +
             `🎓 Course: ${formData.course}\n` +
             `📚 Subject: ${subjectName}\n\n` +
-            `⚠️ Note: Video will be visible after admin approval.`);
+            ` Note: Video will be visible after admin approval.`);
         } else {
-          alert(`✅ ${result.message || 'File uploaded successfully!'}\n\n` +
+          alert(` ${result.message || 'File uploaded successfully!'}\n\n` +
             `📝 Status: ${result.status || 'Pending approval'}\n\n` +
             `🎓 Course: ${formData.course}\n` +
             `📚 Subject: ${subjectName}\n` +
             `📖 Year: ${formData.year}, Semester: ${formData.semester}\n\n` +
-            `⚠️ Note: File will be visible after admin approval.`);
+            ` Note: File will be visible after admin approval.`);
         }
         
         resetForm();
@@ -551,16 +551,16 @@ Upload Date: ${new Date().toLocaleDateString()}
           handleLogout();
         }
         
-        alert(`❌ Upload failed: ${errorMsg}`);
+        alert(` Upload failed: ${errorMsg}`);
       }
       
     } catch (error) {
       console.error('Upload error:', error);
       
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        alert(`❌ Network Error: Cannot connect to backend at ${API_URL}\n\nPlease ensure backend server is running.`);
+        alert(` Network Error: Cannot connect to backend at ${API_URL}\n\nPlease ensure backend server is running.`);
       } else {
-        alert(`❌ Upload Error: ${error.message}`);
+        alert(` Upload Error: ${error.message}`);
       }
     } finally {
       setUploading(false);
@@ -639,7 +639,7 @@ Upload Date: ${new Date().toLocaleDateString()}
 
       <div className="info-box">
         <p><strong>📋 Instructions:</strong> Fill all academic details accurately.</p>
-        <p><small>✅ For YouTube videos: Just paste the video URL</small></p>
+        <p><small> For YouTube videos: Just paste the video URL</small></p>
       </div>
 
       {/* File/URL Upload Section */}
@@ -663,7 +663,7 @@ Upload Date: ${new Date().toLocaleDateString()}
             
             {currentVideoId && (
               <div className="youtube-preview">
-                <p>✅ Valid YouTube URL</p>
+                <p> Valid YouTube URL</p>
                 <div className="youtube-thumbnail-preview">
                   <img 
                     src={`https://img.youtube.com/vi/${currentVideoId}/mqdefault.jpg`}
@@ -707,7 +707,7 @@ Upload Date: ${new Date().toLocaleDateString()}
             <p className="file-types">
               📎 <strong>Supported Formats:</strong> PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, JPEG, PNG
               <br />
-              ⚠️ <strong>Maximum file size:</strong> 10MB
+               <strong>Maximum file size:</strong> 10MB
             </p>
           </>
         )}
@@ -927,7 +927,7 @@ Upload Date: ${new Date().toLocaleDateString()}
         </div>
 
         <div className="admin-note">
-          <div className="admin-note-icon">⚠️</div>
+          <div className="admin-note-icon"></div>
           <div className="admin-note-content">
             <strong>Important Note:</strong> All uploads require admin approval. 
             Your content will be visible to students after review.

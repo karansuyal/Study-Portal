@@ -20,14 +20,14 @@ A full-stack study materials platform where students can upload, view, and downl
 ### 👑 Admin Features
 - 📊 Dashboard with Analytics
 - 📤 Direct Upload (Auto-Approved)
-- ✅ Approve/Reject User Uploads
+-  Approve/Reject User Uploads
 - 👥 User Management (View, Edit, Delete)
 - 🗑️ Bulk Delete Options (by semester/subject/date)
 
 ### 🚀 Technical Features
 - 🌐 **Universal Counters** - Views, Downloads, Ratings sync across all pages
 - ☁️ **Cloudinary Integration** - Fast, optimized file delivery
-- 📧 **Email Service** - Verification and Password Reset via Resend
+-  **Email Service** - Verification and Password Reset via Resend
 - 🗄️ **PostgreSQL Database** - Hosted on Render
 - 🔄 **Real-time Updates** - No refresh needed
 

@@ -20,43 +20,43 @@ def get_drive_service():
         try:
             token_bytes = base64.b64decode(token_base64)
             creds = pickle.loads(token_bytes)
-            print("✅ Loaded Google Drive token from environment variable")
+            print(" Loaded Google Drive token from environment variable")
         except Exception as e:
-            print(f"⚠️ Failed to load token from env: {e}")
+            print(f" Failed to load token from env: {e}")
     
     # ==================== METHOD 2: From Local token.pickle ====================
     if not creds and os.path.exists('token.pickle'):
         try:
             with open('token.pickle', 'rb') as token:
                 creds = pickle.load(token)
-            print("✅ Loaded Google Drive token from local file")
+            print(" Loaded Google Drive token from local file")
         except Exception as e:
-            print(f"⚠️ Failed to load token from file: {e}")
+            print(f" Failed to load token from file: {e}")
     
     # ==================== METHOD 3: From credentials.json (First Time Only) ====================
     if not creds and os.path.exists('credentials.json'):
         try:
             flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
-            print("✅ Created new Google Drive token from credentials.json")
+            print(" Created new Google Drive token from credentials.json")
             
             # Save for next time
             with open('token.pickle', 'wb') as token:
                 pickle.dump(creds, token)
         except Exception as e:
-            print(f"⚠️ Failed to create token from credentials.json: {e}")
+            print(f" Failed to create token from credentials.json: {e}")
     
     if not creds:
-        print("⚠️ No Google Drive credentials available")
+        print(" No Google Drive credentials available")
         return None
     
     # Refresh if expired
     if creds and creds.expired and creds.refresh_token:
         try:
             creds.refresh(Request())
-            print("✅ Refreshed Google Drive token")
+            print(" Refreshed Google Drive token")
         except Exception as e:
-            print(f"⚠️ Failed to refresh token: {e}")
+            print(f" Failed to refresh token: {e}")
     
     return build('drive', 'v3', credentials=creds)
 
@@ -109,7 +109,7 @@ def upload_to_drive(file_path, filename, course=None, semester=None, subject=Non
     try:
         service = get_drive_service()
         if not service:
-            print("⚠️ Google Drive service not available")
+            print(" Google Drive service not available")
             return False
         
         # Root folder: StudyPortal_Backup
@@ -143,11 +143,11 @@ def upload_to_drive(file_path, filename, course=None, semester=None, subject=Non
             fields='id'
         ).execute()
         
-        print(f"✅ Google Drive: {course_name}/{semester_name}/{subject_name}/{note_type_name}/{filename}")
+        print(f" Google Drive: {course_name}/{semester_name}/{subject_name}/{note_type_name}/{filename}")
         return True
         
     except Exception as e:
-        print(f"❌ Google Drive error: {e}")
+        print(f" Google Drive error: {e}")
         return False
 
 
@@ -178,7 +178,7 @@ def list_drive_files(folder_name=None):
         return results.get('files', [])
         
     except Exception as e:
-        print(f"❌ Error listing files: {e}")
+        print(f" Error listing files: {e}")
         return []
 
 
@@ -186,10 +186,10 @@ def check_drive_status():
     """Check if Google Drive is configured"""
     service = get_drive_service()
     if service:
-        print("✅ Google Drive is configured and working")
+        print(" Google Drive is configured and working")
         return True
     else:
-        print("⚠️ Google Drive is not configured")
+        print(" Google Drive is not configured")
         return False
 
 
@@ -220,4 +220,4 @@ if __name__ == '__main__':
     
     # Clean up
     os.remove(test_file)
-    print("\n✅ Test complete!")
+    print("\n Test complete!")

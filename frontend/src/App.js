@@ -24,7 +24,7 @@ import { CounterProvider } from './contexts/CounterContext';
 import Chatbot from './components/Chatbot';  
 
 
-// ✅ HIERARCHICAL PAGES IMPORTS
+//  HIERARCHICAL PAGES IMPORTS
 import YearSelection from './pages/YearSelection.jsx';
 import SemesterSelection from './pages/SemesterSelection.jsx';
 import SubjectSelection from './pages/SubjectSelection.jsx';

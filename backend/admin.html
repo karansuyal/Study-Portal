@@ -933,7 +933,7 @@
             💾 Save Changes
           </button>
           <button class="btn btn-secondary" onclick="closeEditModal()">
-            ❌ Cancel
+             Cancel
           </button>
         </div>
       </div>
@@ -993,9 +993,9 @@
         fetch(`${API_URL}/health`)
           .then((res) => res.json())
           .then((data) => {
-            if (data.success) console.log("✅ Connected to backend");
+            if (data.success) console.log(" Connected to backend");
           })
-          .catch((err) => console.log("⚠️ Backend not connected"));
+          .catch((err) => console.log(" Backend not connected"));
       }
 
       // ==================== AUTH FUNCTIONS ====================
@@ -1024,17 +1024,17 @@
             user = data.user;
             localStorage.setItem("admin_token", token);
             localStorage.setItem("admin_user", JSON.stringify(user));
-            showLoginMessage("✅ Login successful!", "success");
+            showLoginMessage(" Login successful!", "success");
             setTimeout(() => {
               showDashboard();
               loadStats();
               loadPendingNotes();
             }, 1000);
           } else {
-            showLoginMessage("❌ Login failed: " + data.error, "error");
+            showLoginMessage(" Login failed: " + data.error, "error");
           }
         } catch (error) {
-          showLoginMessage("❌ Connection error: " + error.message, "error");
+          showLoginMessage(" Connection error: " + error.message, "error");
         }
       }
 
@@ -1106,7 +1106,7 @@
         const date = new Date(note.uploaded_at).toLocaleString();
         const statusClass =
           status === "approved" ? "status-approved" : "status-pending";
-        const statusText = status === "approved" ? "✅ Approved" : "⏳ Pending";
+        const statusText = status === "approved" ? " Approved" : "⏳ Pending";
         const cleanDesc = cleanDescription(note.description);
 
         let actions = `
@@ -1256,15 +1256,15 @@
           const data = await response.json();
 
           if (data.success) {
-            alert("✅ Note updated successfully!");
+            alert(" Note updated successfully!");
             closeEditModal();
             loadPendingNotes();
             loadApprovedNotes();
           } else {
-            alert("❌ Error: " + data.error);
+            alert(" Error: " + data.error);
           }
         } catch (error) {
-          alert("❌ Error: " + error.message);
+          alert(" Error: " + error.message);
         }
       }
 
@@ -1348,7 +1348,7 @@
             document.getElementById(`note-${noteId}`)?.remove();
             loadStats();
             loadPendingNotes();
-            showMessage("✅ Note approved!", "success", "pendingMessage");
+            showMessage(" Note approved!", "success", "pendingMessage");
           }
         } catch (error) {
           alert("Error: " + error.message);
@@ -1378,7 +1378,7 @@
             document.getElementById(`note-${noteId}`)?.remove();
             loadStats();
             loadPendingNotes();
-            showMessage("✅ Note rejected!", "success", "pendingMessage");
+            showMessage(" Note rejected!", "success", "pendingMessage");
           }
         } catch (error) {
           alert("Error: " + error.message);
@@ -1396,7 +1396,7 @@
           if (data.success) {
             document.getElementById(`note-${noteId}`)?.remove();
             loadStats();
-            showMessage("✅ Note deleted!", "success", "pendingMessage");
+            showMessage(" Note deleted!", "success", "pendingMessage");
           }
         } catch (error) {
           alert("Error: " + error.message);

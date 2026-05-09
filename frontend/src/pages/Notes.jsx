@@ -30,7 +30,7 @@ const Notes = () => {
 
   const handleDownload = async (noteId, filename) => {
     try {
-      // ✅ FIXED: Use Render URL for download
+      //  FIXED: Use Render URL for download
       window.open(`${API_URL}/notes/${noteId}/download`, '_blank');
       
       // Update download count in UI

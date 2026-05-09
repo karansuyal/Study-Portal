@@ -277,7 +277,7 @@ const About = () => {
               background: '#f3f4f6',
               borderRadius: '20px'
             }}>
-              📧 Email
+               Email
             </a>
           </div>
         </div>

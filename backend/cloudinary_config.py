@@ -23,7 +23,7 @@ def configure_cloudinary():
         
         # Validate credentials
         if not cloud_name or not api_key or not api_secret:
-            print("⚠️  Cloudinary credentials missing. Check your .env file.")
+            print("  Cloudinary credentials missing. Check your .env file.")
             print(f"CLOUDINARY_CLOUD_NAME: {'✓' if cloud_name else '✗'}")
             print(f"CLOUDINARY_API_KEY: {'✓' if api_key else '✗'}")
             print(f"CLOUDINARY_API_SECRET: {'✓' if api_secret else '✗'}")
@@ -37,11 +37,11 @@ def configure_cloudinary():
             secure=True
         )
         
-        print("✅ Cloudinary configured successfully")
+        print(" Cloudinary configured successfully")
         return True
         
     except Exception as e:
-        print(f"❌ Cloudinary configuration failed: {e}")
+        print(f" Cloudinary configuration failed: {e}")
         return False
 
 # Auto-configure when module loads

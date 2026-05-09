@@ -26,7 +26,7 @@ export const getCoursesForUpload = async () => {
   }
 };
 
-// ✅ FIXED: Upload file for STUDY MATERIAL
+//  FIXED: Upload file for STUDY MATERIAL
 export const uploadStudyMaterial = async (formData) => {
   try {
     const token = localStorage.getItem('study_portal_token');
@@ -62,7 +62,7 @@ export const uploadStudyMaterial = async (formData) => {
   }
 };
 
-// ✅ FIXED: Get upload history
+//  FIXED: Get upload history
 export const getUploadHistory = async () => {
   try {
     const token = localStorage.getItem('study_portal_token');
@@ -87,7 +87,7 @@ export const getUploadHistory = async () => {
   }
 };
 
-// ✅ FIXED: Delete upload
+//  FIXED: Delete upload
 export const deleteUpload = async (uploadId, type = 'note') => {
   try {
     const token = localStorage.getItem('study_portal_token');

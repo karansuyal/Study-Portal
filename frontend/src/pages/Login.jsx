@@ -69,7 +69,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} style={styles.form}>
             {/* Email */}
             <div style={styles.inputGroup}>
-              <label style={styles.label}>📧 Email</label>
+              <label style={styles.label}> Email</label>
               <input
                 type="email"
                 name="email"

@@ -30,7 +30,7 @@ const SearchResults = () => {
   const fetchSearchResults = (searchQuery) => {
     setLoading(true);
     
-    // ✅ 5 COURSES with multiple search variations
+    //  5 COURSES with multiple search variations
     const courses = [
       { 
         id: 1, 
@@ -42,7 +42,7 @@ const SearchResults = () => {
         path: '/course/2',
         duration: '3 Years',
         subjects: 'Programming, Web Development, Database',
-        // ✅ Search keywords for BCA
+        //  Search keywords for BCA
         keywords: ['bca', 'bachelor', 'computer applications', 'computer', 'applications']
       },
       { 
@@ -55,7 +55,7 @@ const SearchResults = () => {
         path: '/course/3',
         duration: '3 Years',
         subjects: 'Marketing, Finance, HR',
-        // ✅ Search keywords for BBA
+        //  Search keywords for BBA
         keywords: ['bba', 'bachelor', 'business', 'administration', 'management']
       },
       { 
@@ -97,7 +97,7 @@ const SearchResults = () => {
         path: '/course/5',
         duration: '2 Years',
         subjects: 'Advanced Programming, AI, Networking',
-        // ✅ Search keywords for MCA
+        //  Search keywords for MCA
         keywords: ['mca', 'master', 'computer', 'applications', 'postgraduate']
       }
     ];
