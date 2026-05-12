@@ -359,7 +359,7 @@ const Register = () => {
             <div style={{color:'rgba(255,255,255,.75)',fontSize:'.83rem'}}>One last step — verify your email</div>
           </div>
           <div className="rg-verify-body">
-            <p style={{fontSize:'.82rem',color:'#6b7280',textAlign:'center'}}>We've sent a verification link to:</p>
+            <p style={{fontSize:'.82rem',color:'#6b7280',textAlign:'center'}}>Thank you for registering:</p>
             <div className="rg-verify-actions">
               <button className="rg-btn rg-btn-green" onClick={() => navigate('/login')}>Go to Login</button>
               <button className="rg-btn rg-btn-outline" onClick={() => { setVerificationSent(false); setStep(1); }}>Try Again</button>
