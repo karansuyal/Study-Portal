@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FaGoogle } from 'react-icons/fa';
@@ -10,6 +10,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   
   const { login } = useAuth();
@@ -17,6 +18,11 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const showSuccessMessage = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +41,8 @@ const Login = () => {
 
       if (response.ok) {
         login(data.user, data.access_token);
-        navigate('/');
+        showSuccessMessage(); 
+        setTimeout(() => navigate('/'), 1000);
       } else {
         setError(data.error || 'Login failed');
       }
@@ -46,34 +53,31 @@ const Login = () => {
     }
   };
 
-  //  GOOGLE LOGIN HANDLER
   const handleGoogleLogin = () => {
     window.location.href = 'https://study-portal-ill8.onrender.com/api/auth/google';
   };
 
-  const useTestCredentials = () => {
-    setFormData({
-      email: 'student@test.com',
-      password: 'student123'
-    });
-  };
-
   return (
     <div style={styles.container}>
+      {/*  SUCCESS TOAST */}
+      {showToast && (
+        <div style={styles.toast}>
+          <span style={styles.toastIcon}></span>
+          <span style={styles.toastText}>Login successful! Redirecting...</span>
+        </div>
+      )}
+
       <div style={styles.card}>
-        {/* Header */}
         <div style={styles.header}>
           <div style={styles.wave}></div>
           <h1 style={styles.title}>📚 Study Portal</h1>
           <p style={styles.subtitle}>Welcome back! Please login</p>
         </div>
 
-        {/* Form */}
         <div style={styles.formContainer}>
           {error && <div style={styles.error}>{error}</div>}
           
           <form onSubmit={handleSubmit} style={styles.form}>
-            {/* Email */}
             <div style={styles.inputGroup}>
               <label style={styles.label}>📧 Email</label>
               <input
@@ -87,7 +91,6 @@ const Login = () => {
               />
             </div>
             
-            {/* Password */}
             <div style={styles.inputGroup}>
               <label style={styles.label}>🔒 Password</label>
               <input
@@ -101,7 +104,6 @@ const Login = () => {
               />
             </div>
             
-            {/* Remember & Forgot */}
             <div style={styles.row}>
               <label style={styles.checkboxLabel}>
                 <input type="checkbox" style={styles.checkbox} />
@@ -112,7 +114,6 @@ const Login = () => {
               </Link>
             </div>
             
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
@@ -125,12 +126,10 @@ const Login = () => {
               {loading ? 'Logging in...' : 'Login'}
             </button>
             
-            {/*  DIVIDER */}
             <div style={styles.divider}>
               <span>OR</span>
             </div>
             
-            {/*  GOOGLE LOGIN BUTTON */}
             <button
               type="button"
               onClick={handleGoogleLogin}
@@ -139,18 +138,8 @@ const Login = () => {
               <FaGoogle style={styles.googleIcon} />
               Sign in with Google
             </button>
-            
-            {/* Test Credentials */}
-            <button
-              type="button"
-              onClick={useTestCredentials}
-              style={styles.testButton}
-            >
-              🧪 Use Test Credentials
-            </button>
           </form>
           
-          {/* Register Link */}
           <div style={styles.footer}>
             <p style={styles.footerText}>Don't have an account?</p>
             <Link to="/register" style={styles.registerLink}>
@@ -163,7 +152,6 @@ const Login = () => {
   );
 };
 
-// Optimized styles
 const styles = {
   container: {
     minHeight: '100vh',
@@ -171,7 +159,31 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    padding: '1rem'
+    padding: '1rem',
+    position: 'relative'
+  },
+  
+  toast: {
+    position: 'fixed',
+    top: '80px',
+    right: '20px',
+    background: '#10b981',
+    color: 'white',
+    padding: '12px 20px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+    zIndex: 1000,
+    animation: 'slideIn 0.3s ease'
+  },
+  toastIcon: {
+    fontSize: '18px'
+  },
+  toastText: {
+    fontSize: '14px',
+    fontWeight: '500'
   },
   card: {
     width: '100%',
@@ -220,8 +232,7 @@ const styles = {
     padding: '1rem',
     borderRadius: '12px',
     marginBottom: '1.5rem',
-    textAlign: 'center',
-    fontSize: '0.95rem'
+    textAlign: 'center'
   },
   form: {
     width: '100%'
@@ -233,8 +244,7 @@ const styles = {
     display: 'block',
     marginBottom: '0.5rem',
     fontWeight: '600',
-    color: '#374151',
-    fontSize: '0.95rem'
+    color: '#374151'
   },
   input: {
     width: '100%',
@@ -243,16 +253,13 @@ const styles = {
     border: '2px solid #e5e7eb',
     fontSize: '1rem',
     outline: 'none',
-    boxSizing: 'border-box',
-    WebkitAppearance: 'none'
+    boxSizing: 'border-box'
   },
   row: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '1.5rem',
-    flexWrap: 'wrap',
-    gap: '0.5rem'
+    marginBottom: '1.5rem'
   },
   checkboxLabel: {
     display: 'flex',
@@ -268,8 +275,7 @@ const styles = {
   forgotLink: {
     color: '#4f46e5',
     textDecoration: 'none',
-    fontSize: '0.9rem',
-    fontWeight: '500'
+    fontSize: '0.9rem'
   },
   button: {
     width: '100%',
@@ -280,27 +286,17 @@ const styles = {
     fontSize: '1rem',
     fontWeight: '600',
     cursor: 'pointer',
-    marginBottom: '1rem',
-    boxShadow: '0 4px 6px rgba(79, 70, 229, 0.25)'
+    marginBottom: '1rem'
   },
   buttonDisabled: {
     cursor: 'not-allowed',
     opacity: 0.7
   },
-  //  DIVIDER STYLES
   divider: {
     textAlign: 'center',
-    margin: '1rem 0 1rem',
-    position: 'relative',
-    fontSize: '14px',
-    color: '#999'
+    margin: '1rem 0',
+    position: 'relative'
   },
-  dividerText: {
-    background: 'white',
-    padding: '0 10px',
-    color: '#999'
-  },
-  //  GOOGLE BUTTON STYLES
   googleButton: {
     width: '100%',
     padding: '0.875rem',
@@ -315,24 +311,11 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '10px',
-    transition: 'all 0.2s'
+    gap: '10px'
   },
   googleIcon: {
     color: '#DB4437',
     fontSize: '1.2rem'
-  },
-  testButton: {
-    width: '100%',
-    padding: '0.75rem',
-    background: 'transparent',
-    color: '#4f46e5',
-    border: '2px dashed #4f46e5',
-    borderRadius: '12px',
-    fontSize: '0.95rem',
-    fontWeight: '500',
-    cursor: 'pointer',
-    marginBottom: '1.5rem'
   },
   footer: {
     textAlign: 'center',
@@ -341,17 +324,29 @@ const styles = {
   },
   footerText: {
     color: '#6b7280',
-    marginBottom: '0.5rem',
-    fontSize: '0.95rem'
+    marginBottom: '0.5rem'
   },
   registerLink: {
     color: '#4f46e5',
     textDecoration: 'none',
-    fontWeight: '600',
-    fontSize: '1rem',
-    display: 'inline-block',
-    padding: '0.5rem 1rem'
+    fontWeight: '600'
   }
 };
+
+// Add animation to head (if not already present)
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+`;
+document.head.appendChild(styleSheet);
 
 export default Login;
