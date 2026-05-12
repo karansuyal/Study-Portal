@@ -749,7 +749,6 @@ def reset_password():
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import quote
 import json
-import jwt
 from flask import url_for 
 
 # Google OAuth Configuration
