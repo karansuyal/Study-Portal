@@ -422,7 +422,7 @@ const Register = () => {
                 <div>
                   <label className="rg-lbl">Full Name <span className="rg-req">*</span></label>
                   <input className="rg-inp" type="text" name="name" value={formData.name}
-                    onChange={handleChange} placeholder="e.g. Rahul Sharma" required />
+                    onChange={handleChange} placeholder="e.g. Karan Suyal" required />
                 </div>
                 <div>
                   <label className="rg-lbl">Email Address <span className="rg-req">*</span></label>
