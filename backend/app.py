@@ -554,8 +554,9 @@ def send_password_reset_email(to_email, token, name):
         reset_link = f"https://study-portal-app.vercel.app/reset-password?token={token}"
         
         print(f"📧 Sending password reset email to: {to_email}")
+        print(f"🔗 Reset link: {reset_link}")
         
-        # Create email message
+        # Create email using Flask-Mail (Brevo SMTP)
         msg = Message(
             subject="Reset Your Study Portal Password",
             recipients=[to_email],
@@ -586,7 +587,7 @@ def send_password_reset_email(to_email, token, name):
         return True
         
     except Exception as e:
-        print(f"❌ Password reset email failed: {str(e)}")
+        print(f" Password reset email failed: {str(e)}")
         traceback.print_exc()
         return False
 
@@ -612,7 +613,6 @@ def forgot_password():
         # Find user
         user = User.query.filter_by(email=email).first()
         
-        # Always return success for security (don't reveal if email exists)
         if not user:
             print(f"🔍 Forgot password attempt for non-existent email: {email}")
             return jsonify({
@@ -626,19 +626,13 @@ def forgot_password():
         user.verification_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
         db.session.commit()
         
-        # Send reset email via Brevo SMTP
-        email_sent = send_password_reset_email(user.email, reset_token, user.name)
+        # Send reset email
+        send_password_reset_email(user.email, reset_token, user.name)
         
-        if email_sent:
-            return jsonify({
-                'success': True,
-                'message': 'Password reset instructions sent to your email.'
-            }), 200
-        else:
-            return jsonify({
-                'success': True,
-                'message': 'Unable to send email. Please try again later.'
-            }), 200
+        return jsonify({
+            'success': True,
+            'message': 'Password reset instructions sent to your email.'
+        }), 200
         
     except Exception as e:
         print(f" Forgot password error: {str(e)}")
@@ -692,8 +686,9 @@ def reset_password():
         }), 200
         
     except Exception as e:
-        print(f"Reset password error: {str(e)}")
+        print(f" Reset password error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+    
     
 # ==================== GOOGLE OAUTH CONFIGURATION ====================
 from authlib.integrations.flask_client import OAuth
