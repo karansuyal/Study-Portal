@@ -748,6 +748,7 @@ def reset_password():
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import quote
 import json
+from flask import url_for 
 
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
@@ -770,9 +771,10 @@ google = oauth.register(
 def google_login():
     try:
         redirect_uri = url_for('google_callback', _external=True)
+        print(f"🔐 Google login redirect URI: {redirect_uri}")
         return google.authorize_redirect(redirect_uri)
     except Exception as e:
-        print(f"❌ Google login error: {str(e)}")
+        print(f" Google login error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # Google Callback Route
@@ -799,13 +801,12 @@ def google_callback():
                 semester=1,
                 role='student',
                 is_verified=True,
-                password=''  # No password for Google users
+                password='' 
             )
-            # Set dummy password (not used)
             user.set_password('google_auth_' + secrets.token_urlsafe(16))
             db.session.add(user)
             db.session.commit()
-            print(f"New user created via Google: {email}")
+            print(f" New user created via Google: {email}")
         
         # Create JWT token
         access_token = create_access_token(identity=str(user.id))
@@ -823,6 +824,7 @@ def google_callback():
         
     except Exception as e:
         print(f" Google callback error: {str(e)}")
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
 @app.route('/api/auth/profile', methods=['GET'])
