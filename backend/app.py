@@ -522,30 +522,29 @@ def register():
             branch=data['branch'],
             semester=int(data['semester']),
             role=data.get('role', 'student'),
-            is_verified=False
+            is_verified=True  # ← DIRECT REGISTRATION
         )
         user.set_password(data['password'])
 
         token = user.generate_verification_token()
-        print(f" Generated token: {token}")
+        print(f"🔑 Generated token: {token}")
 
         db.session.add(user)
         db.session.commit()
-        print(f" User saved with ID: {user.id}")
-
-        send_verification_email(user.email, token, user.name)
+        print(f"User saved with ID: {user.id}")
 
         return jsonify({
             'success': True,
-            'message': 'Registration successful! Please check your email to verify your account.',
+            'message': 'Registration successful! You can now login.',
             'user': user.to_dict()
         }), 201
 
     except Exception as e:
         db.session.rollback()
-        print(f" ERROR in register: {str(e)}")
+        print(f"ERROR in register: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+    
     
 def send_password_reset_email(to_email, token, name):
     try:
