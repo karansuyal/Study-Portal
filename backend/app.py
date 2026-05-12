@@ -547,100 +547,46 @@ def register():
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
-# ==================== FORGOT PASSWORD ROUTES ====================
+# ==================== FORGOT PASSWORD ROUTES (Using Brevo SMTP) ====================
 
 def send_password_reset_email(to_email, token, name):
     try:
         reset_link = f"https://study-portal-app.vercel.app/reset-password?token={token}"
         
-        print(f" Preparing password reset email for: {to_email}")
-        print(f"🔗 Reset link: {reset_link}")
+        print(f"📧 Sending password reset email to: {to_email}")
         
-        SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-        if not SENDGRID_API_KEY:
-            print(" SENDGRID_API_KEY not found in environment variables")
-            return False
-            
-        print(f" SendGrid API Key found (length: {len(SENDGRID_API_KEY)})")
-    
+        # Create email message
+        msg = Message(
+            subject="Reset Your Study Portal Password",
+            recipients=[to_email],
+            html=f"""
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"></head>
+            <body style="font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px;">
+                <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h1 style="color: #4f46e5;">📚 Study Portal</h1>
+                    <h2>Password Reset Request</h2>
+                    <p>Hello <strong>{name}</strong>,</p>
+                    <p>We received a request to reset your password. Click the button below to set a new password:</p>
+                    <a href="{reset_link}" style="display: inline-block; padding: 12px 24px; background: #4f46e5; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
+                    <p>Or copy this link: <span style="color: #4f46e5;">{reset_link}</span></p>
+                    <p>This link will expire in 1 hour.</p>
+                    <hr style="margin: 20px 0;">
+                    <p style="color: #999; font-size: 12px;">If you didn't request this, please ignore this email.</p>
+                </div>
+            </body>
+            </html>
+            """,
+            sender=app.config['MAIL_DEFAULT_SENDER']
+        )
         
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                <tr>
-                    <td style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 28px;">📚 Study Portal</h1>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 40px 30px;">
-                        <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
-                        <p style="color: #666; line-height: 1.6; font-size: 16px;">
-                            Hello {name}, we received a request to reset your password. Click the button below to set a new password:
-                        </p>
-
-                        <div style="text-align: center; margin: 35px 0;">
-                            <a href="{reset_link}"
-                               style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-                                 Reset Password
-                            </a>
-                        </div>
-
-                        <p style="color: #666; line-height: 1.6; font-size: 14px;">
-                            Or copy and paste this link in your browser:<br>
-                            <span style="color: #667eea; word-break: break-all;">{reset_link}</span>
-                        </p>
-
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-                        <p style="color: #999; font-size: 12px; margin: 0;">
-                             This link will expire in 1 hour.<br>
-                            If you didn't request this, please ignore this email.
-                        </p>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 20px; background: #f9f9f9; text-align: center; border-top: 1px solid #eee;">
-                        <p style="color: #999; font-size: 12px; margin: 0;">
-                            © 2026 Study Portal. All rights reserved.
-                        </p>
-                    </td>
-                </tr>
-            </table>
-        </body>
-        </html>
-        """
+        mail.send(msg)
+        print(f"Password reset email sent to {to_email}")
+        return True
         
-        sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
-        from_email = Email("studyportal02@gmail.com")
-        to_email = To(to_email)
-        subject = "Password Reset Request - Study Portal"
-        content = Content("text/html", html_content)
-        
-        mail = Mail(from_email, to_email, subject, content)
-        print(f"📤 Sending via SendGrid...")
-        
-        response = sg.client.mail.send.post(request_body=mail.get())
-        
-        print(f" SendGrid response status: {response.status_code}")
-        print(f" SendGrid response body: {response.body}")
-        print(f" SendGrid response headers: {response.headers}")
-        
-        if response.status_code == 202:
-            print(f" Password reset email sent to {to_email}")
-            return True
-        else:
-            print(f" SendGrid error: {response.status_code}")
-            return False
-            
     except Exception as e:
-        print(f" Password reset email failed: {str(e)}")
+        print(f"❌ Password reset email failed: {str(e)}")
         traceback.print_exc()
         return False
 
@@ -666,7 +612,7 @@ def forgot_password():
         # Find user
         user = User.query.filter_by(email=email).first()
         
-        # Always return success even if user not found (security)
+        # Always return success for security (don't reveal if email exists)
         if not user:
             print(f"🔍 Forgot password attempt for non-existent email: {email}")
             return jsonify({
@@ -680,13 +626,19 @@ def forgot_password():
         user.verification_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
         db.session.commit()
         
-        # Send reset email
-        send_password_reset_email(user.email, reset_token, user.name)
+        # Send reset email via Brevo SMTP
+        email_sent = send_password_reset_email(user.email, reset_token, user.name)
         
-        return jsonify({
-            'success': True,
-            'message': 'Password reset instructions sent to your email.'
-        }), 200
+        if email_sent:
+            return jsonify({
+                'success': True,
+                'message': 'Password reset instructions sent to your email.'
+            }), 200
+        else:
+            return jsonify({
+                'success': True,
+                'message': 'Unable to send email. Please try again later.'
+            }), 200
         
     except Exception as e:
         print(f" Forgot password error: {str(e)}")
@@ -740,11 +692,9 @@ def reset_password():
         }), 200
         
     except Exception as e:
-        print(f" Reset password error: {str(e)}")
+        print(f"Reset password error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
-
-
+    
 # ==================== GOOGLE OAUTH CONFIGURATION ====================
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import quote
