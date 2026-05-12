@@ -65,9 +65,9 @@ const config = {
       name: 'MCA',
       fullName: 'Master of Computer Applications',
       icon: '💼',
-      duration: 2, // ✅ CORRECTED: MCA is 2 years, not 3
+      duration: 2, //  CORRECTED: MCA is 2 years, not 3
       semestersPerYear: 2,
-      totalSemesters: 4, // ✅ CORRECTED: 2 years × 2 semesters = 4 semesters
+      totalSemesters: 4, //  CORRECTED: 2 years × 2 semesters = 4 semesters
       color: '#F59E0B', // Orange
       description: 'Computer applications postgraduate program',
       branches: ['Computer Applications']

@@ -188,7 +188,7 @@ const SemesterSelection = () => {
   if (yearNum > course.duration) {
     return (
       <div className="semester-error-container">
-        <div className="semester-error-icon">⚠️</div>
+        <div className="semester-error-icon"></div>
         <h3>Invalid Year for {course.name}</h3>
         <p>
           <strong>{course.name}</strong> has only <strong>{course.duration} years</strong> 

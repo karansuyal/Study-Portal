@@ -28,12 +28,12 @@ async function fetchAPI(endpoint, options = {}) {
 
     return response.json();
   } catch (error) {
-    console.error('❌ API Error:', error);
+    console.error(' API Error:', error);
     throw error;
   }
 }
 
-// ✅ HEALTH CHECK
+//  HEALTH CHECK
 export const checkHealth = async () => {
   return fetchAPI('/health');
 };
@@ -42,7 +42,7 @@ export const healthCheck = async () => {
   return checkHealth();
 };
 
-// ✅ AUTH APIs
+//  AUTH APIs
 export const register = async (userData) => {
   return fetchAPI('/auth/register', {
     method: 'POST',
@@ -61,7 +61,7 @@ export const getCurrentUser = async () => {
   return fetchAPI('/auth/profile');
 };
 
-// ✅ COURSE APIs
+//  COURSE APIs
 export const getCourses = async () => {
   try {
     const response = await fetchAPI('/programs');
@@ -92,7 +92,7 @@ export const getCourseById = async (courseId) => {
   }
 };
 
-// ✅ FEATURED COURSES
+//  FEATURED COURSES
 export const getFeaturedCourses = async (limit = 6) => {
   try {
     const data = await getCourses();
@@ -105,7 +105,7 @@ export const getFeaturedCourses = async (limit = 6) => {
   }
 };
 
-// ✅ YEARS APIs
+//  YEARS APIs
 export const getCourseYears = async (courseId) => {
   try {
     const durations = { 1: 4, 2: 3, 3: 3, 4: 2, 5: 2 };
@@ -131,7 +131,7 @@ export const getCourseYears = async (courseId) => {
   }
 };
 
-// ✅ SEMESTERS APIs
+//  SEMESTERS APIs
 export const getSemestersForYear = async (courseId, yearId) => {
   try {
     return [
@@ -146,7 +146,7 @@ export const getSemestersForYear = async (courseId, yearId) => {
   }
 };
 
-// ✅ SUBJECT APIs
+//  SUBJECT APIs
 const getMockSubjects = (semesterId) => {
   const semesterSubjects = {
     1: [
@@ -208,7 +208,7 @@ export const getSubject = async (subjectId) => {
   }
 };
 
-// ✅ MATERIAL APIs
+//  MATERIAL APIs
 const getMockMaterials = () => {
   return [
     {
@@ -254,7 +254,7 @@ export const getMaterial = async (materialId) => {
   }
 };
 
-// ✅ FILE UPLOAD
+//  FILE UPLOAD
 export const uploadMaterial = async (formData) => {
   const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
   
@@ -271,7 +271,7 @@ export const uploadMaterial = async (formData) => {
   return response.json();
 };
 
-// ✅ FILE DOWNLOAD
+//  FILE DOWNLOAD
 export const downloadMaterial = async (materialId, filename) => {
   const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
   
@@ -297,7 +297,7 @@ export const downloadMaterial = async (materialId, filename) => {
   return { success: true };
 };
 
-// ✅ SEARCH
+//  SEARCH
 export const searchMaterials = async (query, filters = {}) => {
   try {
     const response = await getMaterials({ search: query, ...filters });
@@ -307,7 +307,7 @@ export const searchMaterials = async (query, filters = {}) => {
   }
 };
 
-// ✅ USER DOWNLOADS
+//  USER DOWNLOADS
 export const getUserDownloads = async () => {
   try {
     const response = await fetchAPI('/my-uploads');
@@ -317,12 +317,12 @@ export const getUserDownloads = async () => {
   }
 };
 
-// ✅ NOTES
+//  NOTES
 export const getNotes = async () => {
   return getMaterials();
 };
 
-// ✅ ADD SAMPLE COURSES
+//  ADD SAMPLE COURSES
 export const addSampleCourses = async () => {
   try {
     return await fetchAPI('/reset-db', { method: 'POST' });
@@ -331,7 +331,7 @@ export const addSampleCourses = async () => {
   }
 };
 
-// ✅ DATABASE INFO
+//  DATABASE INFO
 export const getDBInfo = async () => {
   try {
     const response = await fetchAPI('/admin/stats');
@@ -352,7 +352,7 @@ export const getDBInfo = async () => {
   }
 };
 
-// ✅ STATISTICS - FIXED with error handling
+//  STATISTICS - FIXED with error handling
 export const getStats = async () => {
   try {
     const dbInfo = await getDBInfo();
@@ -377,7 +377,7 @@ export const getStats = async () => {
   }
 };
 
-// ✅ DATABASE INITIALIZATION
+//  DATABASE INITIALIZATION
 export const initDatabase = async () => {
   try {
     return await fetchAPI('/init-db', { method: 'GET' });
@@ -386,7 +386,7 @@ export const initDatabase = async () => {
   }
 };
 
-// ✅ DEFAULT EXPORT
+//  DEFAULT EXPORT
 const api = {
   register,
   login,

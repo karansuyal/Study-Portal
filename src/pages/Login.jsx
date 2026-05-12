@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { FaGoogle } from 'react-icons/fa';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -43,6 +44,11 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  //  GOOGLE LOGIN HANDLER
+  const handleGoogleLogin = () => {
+    window.location.href = 'https://study-portal-ill8.onrender.com/api/auth/google';
   };
 
   const useTestCredentials = () => {
@@ -119,6 +125,21 @@ const Login = () => {
               {loading ? 'Logging in...' : 'Login'}
             </button>
             
+            {/*  DIVIDER */}
+            <div style={styles.divider}>
+              <span>OR</span>
+            </div>
+            
+            {/*  GOOGLE LOGIN BUTTON */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              style={styles.googleButton}
+            >
+              <FaGoogle style={styles.googleIcon} />
+              Sign in with Google
+            </button>
+            
             {/* Test Credentials */}
             <button
               type="button"
@@ -142,7 +163,7 @@ const Login = () => {
   );
 };
 
-// Optimized styles - no animations, no transitions
+// Optimized styles
 const styles = {
   container: {
     minHeight: '100vh',
@@ -265,6 +286,41 @@ const styles = {
   buttonDisabled: {
     cursor: 'not-allowed',
     opacity: 0.7
+  },
+  //  DIVIDER STYLES
+  divider: {
+    textAlign: 'center',
+    margin: '1rem 0 1rem',
+    position: 'relative',
+    fontSize: '14px',
+    color: '#999'
+  },
+  dividerText: {
+    background: 'white',
+    padding: '0 10px',
+    color: '#999'
+  },
+  //  GOOGLE BUTTON STYLES
+  googleButton: {
+    width: '100%',
+    padding: '0.875rem',
+    background: 'white',
+    color: '#333',
+    border: '1px solid #ddd',
+    borderRadius: '12px',
+    fontSize: '1rem',
+    fontWeight: '500',
+    cursor: 'pointer',
+    marginBottom: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    transition: 'all 0.2s'
+  },
+  googleIcon: {
+    color: '#DB4437',
+    fontSize: '1.2rem'
   },
   testButton: {
     width: '100%',

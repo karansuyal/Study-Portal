@@ -22,9 +22,10 @@ import AdminPanel from './pages/AdminPanel';
 import ScrollToTop from './components/ScrollToTop';
 import { CounterProvider } from './contexts/CounterContext';
 import Chatbot from './components/Chatbot';  
+import AuthCallback from './pages/AuthCallback';
 
 
-// ✅ HIERARCHICAL PAGES IMPORTS
+//  HIERARCHICAL PAGES IMPORTS
 import YearSelection from './pages/YearSelection.jsx';
 import SemesterSelection from './pages/SemesterSelection.jsx';
 import SubjectSelection from './pages/SubjectSelection.jsx';
@@ -66,6 +67,7 @@ function App() {
                 <Route path="/admin-dashboard" element={<AdminPanel />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                
 
                 {/* New Hierarchical Routes */}

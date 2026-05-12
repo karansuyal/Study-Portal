@@ -37,7 +37,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ✅ Main Card - Remove any height restrictions */
+/*  Main Card - Remove any height restrictions */
 .register-card {
   max-width: 650px;
   width: 100%;

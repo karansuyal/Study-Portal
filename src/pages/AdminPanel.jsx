@@ -70,11 +70,11 @@ const AdminPanel = () => {
       const data = await response.json();
       
       if (response.ok) {
-        alert(`✅ Note approved!\nGoogle Drive URL: ${data.drive_url || 'Uploaded to Drive'}`);
+        alert(` Note approved!\nGoogle Drive URL: ${data.drive_url || 'Uploaded to Drive'}`);
         fetchPendingNotes();
         fetchStats(); // Refresh stats
       } else {
-        alert(`❌ Failed: ${data.error || 'Unknown error'}`);
+        alert(` Failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -101,7 +101,7 @@ const AdminPanel = () => {
       });
       
       if (response.ok) {
-        alert('❌ Note rejected!');
+        alert(' Note rejected!');
         fetchPendingNotes();
         fetchStats();
       } else {
@@ -149,7 +149,7 @@ const AdminPanel = () => {
         <StatCard title="Total Users" value={stats.total_users} icon="👥" />
         <StatCard title="Total Courses" value={stats.total_courses} icon="📚" />
         <StatCard title="Total Notes" value={stats.total_notes} icon="📝" />
-        <StatCard title="Approved Notes" value={stats.approved_notes} icon="✅" color="green" />
+        <StatCard title="Approved Notes" value={stats.approved_notes} icon="" color="green" />
         <StatCard title="Pending Notes" value={stats.pending_notes} icon="⏳" color="orange" />
         <StatCard title="Downloads" value={stats.total_downloads} icon="⬇️" />
       </div>
@@ -289,7 +289,7 @@ const AdminPanel = () => {
                       gap: '0.5rem'
                     }}
                   >
-                    ❌ Reject
+                     Reject
                   </button>
                   <button 
                     onClick={() => handleApprove(note.id)}
@@ -306,7 +306,7 @@ const AdminPanel = () => {
                       gap: '0.5rem'
                     }}
                   >
-                    ✅ Approve
+                     Approve
                   </button>
                 </div>
               </div>

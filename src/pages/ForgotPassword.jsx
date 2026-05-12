@@ -61,7 +61,7 @@ const ForgotPassword = () => {
           color: '#1f2937',
           fontSize: '1.8rem'
         }}>
-          🔑 Forgot Password
+           Forgot Password
         </h2>
         
         <p style={{
@@ -83,7 +83,7 @@ const ForgotPassword = () => {
             marginBottom: '1rem',
             textAlign: 'center'
           }}>
-            ❌ {error}
+             {error}
           </div>
         )}
         
@@ -96,7 +96,7 @@ const ForgotPassword = () => {
             marginBottom: '1rem',
             textAlign: 'center'
           }}>
-            ✅ {message}
+             {message}
           </div>
         )}
         

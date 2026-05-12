@@ -106,7 +106,7 @@ const Home = () => {
     const [downloading, setDownloading] = useState(false);
     const typeStyle = getMaterialTypeColor(material.type);
 
-    // ✅ useNoteStats hook - UNIVERSAL COUNTERS
+    //  useNoteStats hook - UNIVERSAL COUNTERS
     const stats = useNoteStats(material.id, {
       views: material.views || 0,
       downloads: material.downloads || 0,
@@ -117,7 +117,7 @@ const Home = () => {
       setDownloading(true);
 
       try {
-        // ✅ Universal download increment
+        //  Universal download increment
         stats.incrementDownload();
 
         if (material.cloudinary_url) {
@@ -203,7 +203,7 @@ const Home = () => {
           link.click();
         }
       } catch (error) {
-        console.error("❌ Download error:", error);
+        console.error(" Download error:", error);
         alert(`Download failed: ${error.message}`);
       } finally {
         setDownloading(false);
@@ -240,12 +240,12 @@ const Home = () => {
         <div className="material-stats">
           <div className="stat-item">
             <span className="stat-icon">👁️</span>
-            <span className="stat-value">{stats.views}</span> {/* ✅ UPDATED */}
+            <span className="stat-value">{stats.views}</span> {/*  UPDATED */}
           </div>
           <div className="stat-item">
             <span className="stat-icon">⬇️</span>
             <span className="stat-value">{stats.downloads}</span>{" "}
-            {/* ✅ UPDATED */}
+            {/*  UPDATED */}
           </div>
         </div>
 
@@ -281,7 +281,7 @@ const Home = () => {
         setShowAddCoursesBtn(true);
       }
     } catch (error) {
-      console.error("❌ Backend connection failed:", error);
+      console.error(" Backend connection failed:", error);
     }
   };
 
@@ -289,11 +289,11 @@ const Home = () => {
     try {
       setLoading(true);
       const result = await addSampleCourses();
-      alert(`✅ ${result.message}`);
+      alert(` ${result.message}`);
       setShowAddCoursesBtn(false);
       fetchData();
     } catch (error) {
-      alert("❌ Failed to add sample courses");
+      alert(" Failed to add sample courses");
       console.error(error);
     } finally {
       setLoading(false);
@@ -413,7 +413,7 @@ const Home = () => {
           }));
 
   const features = [
-    {title: "Updated Content", desc: "Regularly updated materials", icon: "✅"},
+    {title: "Updated Content", desc: "Regularly updated materials", icon: ""},
     {title: "Easy Search", desc: "Find materials quickly", icon: "🔍"},
     {title: "Mobile Friendly", desc: "Access on any device", icon: "📱"},
     {title: "Free Forever", desc: "All resources free", icon: "🆓"},
@@ -576,7 +576,7 @@ const Home = () => {
           </div>
         ) : materialsError ? (
           <div className="error-container">
-            <div className="error-icon">❌</div>
+            <div className="error-icon"></div>
             <h3>Failed to load materials</h3>
             <p>{materialsError}</p>
           </div>

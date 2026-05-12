@@ -45,7 +45,7 @@
   border-color: #667eea;
 }
 
-/* ✅ Title */
+/*  Title */
 .material-title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -55,7 +55,7 @@
   word-break: break-word;
 }
 
-/* ✅ Details Column */
+/*  Details Column */
 .material-details {
   margin-bottom: 0.75rem;
 }
@@ -81,7 +81,7 @@
   text-overflow: ellipsis;
 }
 
-/* ✅ Badge - Date ke niche same column mein */
+/*  Badge - Date ke niche same column mein */
 .badge-detail-item {
   margin-top: 0.25rem;
 }
@@ -95,7 +95,7 @@
   display: inline-block;
 }
 
-/* ✅ Stats */
+/*  Stats */
 .material-stats {
   display: flex;
   gap: 1.5rem;
@@ -121,7 +121,7 @@
   font-weight: 500;
 }
 
-/* ✅ Actions */
+/*  Actions */
 .material-actions {
   display: flex;
   gap: 0.5rem;
@@ -166,7 +166,7 @@
   cursor: not-allowed;
 }
 
-/* ✅ Loading, Error, Empty States */
+/*  Loading, Error, Empty States */
 .loading-container {
   text-align: center;
   padding: 3rem;
@@ -216,7 +216,7 @@
   font-size: 0.9rem;
 }
 
-/* ✅ Responsive */
+/*  Responsive */
 @media (max-width: 768px) {
   .all-materials-container {
     padding: 1rem 0.5rem;

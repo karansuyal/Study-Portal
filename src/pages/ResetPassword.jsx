@@ -100,7 +100,7 @@ const ResetPassword = () => {
             marginBottom: '1rem',
             textAlign: 'center'
           }}>
-            ❌ {error}
+             {error}
           </div>
         )}
         
@@ -113,7 +113,7 @@ const ResetPassword = () => {
             marginBottom: '1rem',
             textAlign: 'center'
           }}>
-            ✅ {message}
+             {message}
           </div>
         )}
         
