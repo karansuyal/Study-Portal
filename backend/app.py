@@ -547,148 +547,36 @@ def register():
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
-# ==================== FORGOT PASSWORD ROUTES (Using Brevo SMTP) ====================
-
 def send_password_reset_email(to_email, token, name):
     try:
         reset_link = f"https://study-portal-app.vercel.app/reset-password?token={token}"
         
-        print(f"📧 Sending password reset email to: {to_email}")
+        print(f"📧 Password reset for: {to_email}")
         print(f"🔗 Reset link: {reset_link}")
         
-        # Create email using Flask-Mail (Brevo SMTP)
+        # Simple email using Flask-Mail (Brevo SMTP)
         msg = Message(
             subject="Reset Your Study Portal Password",
             recipients=[to_email],
             html=f"""
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="UTF-8"></head>
-            <body style="font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px;">
-                <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h1 style="color: #4f46e5;">📚 Study Portal</h1>
-                    <h2>Password Reset Request</h2>
-                    <p>Hello <strong>{name}</strong>,</p>
-                    <p>We received a request to reset your password. Click the button below to set a new password:</p>
-                    <a href="{reset_link}" style="display: inline-block; padding: 12px 24px; background: #4f46e5; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
-                    <p>Or copy this link: <span style="color: #4f46e5;">{reset_link}</span></p>
-                    <p>This link will expire in 1 hour.</p>
-                    <hr style="margin: 20px 0;">
-                    <p style="color: #999; font-size: 12px;">If you didn't request this, please ignore this email.</p>
-                </div>
-            </body>
-            </html>
+            <div style="font-family: Arial, sans-serif; text-align: center;">
+                <h2>Password Reset Request</h2>
+                <p>Click <a href="{reset_link}">here</a> to reset your password.</p>
+                <p>Or copy this link: {reset_link}</p>
+                <p>Link expires in 1 hour.</p>
+            </div>
             """,
             sender=app.config['MAIL_DEFAULT_SENDER']
         )
         
         mail.send(msg)
-        print(f"Password reset email sent to {to_email}")
+        print(f" Email sent to {to_email}")
         return True
         
     except Exception as e:
-        print(f" Password reset email failed: {str(e)}")
-        traceback.print_exc()
-        return False
-
-
-@app.route('/api/auth/forgot-password', methods=['POST', 'OPTIONS'])
-def forgot_password():
-    # Handle preflight OPTIONS request
-    if request.method == 'OPTIONS':
-        response = jsonify({'success': True})
-        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-app.vercel.app')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response, 200
+        print(f" Email failed: {str(e)}")
         
-    try:
-        data = request.get_json()
-        email = data.get('email')
-        
-        if not email:
-            return jsonify({'success': False, 'error': 'Email is required'}), 400
-            
-        # Find user
-        user = User.query.filter_by(email=email).first()
-        
-        if not user:
-            print(f"🔍 Forgot password attempt for non-existent email: {email}")
-            return jsonify({
-                'success': True, 
-                'message': 'If an account exists with this email, you will receive password reset instructions.'
-            }), 200
-            
-        # Generate reset token
-        reset_token = secrets.token_urlsafe(32)
-        user.verification_token = reset_token
-        user.verification_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
-        db.session.commit()
-        
-        # Send reset email
-        send_password_reset_email(user.email, reset_token, user.name)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Password reset instructions sent to your email.'
-        }), 200
-        
-    except Exception as e:
-        print(f" Forgot password error: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
-@app.route('/api/auth/reset-password', methods=['POST', 'OPTIONS'])
-def reset_password():
-    # Handle preflight OPTIONS request
-    if request.method == 'OPTIONS':
-        response = jsonify({'success': True})
-        response.headers.add('Access-Control-Allow-Origin', 'https://study-portal-app.vercel.app')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response, 200
-        
-    try:
-        data = request.get_json()
-        token = data.get('token')
-        new_password = data.get('password')
-        
-        if not token or not new_password:
-            return jsonify({'success': False, 'error': 'Token and password are required'}), 400
-            
-        # Find user by token
-        user = User.query.filter_by(verification_token=token).first()
-        
-        if not user:
-            return jsonify({'success': False, 'error': 'Invalid or expired token'}), 400
-            
-        # Check expiry
-        current_time = datetime.now(timezone.utc)
-        if user.verification_token_expiry.tzinfo is None:
-            expiry = user.verification_token_expiry.replace(tzinfo=timezone.utc)
-        else:
-            expiry = user.verification_token_expiry
-            
-        if expiry < current_time:
-            return jsonify({'success': False, 'error': 'Token expired'}), 400
-            
-        # Update password
-        user.set_password(new_password)
-        user.verification_token = None
-        user.verification_token_expiry = None
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Password reset successfully! You can now login with your new password.'
-        }), 200
-        
-    except Exception as e:
-        print(f" Reset password error: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    
+        return True
     
 # ==================== GOOGLE OAUTH CONFIGURATION ====================
 from authlib.integrations.flask_client import OAuth
