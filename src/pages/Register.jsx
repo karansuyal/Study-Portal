@@ -21,20 +21,20 @@ const Register = () => {
   const navigate = useNavigate();
 
   const courses = [
-    { value: 'BTech', label: 'B.Tech — Bachelor of Technology' },
-    { value: 'BCA',   label: 'BCA — Bachelor of Computer Applications' },
-    { value: 'BBA',   label: 'BBA — Bachelor of Business Administration' },
-    { value: 'MCA',   label: 'MCA — Master of Computer Applications' },
-    { value: 'MBA',   label: 'MBA — Master of Business Administration' },
-    { value: 'Other', label: 'Other Course' }
+    { value: 'BTech', label: 'B.Tech' },
+    { value: 'BCA',   label: 'BCA' },
+    { value: 'BBA',   label: 'BBA' },
+    { value: 'MCA',   label: 'MCA' },
+    { value: 'MBA',   label: 'MBA' },
+    { value: 'Other', label: 'Other' }
   ];
 
   const btechBranches = [
-    { value: 'CSE',        label: 'Computer Science Engineering' },
-    { value: 'ECE',        label: 'Electronics & Communication' },
+    { value: 'CSE',        label: 'Computer Science' },
+    { value: 'ECE',        label: 'Electronics & Comm.' },
     { value: 'EEE',        label: 'Electrical & Electronics' },
-    { value: 'Mechanical', label: 'Mechanical Engineering' },
-    { value: 'Civil',      label: 'Civil Engineering' },
+    { value: 'Mechanical', label: 'Mechanical' },
+    { value: 'Civil',      label: 'Civil' },
     { value: 'IT',         label: 'Information Technology' },
     { value: 'Other',      label: 'Other Branch' }
   ];
@@ -62,210 +62,254 @@ const Register = () => {
   const strength = getStrength(formData.password);
 
   useEffect(() => {
+    const existing = document.getElementById('rg-styles');
+    if (existing) existing.remove();
     const style = document.createElement('style');
     style.id = 'rg-styles';
     style.textContent = `
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-.rg-page{
-  min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
-  background:linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4c1d95 100%);
-  padding:2rem 1rem;font-family:'DM Sans',sans-serif;position:relative;overflow:hidden;
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.rg-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4c1d95 100%);
+  padding: 1.5rem 1rem 3rem;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
 }
-.rg-page::before{
-  content:'';position:absolute;top:-180px;left:-180px;
-  width:480px;height:480px;
-  background:radial-gradient(circle,rgba(129,140,248,.14) 0%,transparent 70%);
-  pointer-events:none;
+
+.rg-card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 32px 72px rgba(0,0,0,.32);
+  overflow: hidden;
+  animation: rg-rise .45s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  z-index: 1;
 }
-.rg-page::after{
-  content:'';position:absolute;bottom:-140px;right:-140px;
-  width:420px;height:420px;
-  background:radial-gradient(circle,rgba(167,139,250,.11) 0%,transparent 70%);
-  pointer-events:none;
+
+@keyframes rg-rise {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.rg-card{
-  width:100%;max-width:600px;background:#fff;border-radius:24px;
-  box-shadow:0 32px 72px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.06);
-  overflow:hidden;animation:rg-rise .5s cubic-bezier(.4,0,.2,1);
-  position:relative;z-index:1;margin-bottom:2rem;
+
+.rg-head {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  padding: 1.75rem 1.5rem 2.75rem;
+  text-align: center;
+  position: relative;
 }
-@keyframes rg-rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.rg-head{
-  background:linear-gradient(135deg,#4338ca 0%,#6d28d9 100%);
-  padding:2rem 2rem 2.75rem;text-align:center;position:relative;
+.rg-head::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0; height: 40px;
+  background: #fff;
+  border-radius: 55% 55% 0 0 / 100% 100% 0 0;
 }
-.rg-head::after{
-  content:'';position:absolute;bottom:-1px;left:0;right:0;height:44px;
-  background:#fff;border-radius:55% 55% 0 0/100% 100% 0 0;
+.rg-logo {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.28);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin: 0 auto .85rem;
 }
-.rg-logo{
-  width:58px;height:58px;border-radius:50%;
-  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.28);
-  display:flex;align-items:center;justify-content:center;font-size:26px;
-  margin:0 auto 1rem;
+.rg-title {
+  font-family: 'Sora', sans-serif; font-size: 1.45rem; font-weight: 700;
+  color: #fff; letter-spacing: -.3px; margin-bottom: 4px;
 }
-.rg-title{
-  font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:700;
-  color:#fff;margin-bottom:4px;letter-spacing:-.3px;
+.rg-sub { color: rgba(255,255,255,.75); font-size: .85rem; }
+
+/* Step bar */
+.rg-step-bar {
+  display: flex; align-items: center; justify-content: center;
+  padding: .9rem 1rem 0; gap: 0; overflow: hidden;
 }
-.rg-sub{color:rgba(255,255,255,.75);font-size:.87rem;}
-.rg-steps{
-  display:flex;align-items:center;justify-content:center;gap:0;
-  margin:0 2rem 1.5rem;padding-top:.5rem;
+.rg-step-item { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.rg-step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; font-weight: 600; font-family: 'Sora', sans-serif;
+  border: 2px solid #e5e7eb; color: #9ca3af; background: #f9fafb;
+  transition: .25s; flex-shrink: 0;
 }
-.rg-step{
-  display:flex;align-items:center;gap:8px;
+.rg-step-num.done   { background: #4338ca; border-color: #4338ca; color: #fff; }
+.rg-step-num.active { background: #4338ca; border-color: #4338ca; color: #fff; box-shadow: 0 0 0 3px rgba(67,56,202,.18); }
+.rg-step-lbl { font-size: .7rem; color: #9ca3af; font-weight: 500; white-space: nowrap; }
+.rg-step-lbl.active { color: #4338ca; font-weight: 600; }
+.rg-connector { height: 2px; width: 28px; background: #e5e7eb; margin: 0 4px; flex-shrink: 0; transition: .25s; }
+.rg-connector.done { background: #4338ca; }
+
+/* Body */
+.rg-body { padding: 1.25rem 1.5rem 1.75rem; }
+
+/* Alerts */
+.rg-info {
+  background: #eff6ff; border-left: 3px solid #3b82f6; border-radius: 10px;
+  padding: .65rem .9rem; margin-bottom: 1.1rem;
+  font-size: .8rem; color: #1d4ed8;
+  display: flex; align-items: flex-start; gap: 7px; line-height: 1.5;
 }
-.rg-step-num{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.75rem;font-weight:600;font-family:'Sora',sans-serif;
-  transition:.3s;
-  border:2px solid #e5e7eb;color:#9ca3af;background:#f9fafb;
+.rg-err {
+  background: #fee2e2; border-left: 3px solid #dc2626; border-radius: 10px;
+  padding: .65rem .9rem; margin-bottom: 1.1rem;
+  font-size: .8rem; color: #b91c1c;
+  display: flex; align-items: flex-start; gap: 7px;
 }
-.rg-step-num.done{background:#4338ca;border-color:#4338ca;color:#fff;}
-.rg-step-num.active{background:#4338ca;border-color:#4338ca;color:#fff;box-shadow:0 0 0 3px rgba(67,56,202,.2);}
-.rg-step-label{font-size:.75rem;color:#9ca3af;font-weight:500;}
-.rg-step-label.active{color:#4338ca;font-weight:600;}
-.rg-connector{width:40px;height:2px;background:#e5e7eb;margin:0 4px;flex-shrink:0;}
-.rg-connector.done{background:#4338ca;}
-.rg-body{padding:0 2rem 2rem;}
-.rg-info{
-  background:#eff6ff;border-left:3px solid #3b82f6;border-radius:10px;
-  padding:.75rem 1rem;margin-bottom:1.4rem;
-  display:flex;align-items:center;gap:8px;
-  font-size:.82rem;color:#1d4ed8;
+
+/* Form */
+.rg-grid { display: grid; gap: .9rem; }
+.rg-row  { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+
+.rg-lbl { display: block; font-size: .76rem; font-weight: 500; color: #374151; margin-bottom: 5px; }
+.rg-req { color: #ef4444; margin-left: 2px; }
+
+.rg-inp, .rg-sel {
+  width: 100%; padding: .68rem .9rem;
+  border: 1.5px solid #e5e7eb; border-radius: 11px;
+  font-size: .88rem; font-family: 'DM Sans', sans-serif;
+  color: #1e1b4b; background: #f9fafb; outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  appearance: none; -webkit-appearance: none;
 }
-.rg-err{
-  background:#fee2e2;border-left:3px solid #dc2626;border-radius:10px;
-  padding:.75rem 1rem;margin-bottom:1.4rem;
-  display:flex;align-items:center;gap:8px;
-  font-size:.82rem;color:#b91c1c;
+.rg-inp:focus, .rg-sel:focus {
+  border-color: #4338ca; background: #fff;
+  box-shadow: 0 0 0 3px rgba(67,56,202,.1);
 }
-.rg-grid{display:grid;gap:1rem;}
-.rg-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.rg-field{}
-.rg-lbl{
-  display:block;font-size:.78rem;font-weight:500;color:#374151;
-  margin-bottom:6px;
+.rg-sel-wrap { position: relative; }
+.rg-sel-wrap::after {
+  content: '▾'; position: absolute; right: 11px; top: 50%;
+  transform: translateY(-50%); color: #9ca3af; font-size: .72rem; pointer-events: none;
 }
-.rg-req{color:#ef4444;margin-left:2px;}
-.rg-inp,.rg-sel{
-  width:100%;padding:.72rem 1rem;
-  border:1.5px solid #e5e7eb;border-radius:11px;
-  font-size:.9rem;font-family:'DM Sans',sans-serif;color:#1e1b4b;
-  background:#f9fafb;outline:none;transition:.2s;
-  appearance:none;-webkit-appearance:none;
+
+.rg-pw-wrap { position: relative; }
+.rg-pw-inp  { padding-right: 2.75rem; }
+.rg-pw-btn  {
+  position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: #9ca3af; font-size: 15px; padding: 4px; line-height: 1; transition: color .2s;
 }
-.rg-inp:focus,.rg-sel:focus{
-  border-color:#4338ca;background:#fff;
-  box-shadow:0 0 0 3px rgba(67,56,202,.1);
+.rg-pw-btn:hover { color: #4338ca; }
+
+.rg-strength { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.rg-bars     { display: flex; gap: 3px; flex: 1; }
+.rg-bar      { height: 4px; flex: 1; border-radius: 3px; background: #e5e7eb; transition: background .3s; }
+.rg-str-txt  { font-size: .7rem; color: #9ca3af; min-width: 48px; text-align: right; }
+.rg-mismatch { font-size: .72rem; color: #ef4444; margin-top: 4px; }
+
+/* Buttons */
+.rg-actions { display: flex; gap: .65rem; margin-top: 1.25rem; }
+.rg-btn {
+  flex: 1; padding: .78rem; border: none; border-radius: 12px;
+  font-family: 'Sora', sans-serif; font-size: .9rem; font-weight: 600;
+  cursor: pointer; transition: transform .15s, box-shadow .2s, opacity .2s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
 }
-.rg-sel-wrap{position:relative;}
-.rg-sel-wrap::after{
-  content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  color:#9ca3af;font-size:.75rem;pointer-events:none;
+.rg-btn-primary {
+  background: linear-gradient(135deg, #4338ca, #6d28d9); color: #fff;
+  box-shadow: 0 4px 14px rgba(67,56,202,.3);
 }
-.rg-pw-wrap{position:relative;}
-.rg-pw-inp{padding-right:3rem;}
-.rg-pw-toggle{
-  position:absolute;right:10px;top:50%;transform:translateY(-50%);
-  background:none;border:none;cursor:pointer;color:#9ca3af;
-  font-size:16px;padding:4px;transition:color .2s;line-height:1;
+.rg-btn-primary:hover:not(:disabled)  { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(67,56,202,.4); }
+.rg-btn-primary:active:not(:disabled) { transform: scale(.98); }
+.rg-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+.rg-btn-ghost {
+  background: #f3f4f6; color: #374151; border: 1.5px solid #e5e7eb;
+  flex: 0 0 auto; padding: .78rem 1.1rem;
 }
-.rg-pw-toggle:hover{color:#4338ca;}
-.rg-strength{display:flex;align-items:center;gap:10px;margin-top:8px;}
-.rg-bars{display:flex;gap:4px;flex:1;}
-.rg-bar{height:4px;flex:1;border-radius:4px;background:#e5e7eb;transition:.3s;}
-.rg-str-txt{font-size:.72rem;color:#9ca3af;min-width:50px;text-align:right;}
-.rg-actions{display:flex;gap:.75rem;margin-top:1.5rem;}
-.rg-btn{
-  flex:1;padding:.82rem;border:none;border-radius:12px;
-  font-family:'Sora',sans-serif;font-size:.92rem;font-weight:600;
-  cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+.rg-btn-ghost:hover { background: #e9e9f0; }
+
+/* Process box */
+.rg-process {
+  background: #f8f7ff; border-radius: 12px;
+  padding: .9rem 1.1rem; margin-top: 1rem;
+  font-size: .78rem; color: #374151;
 }
-.rg-btn-primary{
-  background:linear-gradient(135deg,#4338ca,#6d28d9);color:#fff;
-  box-shadow:0 4px 14px rgba(67,56,202,.32);
+.rg-process h5 {
+  color: #4338ca; font-family: 'Sora', sans-serif;
+  font-size: .78rem; font-weight: 600; margin-bottom: .45rem;
 }
-.rg-btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(67,56,202,.42);}
-.rg-btn-primary:disabled{opacity:.65;cursor:not-allowed;}
-.rg-btn-ghost{
-  background:#f3f4f6;color:#374151;border:1.5px solid #e5e7eb;
-  flex:0 0 auto;padding:.82rem 1.25rem;
+.rg-process ol { padding-left: 1.15rem; color: #6b7280; line-height: 1.85; }
+
+/* Footer */
+.rg-footer { text-align: center; padding-top: 1rem; border-top: 1px solid #f3f4f6; margin-top: 1.1rem; }
+.rg-footer p { font-size: .8rem; color: #9ca3af; margin-bottom: 3px; }
+.rg-link { color: #4338ca; font-weight: 600; font-size: .85rem; text-decoration: none; }
+.rg-link:hover { color: #6d28d9; }
+
+/* Spinner */
+.rg-spinner {
+  width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+  border-radius: 50%; animation: rg-spin .7s linear infinite;
 }
-.rg-btn-ghost:hover{background:#e9e9f0;border-color:#c7c7d9;}
-.rg-spinner{
-  width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
-  border-top-color:#fff;border-radius:50%;
-  animation:rg-spin .7s linear infinite;
-}
-@keyframes rg-spin{to{transform:rotate(360deg)}}
-.rg-footer{text-align:center;padding-top:1.25rem;border-top:1px solid #f3f4f6;}
-.rg-footer p{font-size:.82rem;color:#9ca3af;margin-bottom:4px;}
-.rg-link{color:#4338ca;font-weight:600;font-size:.88rem;text-decoration:none;}
-.rg-link:hover{color:#6d28d9;}
-.rg-process{
-  background:#f8f7ff;border-radius:12px;padding:1rem 1.25rem;
-  margin-top:1.25rem;font-size:.8rem;color:#374151;
-}
-.rg-process h5{color:#4338ca;font-weight:600;font-family:'Sora',sans-serif;margin-bottom:.5rem;font-size:.82rem;}
-.rg-process ol{padding-left:1.2rem;color:#6b7280;line-height:1.8;}
+@keyframes rg-spin { to { transform: rotate(360deg); } }
 
 /* Verification */
-.rg-verify{
-  width:100%;max-width:460px;background:#fff;border-radius:24px;
-  box-shadow:0 32px 72px rgba(0,0,0,.32);overflow:hidden;
-  animation:rg-rise .5s cubic-bezier(.4,0,.2,1);
-  position:relative;z-index:1;
+.rg-verify {
+  width: 100%; max-width: 440px; background: #fff; border-radius: 24px;
+  box-shadow: 0 32px 72px rgba(0,0,0,.32); overflow: hidden;
+  animation: rg-rise .45s cubic-bezier(.4,0,.2,1); position: relative; z-index: 1;
 }
-.rg-verify-head{
-  background:linear-gradient(135deg,#059669,#10b981);
-  padding:2rem 2rem 2.75rem;text-align:center;position:relative;
+.rg-verify-head {
+  background: linear-gradient(135deg, #059669, #10b981);
+  padding: 1.75rem 1.5rem 2.75rem; text-align: center; position: relative;
 }
-.rg-verify-head::after{
-  content:'';position:absolute;bottom:-1px;left:0;right:0;height:44px;
-  background:#fff;border-radius:55% 55% 0 0/100% 100% 0 0;
+.rg-verify-head::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 40px;
+  background: #fff; border-radius: 55% 55% 0 0 / 100% 100% 0 0;
 }
-.rg-check-ring{
-  width:66px;height:66px;border-radius:50%;
-  background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  margin:0 auto 1rem;
+.rg-check-ring {
+  width: 62px; height: 62px; border-radius: 50%;
+  background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.32);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin: 0 auto .85rem;
 }
-.rg-verify-body{padding:1.75rem 2rem 2rem;}
-.rg-email-badge{
-  background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;
-  padding:.65rem 1rem;margin:1rem 0;text-align:center;
-  font-size:.88rem;font-weight:500;color:#065f46;
-  word-break:break-all;
+.rg-verify-body { padding: 1.5rem; }
+.rg-email-badge {
+  background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px;
+  padding: .6rem .9rem; margin: .85rem 0; text-align: center;
+  font-size: .85rem; font-weight: 500; color: #065f46; word-break: break-all;
 }
-.rg-steps-list{
-  background:#f8f7ff;border-radius:12px;padding:1rem 1.25rem;
-  margin:1rem 0;
+.rg-steps-box {
+  background: #f8f7ff; border-radius: 12px; padding: .9rem 1.1rem; margin: .85rem 0;
 }
-.rg-steps-list h5{color:#4338ca;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;margin-bottom:.6rem;}
-.rg-steps-list ol{padding-left:1.2rem;color:#6b7280;font-size:.82rem;line-height:1.8;}
-.rg-verify-actions{display:flex;flex-direction:column;gap:.65rem;}
-.rg-btn-green{
-  background:linear-gradient(135deg,#059669,#10b981);color:#fff;
-  box-shadow:0 4px 14px rgba(16,185,129,.3);
+.rg-steps-box h5 { color: #4338ca; font-family: 'Sora',sans-serif; font-size: .78rem; font-weight: 600; margin-bottom: .45rem; }
+.rg-steps-box ol { padding-left: 1.15rem; color: #6b7280; font-size: .8rem; line-height: 1.85; }
+.rg-verify-actions { display: flex; flex-direction: column; gap: .6rem; }
+.rg-btn-green  { background: linear-gradient(135deg,#059669,#10b981); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,.28); }
+.rg-btn-green:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,.38); }
+.rg-btn-outline { background: #fff; color: #4338ca; border: 1.5px solid #c7d2fe; }
+.rg-btn-outline:hover { background: #f5f4ff; }
+
+/* ─── MOBILE FIX ─── */
+@media (max-width: 480px) {
+  .rg-page { padding: 1rem .75rem 2.5rem; }
+  .rg-head { padding: 1.5rem 1rem 2.5rem; }
+  .rg-body { padding: 1rem 1rem 1.5rem; }
+
+  /* Hide labels, shrink connectors → step numbers only */
+  .rg-step-lbl  { display: none; }
+  .rg-connector { width: 18px; margin: 0 3px; }
+  .rg-step-bar  { padding: .7rem .75rem 0; }
+
+  /* Stack two-column grids */
+  .rg-row { grid-template-columns: 1fr; }
+
+  .rg-btn  { font-size: .85rem; padding: .72rem; }
+  .rg-title { font-size: 1.25rem; }
+  .rg-logo  { width: 48px; height: 48px; font-size: 20px; }
 }
-.rg-btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.4);}
-.rg-btn-outline{
-  background:#fff;color:#4338ca;border:1.5px solid #c7d2fe;
-}
-.rg-btn-outline:hover{background:#f5f4ff;}
-@media(max-width:540px){
-  .rg-body{padding:0 1.25rem 1.5rem;}
-  .rg-head{padding:1.75rem 1.25rem 2.5rem;}
-  .rg-row{grid-template-columns:1fr;}
-  .rg-verify-body{padding:1.25rem;}
+
+@media (max-width: 360px) {
+  .rg-connector { width: 12px; }
+  .rg-step-num  { width: 24px; height: 24px; font-size: .65rem; }
 }
     `;
     document.head.appendChild(style);
-    return () => { const el = document.getElementById('rg-styles'); if(el) el.remove(); };
+    return () => { const el = document.getElementById('rg-styles'); if (el) el.remove(); };
   }, []);
 
   const handleChange = (e) => {
@@ -281,10 +325,9 @@ const Register = () => {
     e.preventDefault();
     setError('');
     if (step === 1) {
-      if (!formData.name || !formData.email) { setError('Please fill in all fields.'); return; }
+      if (!formData.name.trim() || !formData.email.trim()) { setError('Please fill in all fields.'); return; }
       setStep(2);
-    } else if (step === 2) {
-      if (!formData.course || !formData.branch || !formData.semester) { setError('Please fill in all fields.'); return; }
+    } else {
       setStep(3);
     }
   };
@@ -296,7 +339,7 @@ const Register = () => {
     if (formData.password.length < 6) { setError('Password must be at least 6 characters.'); return; }
     setLoading(true);
     try {
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/auth/register', {
+      const res = await fetch('https://study-portal-ill8.onrender.com/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -304,7 +347,7 @@ const Register = () => {
           course: formData.course, branch: formData.branch, semester: parseInt(formData.semester)
         }),
       });
-      const data = await response.json();
+      const data = await res.json();
       if (data.success) {
         setVerificationEmail(data.user.email);
         setVerificationSent(true);
@@ -324,13 +367,13 @@ const Register = () => {
         <div className="rg-verify">
           <div className="rg-verify-head">
             <div className="rg-check-ring">✓</div>
-            <div className="rg-title" style={{color:'#fff',fontFamily:'Sora,sans-serif',fontSize:'1.4rem',fontWeight:700,marginBottom:4}}>Account Created!</div>
-            <div style={{color:'rgba(255,255,255,.78)',fontSize:'.87rem'}}>One last step — verify your email</div>
+            <div style={{color:'#fff',fontFamily:'Sora,sans-serif',fontSize:'1.3rem',fontWeight:700,marginBottom:4}}>Account Created!</div>
+            <div style={{color:'rgba(255,255,255,.75)',fontSize:'.83rem'}}>One last step — verify your email</div>
           </div>
           <div className="rg-verify-body">
-            <p style={{fontSize:'.85rem',color:'#6b7280',textAlign:'center'}}>We've sent a verification link to:</p>
+            <p style={{fontSize:'.82rem',color:'#6b7280',textAlign:'center'}}>We've sent a verification link to:</p>
             <div className="rg-email-badge">{verificationEmail}</div>
-            <div className="rg-steps-list">
+            <div className="rg-steps-box">
               <h5>Next steps</h5>
               <ol>
                 <li>Check your inbox (and spam folder)</li>
@@ -354,6 +397,7 @@ const Register = () => {
   return (
     <div className="rg-page">
       <div className="rg-card">
+
         <div className="rg-head">
           <div className="rg-logo">📚</div>
           <h1 className="rg-title">Create Account</h1>
@@ -361,33 +405,35 @@ const Register = () => {
         </div>
 
         {/* Step indicator */}
-        <div className="rg-steps" style={{padding:'1.25rem 2rem 0'}}>
+        <div className="rg-step-bar">
           {stepLabels.map((label, i) => {
             const n = i + 1;
-            const isDone = step > n;
+            const isDone   = step > n;
             const isActive = step === n;
             return (
               <React.Fragment key={n}>
                 {i > 0 && <div className={`rg-connector${isDone ? ' done' : ''}`} />}
-                <div className="rg-step">
+                <div className="rg-step-item">
                   <div className={`rg-step-num${isDone ? ' done' : isActive ? ' active' : ''}`}>
                     {isDone ? '✓' : n}
                   </div>
-                  <span className={`rg-step-label${isActive ? ' active' : ''}`}>{label}</span>
+                  <span className={`rg-step-lbl${isActive ? ' active' : ''}`}>{label}</span>
                 </div>
               </React.Fragment>
             );
           })}
         </div>
 
-        <div className="rg-body" style={{marginTop:'1.5rem'}}>
+        <div className="rg-body">
+
           <div className="rg-info">
-            <span>ℹ</span> Verify your email after registration before logging in.
+            <span style={{flexShrink:0}}>ℹ</span>
+            Verify your email after registration before logging in.
           </div>
 
           {error && (
             <div className="rg-err">
-              <span>⚠</span> {error}
+              <span style={{flexShrink:0}}>⚠</span> {error}
             </div>
           )}
 
@@ -395,23 +441,21 @@ const Register = () => {
           {step === 1 && (
             <form onSubmit={handleNext}>
               <div className="rg-grid">
-                <div className="rg-field">
+                <div>
                   <label className="rg-lbl">Full Name <span className="rg-req">*</span></label>
                   <input className="rg-inp" type="text" name="name" value={formData.name}
                     onChange={handleChange} placeholder="e.g. Rahul Sharma" required />
                 </div>
-                <div className="rg-field">
+                <div>
                   <label className="rg-lbl">Email Address <span className="rg-req">*</span></label>
                   <input className="rg-inp" type="email" name="email" value={formData.email}
                     onChange={handleChange} placeholder="student@example.com" required />
                 </div>
               </div>
               <div className="rg-actions">
-                <button type="submit" className="rg-btn rg-btn-primary">
-                  Continue →
-                </button>
+                <button type="submit" className="rg-btn rg-btn-primary">Continue →</button>
               </div>
-              <div className="rg-footer" style={{marginTop:'1.25rem'}}>
+              <div className="rg-footer">
                 <p>Already have an account?</p>
                 <Link to="/login" className="rg-link">Login here</Link>
               </div>
@@ -423,7 +467,7 @@ const Register = () => {
             <form onSubmit={handleNext}>
               <div className="rg-grid">
                 <div className="rg-row">
-                  <div className="rg-field">
+                  <div>
                     <label className="rg-lbl">Course <span className="rg-req">*</span></label>
                     <div className="rg-sel-wrap">
                       <select className="rg-sel" name="course" value={formData.course} onChange={handleChange} required>
@@ -431,7 +475,7 @@ const Register = () => {
                       </select>
                     </div>
                   </div>
-                  <div className="rg-field">
+                  <div>
                     <label className="rg-lbl">
                       {formData.course === 'BTech' ? 'Branch' : 'Specialization'} <span className="rg-req">*</span>
                     </label>
@@ -444,7 +488,7 @@ const Register = () => {
                     </div>
                   </div>
                 </div>
-                <div className="rg-field">
+                <div>
                   <label className="rg-lbl">Current Semester <span className="rg-req">*</span></label>
                   <div className="rg-sel-wrap">
                     <select className="rg-sel" name="semester" value={formData.semester} onChange={handleChange} required>
@@ -465,24 +509,26 @@ const Register = () => {
             <form onSubmit={handleRegister}>
               <div className="rg-grid">
                 <div className="rg-row">
-                  <div className="rg-field">
+                  <div>
                     <label className="rg-lbl">Password <span className="rg-req">*</span></label>
                     <div className="rg-pw-wrap">
-                      <input className="rg-inp rg-pw-inp" type={showPassword ? 'text' : 'password'}
-                        name="password" value={formData.password} onChange={handleChange}
-                        placeholder="Min. 6 characters" required />
-                      <button type="button" className="rg-pw-toggle" onClick={() => setShowPassword(v => !v)}>
+                      <input className="rg-inp rg-pw-inp"
+                        type={showPassword ? 'text' : 'password'}
+                        name="password" value={formData.password}
+                        onChange={handleChange} placeholder="Min. 6 characters" required />
+                      <button type="button" className="rg-pw-btn" onClick={() => setShowPassword(v => !v)}>
                         {showPassword ? '🙈' : '👁'}
                       </button>
                     </div>
                   </div>
-                  <div className="rg-field">
+                  <div>
                     <label className="rg-lbl">Confirm Password <span className="rg-req">*</span></label>
                     <div className="rg-pw-wrap">
-                      <input className="rg-inp rg-pw-inp" type={showConfirmPassword ? 'text' : 'password'}
-                        name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-                        placeholder="Re-enter password" required />
-                      <button type="button" className="rg-pw-toggle" onClick={() => setShowConfirmPassword(v => !v)}>
+                      <input className="rg-inp rg-pw-inp"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        name="confirmPassword" value={formData.confirmPassword}
+                        onChange={handleChange} placeholder="Re-enter password" required />
+                      <button type="button" className="rg-pw-btn" onClick={() => setShowConfirmPassword(v => !v)}>
                         {showConfirmPassword ? '🙈' : '👁'}
                       </button>
                     </div>
@@ -502,7 +548,7 @@ const Register = () => {
                 )}
 
                 {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <div style={{fontSize:'.78rem',color:'#ef4444',marginTop:'-4px'}}>⚠ Passwords don't match</div>
+                  <div className="rg-mismatch">⚠ Passwords don't match</div>
                 )}
               </div>
 
@@ -523,12 +569,13 @@ const Register = () => {
                 </button>
               </div>
 
-              <div className="rg-footer" style={{marginTop:'1.25rem'}}>
+              <div className="rg-footer">
                 <p>Already have an account?</p>
                 <Link to="/login" className="rg-link">Login here</Link>
               </div>
             </form>
           )}
+
         </div>
       </div>
     </div>
