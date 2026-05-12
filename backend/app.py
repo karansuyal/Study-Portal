@@ -744,6 +744,87 @@ def reset_password():
 
 
 
+# ==================== GOOGLE OAUTH CONFIGURATION ====================
+from authlib.integrations.flask_client import OAuth
+from urllib.parse import quote
+import json
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id=GOOGLE_CLIENT_ID,
+    client_secret=GOOGLE_CLIENT_SECRET,
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile',
+        'prompt': 'select_account'
+    }
+)
+
+# Google Login Route
+@app.route('/api/auth/google')
+def google_login():
+    try:
+        redirect_uri = url_for('google_callback', _external=True)
+        return google.authorize_redirect(redirect_uri)
+    except Exception as e:
+        print(f"❌ Google login error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Google Callback Route
+@app.route('/api/auth/google/callback')
+def google_callback():
+    try:
+        token = google.authorize_access_token()
+        user_info = google.parse_id_token(token)
+        
+        email = user_info.get('email')
+        name = user_info.get('name', email.split('@')[0])
+        
+        print(f"Google user: {email} - {name}")
+        
+        # Check if user exists
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            # Create new user
+            user = User(
+                name=name,
+                email=email,
+                branch='General',
+                semester=1,
+                role='student',
+                is_verified=True,
+                password=''  # No password for Google users
+            )
+            # Set dummy password (not used)
+            user.set_password('google_auth_' + secrets.token_urlsafe(16))
+            db.session.add(user)
+            db.session.commit()
+            print(f"New user created via Google: {email}")
+        
+        # Create JWT token
+        access_token = create_access_token(identity=str(user.id))
+        
+        # Encode user data for URL
+        user_json = json.dumps(user.to_dict())
+        encoded_user = quote(user_json)
+        
+        # Redirect to frontend with token
+        frontend_url = os.environ.get('FRONTEND_URL', 'https://study-portal-app.vercel.app')
+        redirect_url = f'{frontend_url}/auth/callback?token={access_token}&user={encoded_user}'
+        
+        print(f" Redirecting to: {redirect_url[:100]}...")
+        return redirect(redirect_url)
+        
+    except Exception as e:
+        print(f" Google callback error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 @app.route('/api/auth/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
