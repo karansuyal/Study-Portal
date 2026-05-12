@@ -30,23 +30,11 @@ const Register = () => {
   ];
 
   const btechBranches = [
-    { value: 'CSE',        label: 'Computer Science' },
-    { value: 'ECE',        label: 'Electronics & Comm.' },
-    { value: 'EEE',        label: 'Electrical & Electronics' },
-    { value: 'Mechanical', label: 'Mechanical' },
-    { value: 'Civil',      label: 'Civil' },
-    { value: 'IT',         label: 'Information Technology' },
-    { value: 'Other',      label: 'Other Branch' }
+    { value: 'CSE',        label: 'Computer Science' }
   ];
 
   const otherBranches = [
-    { value: 'General',          label: 'General' },
     { value: 'Computer Science', label: 'Computer Science' },
-    { value: 'Mathematics',      label: 'Mathematics' },
-    { value: 'Physics',          label: 'Physics' },
-    { value: 'Chemistry',        label: 'Chemistry' },
-    { value: 'Commerce',         label: 'Commerce' },
-    { value: 'Management',       label: 'Management' },
     { value: 'Other',            label: 'Other' }
   ];
 
@@ -372,16 +360,6 @@ const Register = () => {
           </div>
           <div className="rg-verify-body">
             <p style={{fontSize:'.82rem',color:'#6b7280',textAlign:'center'}}>We've sent a verification link to:</p>
-            <div className="rg-email-badge">{verificationEmail}</div>
-            <div className="rg-steps-box">
-              <h5>Next steps</h5>
-              <ol>
-                <li>Check your inbox (and spam folder)</li>
-                <li>Click the verification link</li>
-                <li>Return and log in to your account</li>
-                <li>Start uploading &amp; downloading materials</li>
-              </ol>
-            </div>
             <div className="rg-verify-actions">
               <button className="rg-btn rg-btn-green" onClick={() => navigate('/login')}>Go to Login</button>
               <button className="rg-btn rg-btn-outline" onClick={() => { setVerificationSent(false); setStep(1); }}>Try Again</button>
@@ -550,16 +528,6 @@ const Register = () => {
                 {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
                   <div className="rg-mismatch">⚠ Passwords don't match</div>
                 )}
-              </div>
-
-              <div className="rg-process">
-                <h5>Registration Process</h5>
-                <ol>
-                  <li>Fill form with your course details</li>
-                  <li>Verify your email (check inbox &amp; spam)</li>
-                  <li>Login with your credentials</li>
-                  <li>Start uploading / downloading materials</li>
-                </ol>
               </div>
 
               <div className="rg-actions">
