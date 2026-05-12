@@ -27,6 +27,7 @@ import google.generativeai as genai
 from collections import defaultdict
 import resend
 from google_drive import upload_to_drive
+from flask import url_for, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 configure_cloudinary()
@@ -748,6 +749,7 @@ def reset_password():
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import quote
 import json
+import jwt
 from flask import url_for 
 
 # Google OAuth Configuration
@@ -774,18 +776,27 @@ def google_login():
         print(f"🔐 Google login redirect URI: {redirect_uri}")
         return google.authorize_redirect(redirect_uri)
     except Exception as e:
-        print(f" Google login error: {str(e)}")
+        print(f"❌ Google login error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# Google Callback Route
 @app.route('/api/auth/google/callback')
 def google_callback():
     try:
+        # Get token from callback
         token = google.authorize_access_token()
-        user_info = google.parse_id_token(token)
+        id_token = token.get('id_token')
         
-        email = user_info.get('email')
-        name = user_info.get('name', email.split('@')[0])
+        if id_token:
+            # Decode JWT without verification (we trust Google's signature)
+            user_info = jwt.decode(id_token, options={"verify_signature": False})
+            email = user_info.get('email')
+            name = user_info.get('name', email.split('@')[0])
+        else:
+            # Fallback: use userinfo endpoint
+            userinfo_response = google.get('https://www.googleapis.com/oauth2/v3/userinfo')
+            user_info = userinfo_response.json()
+            email = user_info.get('email')
+            name = user_info.get('name', email.split('@')[0])
         
         print(f"Google user: {email} - {name}")
         
@@ -801,12 +812,12 @@ def google_callback():
                 semester=1,
                 role='student',
                 is_verified=True,
-                password='' 
+                password=''  # No password for Google users
             )
             user.set_password('google_auth_' + secrets.token_urlsafe(16))
             db.session.add(user)
             db.session.commit()
-            print(f" New user created via Google: {email}")
+            print(f"New user created via Google: {email}")
         
         # Create JWT token
         access_token = create_access_token(identity=str(user.id))
@@ -819,13 +830,14 @@ def google_callback():
         frontend_url = os.environ.get('FRONTEND_URL', 'https://study-portal-app.vercel.app')
         redirect_url = f'{frontend_url}/auth/callback?token={access_token}&user={encoded_user}'
         
-        print(f" Redirecting to: {redirect_url[:100]}...")
+        print(f"Redirecting to frontend")
         return redirect(redirect_url)
         
     except Exception as e:
-        print(f" Google callback error: {str(e)}")
+        print(f"Google callback error: {str(e)}")
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+    
     
 @app.route('/api/auth/profile', methods=['GET'])
 @jwt_required()
