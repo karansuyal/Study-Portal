@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Globe, ArrowRight, Instagram, Twitter } from "lucide-react";
 
-// ─── Liquid-glass CSS injected once ───────────────────────────────────────────
 const GLASS_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 
@@ -38,7 +37,6 @@ const GLASS_CSS = `
   }
 `;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function injectStyles(id, css) {
   if (document.getElementById(id)) return;
   const el = document.createElement("style");
@@ -47,7 +45,6 @@ function injectStyles(id, css) {
   document.head.appendChild(el);
 }
 
-// ─── Video fade hook ──────────────────────────────────────────────────────────
 function useVideoFade(videoRef) {
   const rafRef = useRef(null);
   const fadingOutRef = useRef(false);
@@ -68,11 +65,10 @@ function useVideoFade(videoRef) {
       fadingOutRef.current = false;
       const start = performance.now();
       const duration = 500;
-      const from = startOpacity;
 
       const tick = (now) => {
         const t = Math.min((now - start) / duration, 1);
-        video.style.opacity = String(from + (1 - from) * t);
+        video.style.opacity = String(startOpacity + (1 - startOpacity) * t);
         if (t < 1) rafRef.current = requestAnimationFrame(tick);
       };
       rafRef.current = requestAnimationFrame(tick);
@@ -129,7 +125,6 @@ function useVideoFade(videoRef) {
   }, [videoRef]);
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function HeroSection() {
   const videoRef = useRef(null);
   useVideoFade(videoRef);
@@ -141,7 +136,7 @@ export default function HeroSection() {
   return (
     <div className="relative min-h-screen bg-black overflow-hidden flex flex-col">
 
-      {/* ── Background video ── */}
+      {/* Background video */}
       <video
         ref={videoRef}
         src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_115001_bcdaa3b4-03de-47e7-ad63-ae3e392c32d4.mp4"
@@ -153,13 +148,12 @@ export default function HeroSection() {
         style={{ opacity: 0 }}
       />
 
-      {/* ── Dark overlay for readability ── */}
+      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/30" />
 
-      {/* ── Navigation ── */}
+      {/* Navigation */}
       <nav className="relative z-20 pl-6 pr-6 py-6">
         <div className="liquid-glass rounded-full px-6 py-3 flex items-center justify-between max-w-5xl mx-auto">
-          {/* Left: logo + links */}
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
               <Globe size={24} className="text-white" />
@@ -177,8 +171,6 @@ export default function HeroSection() {
               ))}
             </div>
           </div>
-
-          {/* Right: auth buttons */}
           <div className="flex items-center gap-4">
             <button className="text-white text-sm font-medium hover:text-white/80 transition-colors">
               Sign Up
@@ -190,7 +182,7 @@ export default function HeroSection() {
         </div>
       </nav>
 
-      {/* ── Hero content ── */}
+      {/* Hero content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center -translate-y-[20%]">
         <h1
           className="text-5xl md:text-6xl lg:text-7xl text-white mb-8 tracking-tight whitespace-nowrap"
@@ -200,7 +192,6 @@ export default function HeroSection() {
         </h1>
 
         <div className="max-w-xl w-full space-y-4">
-          {/* Email bar */}
           <div className="liquid-glass rounded-full pl-6 pr-2 py-2 flex items-center gap-3">
             <input
               type="email"
@@ -212,12 +203,10 @@ export default function HeroSection() {
             </button>
           </div>
 
-          {/* Subtitle */}
           <p className="text-white text-sm leading-relaxed px-4">
             Stay updated with the latest news and insights. Subscribe to our newsletter today and never miss out on exciting updates.
           </p>
 
-          {/* Manifesto button */}
           <div className="flex justify-center">
             <button className="liquid-glass rounded-full px-8 py-3 text-white text-sm font-medium hover:bg-white/5 transition-colors">
               Read the Manifesto
@@ -226,24 +215,15 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* ── Social icons footer ── */}
+      {/* Social icons */}
       <div className="relative z-10 flex justify-center gap-4 pb-12">
-        <button
-          aria-label="Instagram"
-          className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all"
-        >
+        <button aria-label="Instagram" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
           <Instagram size={20} />
         </button>
-        <button
-          aria-label="Twitter"
-          className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all"
-        >
+        <button aria-label="Twitter" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
           <Twitter size={20} />
         </button>
-        <button
-          aria-label="Website"
-          className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all"
-        >
+        <button aria-label="Website" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
           <Globe size={20} />
         </button>
       </div>
