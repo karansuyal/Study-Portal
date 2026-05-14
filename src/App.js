@@ -23,6 +23,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { CounterProvider } from './contexts/CounterContext';
 import Chatbot from './components/Chatbot';  
 import AuthCallback from './pages/AuthCallback';
+import HeroSection from './components/HeroSection';
 
 
 //  HIERARCHICAL PAGES IMPORTS
@@ -68,6 +69,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
+                <HeroSection />
                
 
                 {/* New Hierarchical Routes */}
