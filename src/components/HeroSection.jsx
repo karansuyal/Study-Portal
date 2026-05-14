@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Globe, ArrowRight, Instagram, Twitter } from "lucide-react";
+import { Globe, ArrowRight, Twitter } from "lucide-react";
 
 const GLASS_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
@@ -65,7 +65,6 @@ function useVideoFade(videoRef) {
       fadingOutRef.current = false;
       const start = performance.now();
       const duration = 500;
-
       const tick = (now) => {
         const t = Math.min((now - start) / duration, 1);
         video.style.opacity = String(startOpacity + (1 - startOpacity) * t);
@@ -80,7 +79,6 @@ function useVideoFade(videoRef) {
       const start = performance.now();
       const duration = 500;
       const from = parseFloat(video.style.opacity ?? "1");
-
       const tick = (now) => {
         const t = Math.min((now - start) / duration, 1);
         video.style.opacity = String(from * (1 - t));
@@ -217,12 +215,19 @@ export default function HeroSection() {
 
       {/* Social icons */}
       <div className="relative z-10 flex justify-center gap-4 pb-12">
+        {/* Instagram — inline SVG since older lucide-react doesn't export it */}
         <button aria-label="Instagram" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
-          <Instagram size={20} />
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
         </button>
+
         <button aria-label="Twitter" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
           <Twitter size={20} />
         </button>
+
         <button aria-label="Website" className="liquid-glass rounded-full p-4 text-white/80 hover:text-white hover:bg-white/5 transition-all">
           <Globe size={20} />
         </button>
