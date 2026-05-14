@@ -69,7 +69,8 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
-                <HeroSection />
+                <Route path="/" element={<HeroSection />} />
+               
                
 
                 {/* New Hierarchical Routes */}
