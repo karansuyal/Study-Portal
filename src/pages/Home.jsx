@@ -461,7 +461,7 @@ const Home = () => {
             <span className="banner-icon">📚</span>
             <span className="banner-text">
               <strong>Welcome to Study Portal!</strong> Upload Notes, PYQs,
-              Syllabus and Study Materials to help others ILU Dollu!
+              Syllabus and Study Materials to help others!
             </span>
             <button className="banner-close" onClick={handleCloseBanner}>
               ✕
