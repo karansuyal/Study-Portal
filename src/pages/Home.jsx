@@ -460,8 +460,25 @@ const Home = () => {
           <div className="banner-content">
             <span className="banner-icon">📚</span>
             <span className="banner-text">
-              <strong>Welcome to Study Portal!</strong> Upload Notes, PYQs,
-              Syllabus and Study Materials to help others!
+              <strong>Welcome to Study Portal!</strong> ⚠️ Important Update Regarding Notes & Materials
+
+Hello everyone 👋
+
+I’m really sorry for the inconvenience.
+The previous database was running on a free-tier service, and its usage time/compute limit got exhausted unexpectedly. Because of this, I had to temporarily shift the website to a new database.
+
+Currently, the new database contains fewer notes and materials than before, so some content may be missing for now. 😔
+
+✅ The good news is:
+
+* Your uploads and new data are still working properly.
+* You can continue uploading and accessing newly added materials.
+* From next month, once the previous database becomes accessible again, the old data and notes will be restored gradually.
+
+I sincerely apologize for the inconvenience and thank you for your patience and support ❤️
+
+The platform will be fully stable soon with all previous data restored.
+!
             </span>
             <button className="banner-close" onClick={handleCloseBanner}>
               ✕
