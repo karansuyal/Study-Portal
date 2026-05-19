@@ -460,7 +460,7 @@ const Home = () => {
           <div className="banner-content">
             <span className="banner-icon">📚</span>
             <span className="banner-text">
-              <strong>Welcome to Study Portal! ⚠️ Important Update Regarding Notes & Materials
+              <strong>Welcome to Study Portal! 
 
 Hello everyone 👋
 
