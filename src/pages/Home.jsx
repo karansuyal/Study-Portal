@@ -389,9 +389,9 @@ const Home = () => {
 
         {/* Floating cards decoration */}
         <div className="hero-deco">
-          <div className="deco-card deco-1">📄 <span>Maths Notes</span></div>
-          <div className="deco-card deco-2">📝 <span>PYQ 2023</span></div>
-          <div className="deco-card deco-3">🔬 <span>Lab Manual</span></div>
+          <div className="deco-card deco-1">📄 <span>Computer Science Notes</span></div>
+          <div className="deco-card deco-2">📝 <span>PYQ / Syllabus </span></div>
+          <div className="deco-card deco-3">🔬 <span>Imp Question / Lab Manual</span></div>
         </div>
       </section>
 
@@ -409,10 +409,10 @@ const Home = () => {
             <p className="section-eyebrow">Browse by Program</p>
             <h2 className="section-title">Popular Courses</h2>
           </div>
-          <button className="section-link" onClick={() => navigate("/courses")}>
+          {/* <button className="section-link" onClick={() => navigate("/courses")}>
             View All Courses
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
+          </button> */}
         </div>
 
         {loading ? (
