@@ -715,22 +715,114 @@ def verify_email():
         print(f" Verification error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== AI CHATBOT (GEMINI API) ====================
+# ==================== AI CHATBOT (GROQCLOUD API) ====================
 import time
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    print(" Gemini AI configured successfully")
+import requests
+import json
+
+# GroqCloud Configuration
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+# Available Groq Models (all free)
+GROQ_MODELS = {
+    'fast': 'llama-3.1-8b-instant',           # Fastest, 8B params
+    'balanced': 'llama-3.3-70b-versatile',    # Best quality, 70B params
+    'coding': 'qwen-2.5-coder-32b',           # Best for coding questions
+    'vision': 'llama-3.2-11b-vision-preview', # For vision (if needed)
+}
+
+# Rate limiting for Groq (30 req/min = 0.5 sec between requests)
+RATE_LIMIT_SECONDS = 2  # Conservative: 30 req/min = 2 sec gap
+CACHE_TTL = 300
+
+cache = {}
+cache_time = {}
+last_request_time = defaultdict(float)
+
+def get_cache_key(prompt):
+    return hashlib.md5(prompt.encode()).hexdigest()
+
+def get_from_cache(prompt):
+    key = get_cache_key(prompt)
+    if key in cache:
+        if time.time() - cache_time[key] < CACHE_TTL:
+            return cache[key]
+    return None
+
+def save_to_cache(prompt, response):
+    key = get_cache_key(prompt)
+    cache[key] = response
+    cache_time[key] = time.time()
+
+def is_rate_limited(user_id="global"):
+    now = time.time()
+    if now - last_request_time[user_id] < RATE_LIMIT_SECONDS:
+        return True
+    last_request_time[user_id] = now
+    return False
+
+# GroqCloud API Call Function
+def get_groq_response(prompt, model_name=GROQ_MODELS['balanced']):
+    """Get response from GroqCloud API"""
     
-    # Test available models
+    if not GROQ_API_KEY:
+        return None
+    
+    if is_rate_limited():
+        return "⏳ Too many requests. Please wait a second."
+    
+    cached = get_from_cache(prompt)
+    if cached:
+        return cached
+    
     try:
-        available_models = genai.list_models()
-        gemini_models = [m.name for m in available_models if 'gemini' in m.name]
-        print(f"📋 Available Gemini models: {gemini_models[:5]}")
-    except:
-        print(" Could not list models")
-else:
-    print(" GEMINI_API_KEY not found, chatbot will use fallback mode")
+        headers = {
+            'Authorization': f'Bearer {GROQ_API_KEY}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            'model': model_name,
+            'messages': [
+                {'role': 'system', 'content': 'You are a helpful study assistant for college students.'},
+                {'role': 'user', 'content': prompt}
+            ],
+            'temperature': 0.7,
+            'max_tokens': 1024,
+            'top_p': 0.9,
+            'stream': False
+        }
+        
+        response = requests.post(
+            GROQ_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            ai_response = result['choices'][0]['message']['content'].strip()
+            save_to_cache(prompt, ai_response)
+            return ai_response
+        else:
+            error_detail = response.json() if response.text else {}
+            error_msg = error_detail.get('error', {}).get('message', 'Unknown error')
+            print(f" Groq API Error {response.status_code}: {error_msg}")
+            
+            # Rate limit specific handling
+            if response.status_code == 429:
+                return "⏳ API rate limit reached. Please try again in a few seconds."
+            
+            return None
+            
+    except requests.exceptions.Timeout:
+        print(" Groq API timeout")
+        return None
+    except Exception as e:
+        print(f" Groq API exception: {str(e)}")
+        return None
 
 # Helper function to get user context
 def get_user_context(user_id):
@@ -803,73 +895,7 @@ def search_knowledge_base(query, user_id=None):
         print(f"Search error: {e}")
         return {'subjects': [], 'notes': [], 'pyqs': []}
 
-# Function to get Gemini response
-
-MODEL_PRIORITY = [
-    "models/gemini-2.0-flash",
-    "models/gemini-2.5-flash",
-    "models/gemini-2.5-pro"
-]
-
-RATE_LIMIT_SECONDS = 1
-CACHE_TTL = 300
-
-cache = {}
-cache_time = {}
-
-def get_cache_key(prompt):
-    return hashlib.md5(prompt.encode()).hexdigest()
-
-def get_from_cache(prompt):
-    key = get_cache_key(prompt)
-    if key in cache:
-        if time.time() - cache_time[key] < CACHE_TTL:
-            return cache[key]
-    return None
-
-def save_to_cache(prompt, response):
-    key = get_cache_key(prompt)
-    cache[key] = response
-    cache_time[key] = time.time()
-
-last_request_time = defaultdict(float)
-
-def is_rate_limited(user_id="global"):
-    now = time.time()
-    if now - last_request_time[user_id] < RATE_LIMIT_SECONDS:
-        return True
-    last_request_time[user_id] = now
-    return False
-
-def get_gemini_response(prompt, user_id="global"):
-    if is_rate_limited(user_id):
-        return " Too many requests. Please wait a second."
-
-    cached = get_from_cache(prompt)
-    if cached:
-        return cached
-
-    for model_name in MODEL_PRIORITY:
-        try:
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content(prompt)
-
-            if response and response.text:
-                result = response.text.strip()
-                save_to_cache(prompt, result)
-                return result
-
-        except Exception as e:
-            error_msg = str(e)
-
-            if "429" in error_msg:
-                break
-
-            time.sleep(0.5)
-
-    return " AI service busy or quota exceeded. Try again later."
-
-# Chatbot endpoint
+# ==================== CHATBOT ENDPOINT ====================
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
 @jwt_required(optional=True)
 def chat_with_ai():
@@ -916,7 +942,7 @@ def chat_with_ai():
             for pyq in search_results['pyqs'][:2]:
                 context += f"- {pyq.title}\n"
         
-        # Prepare prompt
+        # Prepare prompt based on user context
         if user_context:
             prompt = f"""You are a helpful study assistant for a college student.
 
@@ -953,13 +979,18 @@ def chat_with_ai():
 
 **Your Response:**"""
 
-        # Call Gemini API or use fallback
+        # Call GroqCloud API (primary)
         ai_response = None
         
-        if GEMINI_API_KEY:
-            ai_response = get_gemini_response(prompt)
+        if GROQ_API_KEY:
+            # Try with best quality model first
+            ai_response = get_groq_response(prompt, GROQ_MODELS['balanced'])
+            
+            # If fails, try faster model as fallback
+            if not ai_response:
+                ai_response = get_groq_response(prompt, GROQ_MODELS['fast'])
         
-        # If Gemini failed or not configured, use fallback
+        # If Groq failed, use fallback
         if not ai_response:
             ai_response = fallback_response(user_message, context)
         
@@ -981,7 +1012,7 @@ def chat_with_ai():
         })
 
 def fallback_response(question, context):
-    """Fallback when Gemini API is not available"""
+    """Fallback when GroqCloud API is not available"""
     question_lower = question.lower()
     
     if 'notes' in question_lower or 'study material' in question_lower:
@@ -997,9 +1028,21 @@ def fallback_response(question, context):
         return "📋 Syllabus for all courses is available in the Materials section. Select your course, year, and semester to find the complete syllabus."
     
     else:
-        return f"👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n\nWhat would you like to know about {question}?"
+        return f"👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n\nWhat would you like to know?"
+
+# Test endpoint for Groq API
+@app.route('/api/chat/test', methods=['GET'])
+def test_groq():
+    """Test if Groq API is working"""
+    if not GROQ_API_KEY:
+        return jsonify({'success': False, 'error': 'GROQ_API_KEY not configured'})
     
+    test_response = get_groq_response("Say 'Hello! I am working!' in one sentence.")
     
+    if test_response:
+        return jsonify({'success': True, 'response': test_response})
+    else:
+        return jsonify({'success': False, 'error': 'Groq API not responding'})
 # ==================== ADMIN ROUTES ====================
 
 @app.route('/api/admin/stats', methods=['GET'])
