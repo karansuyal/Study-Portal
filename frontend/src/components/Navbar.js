@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   FaSearch, FaUpload, FaInfoCircle, FaHome, 
   FaGraduationCap, FaSignInAlt, FaUserPlus, FaBars, FaTimes,
-  FaSignOutAlt, FaAngleDown, FaUserCircle
+  FaSignOutAlt, FaAngleDown, FaUserCircle, FaMoon, FaSun
 } from 'react-icons/fa';
 import './Navbar.css';
 
@@ -19,9 +19,18 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('sp_dark_mode') === 'true';
+  });
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Dark mode apply on mount + toggle
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem('sp_dark_mode', darkMode);
+  }, [darkMode]);
 
   // Check login status
   useEffect(() => {
@@ -37,7 +46,6 @@ const Navbar = () => {
   const checkLoginStatus = () => {
     const token = localStorage.getItem('study_portal_token');
     const userData = localStorage.getItem('study_portal_user');
-    
     if (token && userData) {
       try {
         setUser(JSON.parse(userData));
@@ -54,14 +62,12 @@ const Navbar = () => {
 
   // Scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close menu on route change
+  // Close on route change
   useEffect(() => {
     setIsMenuOpen(false);
     setActiveDropdown(null);
@@ -69,19 +75,26 @@ const Navbar = () => {
     setShowSearchResults(false);
   }, [location]);
 
-  // Fetch courses
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (!e.target.closest('.dropdown-wrapper') && !e.target.closest('.search-container')) {
+        setActiveDropdown(null);
+        setShowSearchResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   useEffect(() => {
     fetchCourses();
   }, []);
 
-  // Debounced search - SIRF 5 COURSES
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchQuery.length > 1) {
-        performSearch();
-      } else {
-        setSearchResults([]);
-      }
+      if (searchQuery.length > 1) performSearch();
+      else setSearchResults([]);
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -93,29 +106,25 @@ const Navbar = () => {
       if (data.success) {
         setCourses(data.courses.slice(0, 6));
       } else {
-        // Fallback courses - SIRF 5 COURSES
-        setCourses([
-          { id: 1, name: 'B.Tech', icon: '💻', code: 'BTECH', duration: '4 Years', students: '2.5k+' },
-          { id: 2, name: 'BCA', icon: '📱', code: 'BCA', duration: '3 Years', students: '1.8k+' },
-          { id: 3, name: 'BBA', icon: '📊', code: 'BBA', duration: '3 Years', students: '1.2k+' },
-          { id: 4, name: 'MBA', icon: '🎓', code: 'MBA', duration: '2 Years', students: '900+' },
-          { id: 5, name: 'MCA', icon: '💼', code: 'MCA', duration: '2 Years', students: '750+' },
-        ]);
+        setFallbackCourses();
       }
     } catch (error) {
-      setCourses([
-        { id: 1, name: 'B.Tech', icon: '💻', code: 'BTECH', duration: '4 Years', students: '2.5k+' },
-        { id: 2, name: 'BCA', icon: '📱', code: 'BCA', duration: '3 Years', students: '1.8k+' },
-        { id: 3, name: 'BBA', icon: '📊', code: 'BBA', duration: '3 Years', students: '1.2k+' },
-        { id: 4, name: 'MBA', icon: '🎓', code: 'MBA', duration: '2 Years', students: '900+' },
-        { id: 5, name: 'MCA', icon: '💼', code: 'MCA', duration: '2 Years', students: '750+' },
-      ]);
+      setFallbackCourses();
     }
+  };
+
+  const setFallbackCourses = () => {
+    setCourses([
+      { id: 1, name: 'B.Tech', icon: '💻', code: 'BTECH', duration: '4 Years', students: '2.5k+' },
+      { id: 2, name: 'BCA', icon: '📱', code: 'BCA', duration: '3 Years', students: '1.8k+' },
+      { id: 3, name: 'BBA', icon: '📊', code: 'BBA', duration: '3 Years', students: '1.2k+' },
+      { id: 4, name: 'MBA', icon: '🎓', code: 'MBA', duration: '2 Years', students: '900+' },
+      { id: 5, name: 'MCA', icon: '💼', code: 'MCA', duration: '2 Years', students: '750+' },
+    ]);
   };
 
   const performSearch = () => {
     setLoading(true);
-    
     const allCourses = [
       { id: 1, name: 'B.Tech', fullName: 'Bachelor of Technology', icon: '💻', category: 'Engineering' },
       { id: 2, name: 'BCA', fullName: 'Bachelor of Computer Applications', icon: '📱', category: 'Computer Applications' },
@@ -123,43 +132,16 @@ const Navbar = () => {
       { id: 4, name: 'MBA', fullName: 'Master of Business Administration', icon: '🎓', category: 'Management' },
       { id: 5, name: 'MCA', fullName: 'Master of Computer Applications', icon: '💼', category: 'Computer Applications' },
     ];
-
     const query = searchQuery.toLowerCase().trim();
-    
-    const filtered = allCourses.filter(course => {
-      const nameMatch = course.name.toLowerCase().includes(query);
-      const fullNameMatch = course.fullName.toLowerCase().includes(query);
-      const categoryMatch = course.category.toLowerCase().includes(query);
-      
-      const btechMatch = (course.name === 'B.Tech') && (
-        query === 'btech' || query === 'b.tech' || query === 'b tech' || 
-        query === 'engineering' || query === 'bachelor of technology'
-      );
-      
-      const bcaMatch = (course.name === 'BCA') && (
-        query === 'bca' || query === 'computer applications' || query === 'bachelor of computer applications'
-      );
-      
-      const bbaMatch = (course.name === 'BBA') && (
-        query === 'bba' || query === 'business administration' || query === 'bachelor of business administration'
-      );
-      
-      const mbaMatch = (course.name === 'MBA') && (
-        query === 'mba' || query === 'master of business administration'
-      );
-      
-      const mcaMatch = (course.name === 'MCA') && (
-        query === 'mca' || query === 'master of computer applications'
-      );
-      
-      return nameMatch || fullNameMatch || categoryMatch || 
-             btechMatch || bcaMatch || bbaMatch || mbaMatch || mcaMatch;
-    });
-
+    const filtered = allCourses.filter(c =>
+      c.name.toLowerCase().includes(query) ||
+      c.fullName.toLowerCase().includes(query) ||
+      c.category.toLowerCase().includes(query)
+    );
     setTimeout(() => {
       setSearchResults(filtered);
       setLoading(false);
-    }, 300);
+    }, 200);
   };
 
   const handleSearch = (e) => {
@@ -187,86 +169,95 @@ const Navbar = () => {
     { name: 'About', icon: <FaInfoCircle />, path: '/about' },
   ];
 
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   return (
-    <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
+    <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${darkMode ? 'dark' : ''}`}>
       <div className="nav-container">
-        {/* Logo with Image */}
+
+        {/* Logo */}
         <Link to="/" className="logo">
-          <img 
-            src="/logo.png" 
-            alt="Study Portal" 
-            className="logo-image"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.style.display = 'none';
-              // Fallback if image fails to load
-              const fallback = e.target.parentElement.querySelector('.logo-fallback');
-              if (fallback) fallback.style.display = 'flex';
-            }}
-          />
-          <div className="logo-fallback" style={{ display: 'none' }}>
-            <div className="logo-icon">📚</div>
+          <div className="logo-icon-wrap">
+            <img
+              src="/logo.png"
+              alt="Study Portal"
+              className="logo-image"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <div className="logo-fallback-icon" style={{ display: 'none' }}>📚</div>
           </div>
           <div className="logo-text">
             <span className="logo-title">Study Portal</span>
-            <span className="logo-subtitle">BY KARAN SUYAL</span>
+            <span className="logo-sub">by Karan Suyal</span>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Nav */}
         <div className="desktop-nav">
-          {navItems.map(item => (
-            <div key={item.name} className="nav-item">
-              {item.hasDropdown ? (
-                <div className="dropdown-wrapper">
-                  <button
-                    className={`nav-link ${activeDropdown === 'courses' ? 'active' : ''}`}
-                    onClick={() => setActiveDropdown(activeDropdown === 'courses' ? null : 'courses')}
+
+          {/* Nav Links */}
+          <div className="nav-links">
+            {navItems.map(item => (
+              <div key={item.name} className="nav-item">
+                {item.hasDropdown ? (
+                  <div className="dropdown-wrapper">
+                    <button
+                      className={`nav-link ${activeDropdown === 'courses' ? 'active' : ''}`}
+                      onClick={() => setActiveDropdown(activeDropdown === 'courses' ? null : 'courses')}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      {item.name}
+                      <FaAngleDown className={`drop-arrow ${activeDropdown === 'courses' ? 'open' : ''}`} />
+                    </button>
+
+                    <div className={`dropdown-panel ${activeDropdown === 'courses' ? 'show' : ''}`}>
+                      <div className="dp-header">
+                        <span>Popular Courses</span>
+                        <Link to="/courses" className="dp-view-all" onClick={() => setActiveDropdown(null)}>
+                          View All →
+                        </Link>
+                      </div>
+                      <div className="dp-grid">
+                        {courses.map(course => (
+                          <Link
+                            key={course.id}
+                            to={`/course/${course.id}`}
+                            className="dp-item"
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            <div className="dp-item-icon">{course.icon}</div>
+                            <div className="dp-item-info">
+                              <span className="dp-item-name">{course.name}</span>
+                              <span className="dp-item-meta">{course.duration} · {course.students} students</span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
                   >
                     <span className="nav-icon">{item.icon}</span>
                     {item.name}
-                    <FaAngleDown className={`dropdown-arrow ${activeDropdown === 'courses' ? 'rotated' : ''}`} />
-                  </button>
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
 
-                  <div className={`dropdown-content ${activeDropdown === 'courses' ? 'show' : ''}`}>
-                    <div className="dropdown-header">
-                      <span className="dropdown-title">Popular Courses</span>
-                    </div>
-                    <div className="dropdown-grid">
-                      {courses.map(course => (
-                        <Link
-                          key={course.id}
-                          to={`/course/${course.id}`}
-                          className="dropdown-item"
-                          onClick={() => setActiveDropdown(null)}
-                        >
-                          <div className="course-icon">{course.icon}</div>
-                          <div className="course-info">
-                            <div className="course-name">{course.name}</div>
-                            <div className="course-duration">{course.duration}</div>
-                            <div className="course-students">{course.students} students</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  to={item.path}
-                  className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  {item.name}
-                </Link>
-              )}
-            </div>
-          ))}
-
-          {/* Search Bar - Desktop */}
+          {/* Search */}
           <div className="search-container">
-            <form onSubmit={handleSearch} className="search-wrapper">
-              <FaSearch className="search-icon" />
+            <form onSubmit={handleSearch} className="search-form">
+              <FaSearch className="s-icon" />
               <input
                 type="text"
                 placeholder="Search courses..."
@@ -275,125 +266,156 @@ const Navbar = () => {
                   setSearchQuery(e.target.value);
                   setShowSearchResults(true);
                 }}
+                onFocus={() => searchQuery.length > 1 && setShowSearchResults(true)}
               />
               {searchQuery && (
-                <button type="button" className="search-clear" onClick={() => setSearchQuery('')}>
+                <button type="button" className="s-clear" onClick={() => { setSearchQuery(''); setSearchResults([]); }}>
                   <FaTimes />
                 </button>
               )}
             </form>
-            
-            {/* Search Results Dropdown */}
+
             {showSearchResults && searchQuery.length > 1 && (
-              <div className="search-results">
+              <div className="search-dropdown">
                 {loading ? (
-                  <div className="search-loading">
-                    <div className="spinner-small"></div>
-                    <span>Searching...</span>
-                  </div>
+                  <div className="s-loading"><div className="s-spinner" /><span>Searching...</span></div>
                 ) : searchResults.length > 0 ? (
                   <>
-                    <div className="search-results-header">
-                      <span>Courses</span>
-                    </div>
-                    {searchResults.map((result) => (
+                    <div className="s-results-label">Courses</div>
+                    {searchResults.map(r => (
                       <div
-                        key={result.id}
-                        className="search-result-item"
+                        key={r.id}
+                        className="s-result-item"
                         onClick={() => {
-                          navigate(`/course/${result.id}`);
+                          navigate(`/course/${r.id}`);
                           setShowSearchResults(false);
                           setSearchQuery('');
                         }}
                       >
-                        <span className="result-icon">{result.icon}</span>
-                        <div className="result-info">
-                          <span className="result-name">{result.name}</span>
-                          <span className="result-fullname">{result.fullName}</span>
+                        <span className="s-result-icon">{r.icon}</span>
+                        <div>
+                          <div className="s-result-name">{r.name}</div>
+                          <div className="s-result-full">{r.fullName}</div>
                         </div>
                       </div>
                     ))}
                   </>
                 ) : (
-                  <div className="search-no-results">
-                    <span>No courses found for "{searchQuery}"</span>
-                    <span className="search-suggestion">
-                      Try: BCA, BBA, B.Tech, MBA, MCA
-                    </span>
+                  <div className="s-no-results">
+                    <span>No results for "{searchQuery}"</span>
+                    <span className="s-hint">Try: BCA, BBA, B.Tech, MBA, MCA</span>
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Auth Buttons */}
-          <div className="auth-section">
+          {/* Dark Mode Toggle */}
+          <button
+            className="dark-toggle"
+            onClick={() => setDarkMode(!darkMode)}
+            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </button>
+
+          {/* Auth */}
+          <div className="auth-area">
             {isLoggedIn ? (
               <div className="user-menu">
-                <span className="user-greeting">
-                  <FaUserCircle className="user-icon" />
-                  Hi, {user?.name?.split(' ')[0] || 'User'}
-                </span>
-                <button onClick={handleLogout} className="auth-btn logout-btn">
+                <div className="user-avatar">{getUserInitials(user?.name)}</div>
+                <span className="user-name">Hi, {user?.name?.split(' ')[0] || 'User'}</span>
+                <button className="btn-logout" onClick={handleLogout}>
                   <FaSignOutAlt /> Logout
                 </button>
               </div>
             ) : (
-              <>
-                <button onClick={() => navigate('/login')} className="auth-btn login-btn">
+              <div className="auth-btns">
+                <button className="btn-login" onClick={() => navigate('/login')}>
                   <FaSignInAlt /> Login
                 </button>
-                <button onClick={() => navigate('/register')} className="auth-btn register-btn">
+                <button className="btn-register" onClick={() => navigate('/register')}>
                   <FaUserPlus /> Register
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-      </div>
-
-      {/* Mobile Navigation */}
-      <div className={`mobile-nav ${isMenuOpen ? 'open' : ''}`}>
-        <div className="mobile-nav-header">
-          <h3>Menu</h3>
-          <button className="close-menu-btn" onClick={() => setIsMenuOpen(false)}>
-            <FaTimes />
+        {/* Mobile Hamburger */}
+        <div className="mobile-right">
+          <button className="dark-toggle" onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </button>
+          <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
+      </div>
 
-        <div className="mobile-nav-links">
+      {/* Mobile Drawer */}
+      <div className={`mobile-drawer ${isMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-drawer-inner">
+
+          {/* Mobile User / Auth */}
+          {isLoggedIn ? (
+            <div className="mobile-user-card">
+              <div className="mobile-avatar">{getUserInitials(user?.name)}</div>
+              <div>
+                <div className="mobile-user-name">{user?.name || 'User'}</div>
+                <div className="mobile-user-email">{user?.email || ''}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="mobile-auth-row">
+              <button className="mob-btn-login" onClick={() => { navigate('/login'); setIsMenuOpen(false); }}>
+                <FaSignInAlt /> Login
+              </button>
+              <button className="mob-btn-register" onClick={() => { navigate('/register'); setIsMenuOpen(false); }}>
+                <FaUserPlus /> Register
+              </button>
+            </div>
+          )}
+
+          <div className="mobile-divider" />
+
+          {/* Mobile Search */}
+          <form onSubmit={(e) => { handleSearch(e); setIsMenuOpen(false); }} className="mobile-search-form">
+            <FaSearch />
+            <input
+              type="text"
+              placeholder="Search courses..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
+
+          <div className="mobile-divider" />
+
+          {/* Mobile Links */}
           {navItems.map(item => (
             <div key={item.name}>
               {item.hasDropdown ? (
                 <>
                   <div
-                    className="mobile-nav-link"
+                    className="mob-nav-link"
                     onClick={() => setMobileDropdown(mobileDropdown === item.name ? null : item.name)}
                   >
-                    <span className="nav-icon">{item.icon}</span>
-                    {item.name}
-                    <FaAngleDown style={{ 
-                      marginLeft: 'auto',
-                      transform: mobileDropdown === item.name ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.3s'
-                    }} />
+                    <span className="mob-icon">{item.icon}</span>
+                    <span>{item.name}</span>
+                    <FaAngleDown className={`mob-arrow ${mobileDropdown === item.name ? 'open' : ''}`} />
                   </div>
-                  
-                  <div className={`mobile-dropdown-content ${mobileDropdown === item.name ? 'show' : ''}`}>
-                    {courses.map(course => (
+                  <div className={`mob-sub ${mobileDropdown === item.name ? 'open' : ''}`}>
+                    {courses.map(c => (
                       <Link
-                        key={course.id}
-                        to={`/course/${course.id}`}
-                        className="mobile-dropdown-item"
+                        key={c.id}
+                        to={`/course/${c.id}`}
+                        className="mob-sub-item"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <span>{course.icon}</span>
-                        <span>{course.name}</span>
+                        <span>{c.icon}</span>
+                        <span>{c.name}</span>
+                        <span className="mob-sub-meta">{c.duration}</span>
                       </Link>
                     ))}
                   </div>
@@ -401,50 +423,29 @@ const Navbar = () => {
               ) : (
                 <Link
                   to={item.path}
-                  className="mobile-nav-link"
+                  className={`mob-nav-link ${location.pathname === item.path ? 'mob-active' : ''}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <span className="nav-icon">{item.icon}</span>
-                  {item.name}
+                  <span className="mob-icon">{item.icon}</span>
+                  <span>{item.name}</span>
                 </Link>
               )}
             </div>
           ))}
 
-          {/* Mobile Search */}
-          <div className="mobile-search">
-            <form onSubmit={handleSearch}>
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </form>
-          </div>
-
-          {/* Mobile Auth */}
-          <div className="mobile-auth">
-            {isLoggedIn ? (
-              <button onClick={handleLogout} className="mobile-auth-btn logout">
+          {isLoggedIn && (
+            <>
+              <div className="mobile-divider" />
+              <button className="mob-logout" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>
                 <FaSignOutAlt /> Logout
               </button>
-            ) : (
-              <>
-                <button onClick={() => navigate('/login')} className="mobile-auth-btn login">
-                  <FaSignInAlt /> Login
-                </button>
-                <button onClick={() => navigate('/register')} className="mobile-auth-btn register">
-                  <FaUserPlus /> Register
-                </button>
-              </>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
 
       {/* Overlay */}
-      {isMenuOpen && <div className="mobile-overlay" onClick={() => setIsMenuOpen(false)}></div>}
+      {isMenuOpen && <div className="mob-overlay" onClick={() => setIsMenuOpen(false)} />}
     </nav>
   );
 };

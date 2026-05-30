@@ -23,6 +23,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { CounterProvider } from './contexts/CounterContext';
 import Chatbot from './components/Chatbot';  
 import AuthCallback from './pages/AuthCallback';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 
 //  HIERARCHICAL PAGES IMPORTS
@@ -35,6 +36,7 @@ import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
+    <ThemeProvider>
     <Router>
       <Analytics />
       <AuthProvider>  {}
@@ -86,6 +88,7 @@ function App() {
         </CounterProvider>  {}
       </AuthProvider>
     </Router>
+    </ThemeProvider>
   );
 }
 

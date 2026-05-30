@@ -372,3 +372,198 @@ input, textarea, select {
     background: #2d2d44;
   }
 }
+/* ========== GLOBAL DARK MODE ========== */
+[data-theme="dark"] body,
+[data-theme="dark"] {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+}
+
+/* Sabhi containers/cards/sections */
+[data-theme="dark"] div,
+[data-theme="dark"] section,
+[data-theme="dark"] main,
+[data-theme="dark"] aside,
+[data-theme="dark"] header,
+[data-theme="dark"] footer,
+[data-theme="dark"] article {
+  background-color: transparent;
+  color: #f1f5f9;
+}
+
+/* White background wale elements */
+[data-theme="dark"] [class*="card"],
+[data-theme="dark"] [class*="Card"],
+[data-theme="dark"] [class*="box"],
+[data-theme="dark"] [class*="Box"],
+[data-theme="dark"] [class*="container"],
+[data-theme="dark"] [class*="Container"],
+[data-theme="dark"] [class*="section"],
+[data-theme="dark"] [class*="Section"],
+[data-theme="dark"] [class*="panel"],
+[data-theme="dark"] [class*="Panel"],
+[data-theme="dark"] [class*="wrapper"],
+[data-theme="dark"] [class*="Wrapper"],
+[data-theme="dark"] [class*="modal"],
+[data-theme="dark"] [class*="Modal"],
+[data-theme="dark"] [class*="dropdown"],
+[data-theme="dark"] [class*="Dropdown"] {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Text */
+[data-theme="dark"] h1, [data-theme="dark"] h2,
+[data-theme="dark"] h3, [data-theme="dark"] h4,
+[data-theme="dark"] h5, [data-theme="dark"] h6 {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] label,
+[data-theme="dark"] li,
+[data-theme="dark"] td,
+[data-theme="dark"] th {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] a {
+  color: #818cf8 !important;
+}
+
+/* Inputs */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Buttons — sirf plain white wale override honge */
+[data-theme="dark"] button {
+  color: #f1f5f9;
+}
+
+/* Table */
+[data-theme="dark"] table {
+  background-color: #1e293b !important;
+}
+
+[data-theme="dark"] tr:hover {
+  background-color: #334155 !important;
+}
+
+/* HR */
+[data-theme="dark"] hr {
+  border-color: #334155 !important;
+}
+
+/* Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+
+/* Page backgrounds */
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  color: #f1f5f9 !important;
+}
+
+
+[data-theme="dark"] .semester-container,
+[data-theme="dark"] .year-container,
+[data-theme="dark"] .subject-container,
+[data-theme="dark"] .container,
+[data-theme="dark"] .materials-container,
+[data-theme="dark"] .upload-container,
+[data-theme="dark"] .hero-gradient,
+[data-theme="dark"] .stats-section,
+[data-theme="dark"] .materials-section,
+[data-theme="dark"] .features-section {
+  background: transparent !important;
+  color: #f1f5f9 !important;
+}
+
+/* Cards */
+[data-theme="dark"] .semester-card,
+[data-theme="dark"] .year-card,
+[data-theme="dark"] .subject-card,
+[data-theme="dark"] .material-card,
+[data-theme="dark"] .semester-compact-course-info,
+[data-theme="dark"] .subjectHeader,
+[data-theme="dark"] .searchFilterBar,
+[data-theme="dark"] .typeFilterContainer,
+[data-theme="dark"] .materialsHeader,
+[data-theme="dark"] .materialActions,
+[data-theme="dark"] .emptyState,
+[data-theme="dark"] .previewButton,
+[data-theme="dark"] .warning-box {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* All text */
+[data-theme="dark"] h1, [data-theme="dark"] h2,
+[data-theme="dark"] h3, [data-theme="dark"] h4,
+[data-theme="dark"] h5, [data-theme="dark"] h6,
+[data-theme="dark"] p, [data-theme="dark"] span,
+[data-theme="dark"] label, [data-theme="dark"] li,
+[data-theme="dark"] td, [data-theme="dark"] th {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] a { color: #818cf8 !important; }
+
+/* Inputs */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Table */
+[data-theme="dark"] table { background: #1e293b !important; }
+[data-theme="dark"] tr:hover { background: #334155 !important; }
+[data-theme="dark"] hr { border-color: #334155 !important; }
+
+/* Emergency dark mode - Forcefully apply */
+body.dark-mode {
+  background: #0a0a0a !important;
+  color: white !important;
+}
+
+body.dark-mode * {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+body.dark-mode input,
+body.dark-mode textarea {
+  background: #2a2a2a !important;
+  color: white !important;
+}

@@ -404,229 +404,106 @@ const getCleanDescription = (desc) => {
       }
     };
 
-    const handlePreview = () => {
-      const previewModal = document.createElement("div");
-      previewModal.id = "previewModal";
-      previewModal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      `;
-
-      const previewContent = document.createElement("div");
-      previewContent.style.cssText = `
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        max-width: ${isMobile ? "90%" : "500px"};
-        width: ${isMobile ? "95%" : "90%"};
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
-      `;
-
-      previewContent.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h3 style="color: #1f2937; margin-bottom: 10px;">${material.title}</h3>
-          <p style="color: #6b7280; font-size: 14px;">${material.description}</p>
-        </div>
-        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-          <p style="margin: 5px 0;"><strong>📁 File Type:</strong> ${material.fileType?.toUpperCase() || "PDF"}</p>
-          <p style="margin: 5px 0;"><strong>📏 File Size:</strong> ${material.fileSize}</p>
-          <p style="margin: 5px 0;"><strong>👤 Uploaded by:</strong> ${material.user}</p>
-          <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${material.uploadDate}</p>
-          <p style="margin: 5px 0;"><strong>⭐ Rating:</strong> ${stats.rating.toFixed(1)}/5</p>
-          <p style="margin: 5px 0;"><strong>📥 Downloads:</strong> ${stats.downloads}</p>
-          <p style="margin: 5px 0;"><strong>👁️ Views:</strong> ${stats.views}</p>
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <button id="previewDownloadBtn" style="flex: 1; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-            Download Now
-          </button>
-          <button id="previewCloseBtn" style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-            Close
-          </button>
-        </div>
-      `;
-
-      previewModal.appendChild(previewContent);
-      document.body.appendChild(previewModal);
-
-      document.getElementById("previewDownloadBtn").onclick = () => {
-        handleDownload();
-        document.body.removeChild(previewModal);
-      };
-
-      document.getElementById("previewCloseBtn").onclick = () => {
-        document.body.removeChild(previewModal);
-      };
-
-      previewModal.onclick = (e) => {
-        if (e.target === previewModal) {
-          document.body.removeChild(previewModal);
-        }
-      };
-    };
-
-    if (!isMobile) {
-      return (
-        <div style={styles.laptopMaterialCard}>
-          <div style={styles.laptopMaterialHeader(typeInfo.color)}>
-            <div style={styles.laptopMaterialType}>
-              <span style={{color: typeInfo.color, fontSize: "16px"}}>
-                {typeInfo.icon}
-              </span>
-              <span
-                style={{
-                  color: typeInfo.color,
-                  fontWeight: "600",
-                  fontSize: "14px",
-                }}
-              >
-                {typeInfo.name}
-              </span>
-            </div>
-            <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  color: "#6b7280",
-                  fontSize: "12px",
-                }}
-              >
-                <FaUser size={10} /> {material.user}
-              </div>
-            </div>
-          </div>
-          <div style={styles.laptopMaterialContent}>
-            <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-            <p style={styles.laptopMaterialDescription}>
-              {getCleanDescription(material.description)}
-            </p>
-            <div style={styles.laptopMaterialStats}>
-              <div style={styles.laptopStatItem}>
-                <FaClock color="#9ca3af" size={12} />
-                <span>{material.uploadDate}</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaDownload color="#9ca3af" size={12} />
-                <span>{stats.downloads} downloads</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaEye color="#9ca3af" size={12} />
-                <span>{stats.views} views</span>
-              </div>
-              <div style={styles.laptopStatItem}>
-                <FaStar color="#fbbf24" size={12} />
-                <span>{stats.rating.toFixed(1)}/5</span>
-              </div>
-              <div style={styles.laptopRatingContainer}>
-                <Rating materialId={material.id} currentRating={stats.rating} />
-              </div>
-            </div>
-            <div style={styles.laptopFileInfo}>
-              <span style={{display: "flex", alignItems: "center", gap: "5px"}}>
-                {getFileIcon(material.fileType)}{" "}
-                <span>{material.fileSize}</span>
-              </span>
-            </div>
-          </div>
-          <div style={styles.laptopMaterialActions}>
-            <button style={styles.laptopPreviewButton} onClick={handlePreview}>
-              <FaEye size={14} /> Preview
-            </button>
-            <button
-              style={styles.laptopDownloadButton(downloading)}
-              onClick={handleDownload}
-              disabled={downloading}
-            >
-              {downloading ? (
-                <>
-                  <FaSpinner
-                    style={{animation: "spin 1s linear infinite"}}
-                    size={14}
-                  />{" "}
-                  Downloading...
-                </>
-              ) : (
-                <>
-                  <FaDownload size={14} /> Download
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      );
+    const handleView = () => {
+    if (material.cloudinary_url) {
+      const pdfUrl = material.cloudinary_url;
+      // Use Google Docs Viewer for PDFs
+      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+      window.open(viewerUrl, '_blank');
     }
+  };
 
+  if (!isMobile) {
     return (
-      <div style={styles.mobileMaterialCard}>
-        {material.isNew && <span style={styles.mobileNewBadge}>NEW</span>}
-        <div style={styles.mobileMaterialHeader}>
-          <div style={styles.mobileMaterialType}>
-            <span style={{color: typeInfo?.color}}>{typeInfo?.icon}</span>
-            <span style={{color: typeInfo?.color, fontWeight: "500"}}>
-              {typeInfo?.name}
+      <div style={styles.laptopMaterialCard}>
+        <div style={styles.laptopMaterialHeader(typeInfo.color)}>
+          <div style={styles.laptopMaterialType}>
+            <span style={{ color: typeInfo.color, fontSize: "16px" }}>
+              {typeInfo.icon}
+            </span>
+            <span style={{ color: typeInfo.color, fontWeight: "600", fontSize: "14px" }}>
+              {typeInfo.name}
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px", color: "#6b7280", fontSize: "12px" }}>
+              <FaUser size={10} /> {material.user}
+            </div>
+          </div>
+        </div>
+        <div style={styles.laptopMaterialContent}>
+          <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
+          <p style={styles.laptopMaterialDescription}>
+            {getCleanDescription(material.description)}
+          </p>
+          <div style={styles.laptopMaterialStats}>
+            <div style={styles.laptopStatItem}><FaClock color="#9ca3af" size={12} /><span>{material.uploadDate}</span></div>
+            <div style={styles.laptopStatItem}><FaDownload color="#9ca3af" size={12} /><span>{stats.downloads} downloads</span></div>
+            <div style={styles.laptopStatItem}><FaEye color="#9ca3af" size={12} /><span>{stats.views} views</span></div>
+            <div style={styles.laptopStatItem}><FaStar color="#fbbf24" size={12} /><span>{stats.rating.toFixed(1)}/5</span></div>
+            <div style={styles.laptopRatingContainer}><Rating materialId={material.id} currentRating={stats.rating} /></div>
+          </div>
+          <div style={styles.laptopFileInfo}>
+            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              {getFileIcon(material.fileType)} <span>{material.fileSize}</span>
             </span>
           </div>
         </div>
-        <div style={styles.mobileMaterialContent}>
-          <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-          <p style={styles.mobileMaterialDescription}>
-           {getCleanDescription(material.description)}
-          </p>
-          <div style={styles.mobileMaterialMeta}>
-            <div style={styles.mobileMetaItem}>
-              <FaClock /> {material.uploadDate}
-            </div>
-            <div style={styles.mobileMetaItem}>
-              <FaEye /> {stats.views}
-            </div>
-            <div style={styles.mobileMetaItem}>
-              <FaDownload /> {stats.downloads}
-            </div>
-          </div>
-          <div style={styles.mobileRatingContainer}>
-            <Rating materialId={material.id} currentRating={stats.rating} />
-          </div>
-          <div style={styles.mobileFileInfo}>
-            {getFileIcon(material.fileType)} <span>{material.fileSize}</span>
-          </div>
-        </div>
-        <div style={styles.mobileMaterialActions}>
-          <button style={styles.mobilePreviewButton} onClick={handlePreview}>
-            <FaEye /> Preview
+        <div style={styles.laptopMaterialActions}>
+          {/*  VIEW BUTTON - Opens in new tab with Google Viewer */}
+          <button style={styles.laptopPreviewButton} onClick={handleView}>
+            <FaEye size={14} /> View
           </button>
-          <button
-            style={styles.mobileDownloadButton(downloading)}
-            onClick={handleDownload}
-            disabled={downloading}
-          >
+          <button style={styles.laptopDownloadButton(downloading)} onClick={handleDownload} disabled={downloading}>
             {downloading ? (
-              <>
-                <FaSpinner style={{animation: "spin 1s linear infinite"}} />{" "}
-                Downloading
-              </>
+              <><FaSpinner style={{ animation: "spin 1s linear infinite" }} size={14} /> Downloading...</>
             ) : (
-              <>
-                <FaDownload /> Download
-              </>
+              <><FaDownload size={14} /> Download</>
             )}
           </button>
         </div>
       </div>
     );
-  };
+  }
 
+  // Mobile View
+  return (
+    <div style={styles.mobileMaterialCard}>
+      {material.isNew && <span style={styles.mobileNewBadge}>NEW</span>}
+      <div style={styles.mobileMaterialHeader}>
+        <div style={styles.mobileMaterialType}>
+          <span style={{ color: typeInfo?.color }}>{typeInfo?.icon}</span>
+          <span style={{ color: typeInfo?.color, fontWeight: "500" }}>{typeInfo?.name}</span>
+        </div>
+      </div>
+      <div style={styles.mobileMaterialContent}>
+        <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
+        <p style={styles.mobileMaterialDescription}>{getCleanDescription(material.description)}</p>
+        <div style={styles.mobileMaterialMeta}>
+          <div style={styles.mobileMetaItem}><FaClock /> {material.uploadDate}</div>
+          <div style={styles.mobileMetaItem}><FaEye /> {stats.views}</div>
+          <div style={styles.mobileMetaItem}><FaDownload /> {stats.downloads}</div>
+        </div>
+        <div style={styles.mobileRatingContainer}><Rating materialId={material.id} currentRating={stats.rating} /></div>
+        <div style={styles.mobileFileInfo}>{getFileIcon(material.fileType)} <span>{material.fileSize}</span></div>
+      </div>
+      <div style={styles.mobileMaterialActions}>
+        {/* VIEW BUTTON - Mobile version */}
+        <button style={styles.mobilePreviewButton} onClick={handleView}>
+          <FaEye /> View
+        </button>
+        <button style={styles.mobileDownloadButton(downloading)} onClick={handleDownload} disabled={downloading}>
+          {downloading ? (
+            <><FaSpinner style={{ animation: "spin 1s linear infinite" }} /> Downloading</>
+          ) : (
+            <><FaDownload /> Download</>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+    
   //  FETCH MATERIALS FUNCTION
   const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) setRefreshing(true);
