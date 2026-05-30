@@ -719,6 +719,11 @@ def verify_email():
 import time
 import requests
 import json
+from collections import defaultdict
+import hashlib
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # GroqCloud Configuration
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
@@ -729,11 +734,10 @@ GROQ_MODELS = {
     'fast': 'llama-3.1-8b-instant',           # Fastest, 8B params
     'balanced': 'llama-3.3-70b-versatile',    # Best quality, 70B params
     'coding': 'qwen-2.5-coder-32b',           # Best for coding questions
-    'vision': 'llama-3.2-11b-vision-preview', # For vision (if needed)
 }
 
-# Rate limiting for Groq (30 req/min = 0.5 sec between requests)
-RATE_LIMIT_SECONDS = 2  # Conservative: 30 req/min = 2 sec gap
+# Rate limiting for Groq (30 req/min = 2 sec between requests)
+RATE_LIMIT_SECONDS = 2
 CACHE_TTL = 300
 
 cache = {}
@@ -785,7 +789,25 @@ def get_groq_response(prompt, model_name=GROQ_MODELS['balanced']):
         payload = {
             'model': model_name,
             'messages': [
-                {'role': 'system', 'content': 'You are a helpful study assistant for college students.'},
+                {'role': 'system', 'content': '''You are a helpful study assistant for Study Portal.
+
+**About Study Portal:**
+- Created by: Karan Suyal
+- Purpose: Free study materials platform for students
+- Features: Notes, PYQs, Syllabus, Lab Manuals, Dark Mode, AI Chatbot
+- Website: study-portal-app.vercel.app
+
+**Your Role:**
+1. Help students with academic questions
+2. Guide them to study materials on the portal
+3. Be friendly, encouraging, and concise (max 150 words)
+4. If asked "who created this portal" or "who made study portal", say it was created by Karan Suyal
+
+**Rules:**
+- Keep responses helpful and educational
+- Suggest checking Materials section for notes/PYQs
+- Don't give wrong academic information
+- Be positive and supportive'''},
                 {'role': 'user', 'content': prompt}
             ],
             'temperature': 0.7,
@@ -809,19 +831,18 @@ def get_groq_response(prompt, model_name=GROQ_MODELS['balanced']):
         else:
             error_detail = response.json() if response.text else {}
             error_msg = error_detail.get('error', {}).get('message', 'Unknown error')
-            print(f" Groq API Error {response.status_code}: {error_msg}")
+            print(f"❌ Groq API Error {response.status_code}: {error_msg}")
             
-            # Rate limit specific handling
             if response.status_code == 429:
                 return "⏳ API rate limit reached. Please try again in a few seconds."
             
             return None
             
     except requests.exceptions.Timeout:
-        print(" Groq API timeout")
+        print("⏰ Groq API timeout")
         return None
     except Exception as e:
-        print(f" Groq API exception: {str(e)}")
+        print(f"❌ Groq API exception: {str(e)}")
         return None
 
 # Helper function to get user context
@@ -944,12 +965,11 @@ def chat_with_ai():
         
         # Prepare prompt based on user context
         if user_context:
-            prompt = f"""You are a helpful study assistant for a college student.
-
-**Student Profile:**
+            prompt = f"""**Student Profile:**
 - Name: {user_context['name']}
 - Course: {user_context['course']}
 - Semester: {user_context['semester']}
+- Subjects: {', '.join(user_context['subjects'][:3])}
 
 **Relevant Materials from Portal:**
 {context if context else "No specific materials found in database for this query."}
@@ -965,7 +985,10 @@ def chat_with_ai():
 
 **Your Response:**"""
         else:
-            prompt = f"""You are a helpful study assistant for a student.
+            prompt = f"""**About Study Portal:**
+- Created by Karan Suyal
+- Free study materials for students
+- Website: study-portal-app.vercel.app
 
 **Relevant Materials from Portal:**
 {context if context else "No specific materials found."}
@@ -975,7 +998,8 @@ def chat_with_ai():
 **Instructions:**
 1. Be friendly and helpful 
 2. Give concise answers (max 150 words)
-3. Suggest checking the study portal for more resources
+3. If asked "who created this" or "who made study portal", say it was created by Karan Suyal
+4. Suggest checking the study portal for more resources
 
 **Your Response:**"""
 
@@ -983,15 +1007,18 @@ def chat_with_ai():
         ai_response = None
         
         if GROQ_API_KEY:
+            print(f"🤖 Calling Groq API for: {user_message[:50]}...")
             # Try with best quality model first
             ai_response = get_groq_response(prompt, GROQ_MODELS['balanced'])
             
             # If fails, try faster model as fallback
             if not ai_response:
+                print("🔄 Falling back to fast model...")
                 ai_response = get_groq_response(prompt, GROQ_MODELS['fast'])
         
         # If Groq failed, use fallback
         if not ai_response:
+            print("⚠️ Using fallback response")
             ai_response = fallback_response(user_message, context)
         
         # Add helpful tip if materials found
@@ -1004,7 +1031,7 @@ def chat_with_ai():
         })
         
     except Exception as e:
-        print(f" Chat error: {str(e)}")
+        print(f"❌ Chat error: {str(e)}")
         traceback.print_exc()
         return jsonify({
             'success': True,
@@ -1014,6 +1041,10 @@ def chat_with_ai():
 def fallback_response(question, context):
     """Fallback when GroqCloud API is not available"""
     question_lower = question.lower()
+    
+    # Check if asking about creator
+    if 'who made' in question_lower or 'who created' in question_lower or 'who built' in question_lower:
+        return "👨‍💻 **Study Portal** was created by **Karan Suyal**! It's a platform for free study materials including notes, PYQs, syllabus, and lab manuals for students."
     
     if 'notes' in question_lower or 'study material' in question_lower:
         return "📚 You can find study materials in the **Materials** section! Browse by course, year, and semester to access notes, PYQs, and syllabus."
@@ -1027,8 +1058,11 @@ def fallback_response(question, context):
     elif 'syllabus' in question_lower:
         return "📋 Syllabus for all courses is available in the Materials section. Select your course, year, and semester to find the complete syllabus."
     
+    elif 'dark mode' in question_lower:
+        return "🌙 Dark mode is available! Look for the moon/sun icon in the navbar or at the bottom right corner to toggle between light and dark themes."
+    
     else:
-        return f"👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n\nWhat would you like to know?"
+        return f"👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n🌙 Dark Mode\n\nWhat would you like to know?"
 
 # Test endpoint for Groq API
 @app.route('/api/chat/test', methods=['GET'])
