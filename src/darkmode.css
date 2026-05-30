@@ -1,0 +1,470 @@
+/* ============================================================
+   darkmode.css — Global Dark Mode for Study Portal
+   Import this in index.css ONCE and it covers every page.
+   Works by overriding existing class names under [data-theme="dark"]
+   ============================================================ */
+
+/* ── 1. BODY & HTML BASE ─────────────────────────────────── */
+[data-theme="dark"],
+[data-theme="dark"] body {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 2. UNIVERSAL CARD / CONTAINER OVERRIDES ─────────────── */
+/* Catches: .material-card, .stat-card, .feature-card, .course-card, etc. */
+[data-theme="dark"] [class*="-card"],
+[data-theme="dark"] [class*="card"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 3. PAGE CONTAINERS / WRAPPERS ───────────────────────── */
+/* index.css body has a light gradient — kill it */
+[data-theme="dark"] body {
+  background: #0e0e14 !important;
+}
+
+/* MaterialsPage .container */
+[data-theme="dark"] .container {
+  background: #0e0e14 !important;
+}
+
+/* All pages that use light gradient bg */
+[data-theme="dark"] .semester-container,
+[data-theme="dark"] .subject-container,
+[data-theme="dark"] .year-container,
+[data-theme="dark"] .all-materials-container,
+[data-theme="dark"] .about-container,
+[data-theme="dark"] .register-container,
+[data-theme="dark"] .courses-container,
+[data-theme="dark"] .dashboard-container,
+[data-theme="dark"] .upload-container,
+[data-theme="dark"] .search-results-container,
+[data-theme="dark"] .home-page {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 4. TEXT COLORS ───────────────────────────────────────── */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] label,
+[data-theme="dark"] li,
+[data-theme="dark"] td,
+[data-theme="dark"] th {
+  color: inherit;
+}
+
+/* Dark muted text */
+[data-theme="dark"] [class*="subtitle"],
+[data-theme="dark"] [class*="desc"],
+[data-theme="dark"] [class*="meta"],
+[data-theme="dark"] [class*="label"]:not(button):not(.mat-badge):not(.hero-pill) {
+  color: #a0a0b8 !important;
+}
+
+/* ── 5. INPUTS & FORMS ────────────────────────────────────── */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: #1e1e28 !important;
+  color: #f0f0fa !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #5a5a78 !important;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  border-color: #5b4cf5 !important;
+  box-shadow: 0 0 0 3px rgba(91,76,245,0.15) !important;
+  outline: none !important;
+}
+
+/* ── 6. REGISTER PAGE ─────────────────────────────────────── */
+[data-theme="dark"] .register-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+}
+
+[data-theme="dark"] .register-card,
+[data-theme="dark"] .register-form-card {
+  background: #18181f !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 7. LOGIN PAGE (inline styles — override via class wrapper) */
+/* Login uses inline styles so we target its wrapper container */
+[data-theme="dark"] .login-container,
+[data-theme="dark"] [class*="login"] {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+}
+
+/* ── 8. SEMESTER / SUBJECT / YEAR SELECTION PAGES ─────────── */
+[data-theme="dark"] .semester-container,
+[data-theme="dark"] .subject-container,
+[data-theme="dark"] .year-container {
+  background: #0e0e14 !important;
+}
+
+[data-theme="dark"] [class*="compact-header"],
+[data-theme="dark"] [class*="page-header"],
+[data-theme="dark"] [class*="breadcrumb"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* Semester/Subject/Year cards */
+[data-theme="dark"] [class*="semester-card"],
+[data-theme="dark"] [class*="subject-card"],
+[data-theme="dark"] [class*="year-card"],
+[data-theme="dark"] [class*="selection-card"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] [class*="semester-card"]:hover,
+[data-theme="dark"] [class*="subject-card"]:hover,
+[data-theme="dark"] [class*="year-card"]:hover {
+  background: #252530 !important;
+  border-color: #5b4cf5 !important;
+}
+
+[data-theme="dark"] [class*="semester-card"] h3,
+[data-theme="dark"] [class*="semester-card"] p,
+[data-theme="dark"] [class*="subject-card"] h3,
+[data-theme="dark"] [class*="subject-card"] p,
+[data-theme="dark"] [class*="year-card"] h3,
+[data-theme="dark"] [class*="year-card"] p {
+  color: #f0f0fa !important;
+}
+
+/* ── 9. ALL MATERIALS PAGE ────────────────────────────────── */
+[data-theme="dark"] .all-materials-container {
+  background: #0e0e14 !important;
+}
+
+[data-theme="dark"] .all-materials-header h1 {
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] .all-materials-header p {
+  color: #a0a0b8 !important;
+}
+
+[data-theme="dark"] .material-card {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+[data-theme="dark"] .material-title {
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] .material-card:hover {
+  border-color: #5b4cf5 !important;
+}
+
+/* ── 10. MATERIALS PAGE (MaterialsPage.jsx) ───────────────── */
+[data-theme="dark"] .innerContainer {
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] .header {
+  background: transparent !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] [class*="filter"],
+[data-theme="dark"] [class*="Filter"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] [class*="noteCard"],
+[data-theme="dark"] [class*="note-card"],
+[data-theme="dark"] [class*="NoteCard"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 11. ABOUT PAGE ────────────────────────────────────────── */
+[data-theme="dark"] .about-container {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .team-card {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── 12. STATS SECTION ─────────────────────────────────────── */
+[data-theme="dark"] .stats-section {
+  background: #0e0e14 !important;
+}
+
+[data-theme="dark"] .stat-card {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+[data-theme="dark"] .stat-label {
+  color: #a0a0b8 !important;
+}
+
+/* ── 13. NAVBAR scrolled state (dark) ─────────────────────── */
+[data-theme="dark"] .navbar.scrolled {
+  background: rgba(14,14,20,0.95) !important;
+}
+
+/* ── 14. DROPDOWN / MODALS / POPUPS ───────────────────────── */
+[data-theme="dark"] [class*="dropdown"],
+[data-theme="dark"] [class*="Dropdown"],
+[data-theme="dark"] [class*="modal"],
+[data-theme="dark"] [class*="Modal"],
+[data-theme="dark"] [class*="popup"],
+[data-theme="dark"] [class*="Popup"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 15. TABLES ─────────────────────────────────────────────── */
+[data-theme="dark"] table,
+[data-theme="dark"] thead,
+[data-theme="dark"] tbody,
+[data-theme="dark"] tr,
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] tr:nth-child(even) td {
+  background: #1e1e28 !important;
+}
+
+[data-theme="dark"] tr:hover td {
+  background: #252530 !important;
+}
+
+/* ── 16. ALERTS / BANNERS ───────────────────────────────────── */
+[data-theme="dark"] [class*="alert"],
+[data-theme="dark"] [class*="Alert"],
+[data-theme="dark"] [class*="banner"]:not(.announcement-bar) {
+  background: #1e1e28 !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] [class*="success"] {
+  background: rgba(16,185,129,0.15) !important;
+  color: #34d399 !important;
+  border-color: rgba(16,185,129,0.25) !important;
+}
+
+[data-theme="dark"] [class*="error"],
+[data-theme="dark"] [class*="danger"] {
+  background: rgba(239,68,68,0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239,68,68,0.25) !important;
+}
+
+[data-theme="dark"] [class*="warning"] {
+  background: rgba(245,158,11,0.15) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245,158,11,0.25) !important;
+}
+
+/* ── 17. LOADING SPINNERS / SKELETONS ───────────────────────── */
+[data-theme="dark"] [class*="loading"],
+[data-theme="dark"] [class*="spinner"],
+[data-theme="dark"] [class*="skeleton"] {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+[data-theme="dark"] .loading-spinner,
+[data-theme="dark"] [class*="loading-spinner"] {
+  border-color: #252530 !important;
+  border-top-color: #5b4cf5 !important;
+}
+
+/* ── 18. BREADCRUMB NAV ────────────────────────────────────── */
+[data-theme="dark"] [class*="breadcrumb"],
+[data-theme="dark"] [class*="Breadcrumb"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.06) !important;
+  color: #a0a0b8 !important;
+}
+
+[data-theme="dark"] [class*="breadcrumb"] a,
+[data-theme="dark"] [class*="breadcrumb"] span {
+  color: #a0a0b8 !important;
+}
+
+[data-theme="dark"] [class*="breadcrumb"] a:hover {
+  color: #5b4cf5 !important;
+}
+
+/* ── 19. FOOTER ────────────────────────────────────────────── */
+[data-theme="dark"] footer,
+[data-theme="dark"] [class*="footer"],
+[data-theme="dark"] [class*="Footer"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.06) !important;
+  color: #a0a0b8 !important;
+}
+
+[data-theme="dark"] [class*="footer"] a,
+[data-theme="dark"] [class*="Footer"] a {
+  color: #a0a0b8 !important;
+}
+
+[data-theme="dark"] [class*="footer"] a:hover,
+[data-theme="dark"] [class*="Footer"] a:hover {
+  color: #5b4cf5 !important;
+}
+
+/* ── 20. SEARCH RESULTS PAGE ───────────────────────────────── */
+[data-theme="dark"] [class*="search-result"],
+[data-theme="dark"] [class*="SearchResult"],
+[data-theme="dark"] [class*="results-container"] {
+  background: #18181f !important;
+  color: #f0f0fa !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── 21. DASHBOARD PAGE ─────────────────────────────────────── */
+[data-theme="dark"] [class*="dashboard"],
+[data-theme="dark"] [class*="Dashboard"] {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 22. ADMIN PANEL ────────────────────────────────────────── */
+[data-theme="dark"] [class*="admin"],
+[data-theme="dark"] [class*="Admin"] {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] [class*="admin"] table,
+[data-theme="dark"] [class*="Admin"] table {
+  background: #18181f !important;
+}
+
+/* ── 23. CHATBOT ────────────────────────────────────────────── */
+[data-theme="dark"] [class*="chatbot"],
+[data-theme="dark"] [class*="Chatbot"],
+[data-theme="dark"] [class*="chat-"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 24. COURSE CARDS ────────────────────────────────────────── */
+[data-theme="dark"] [class*="course-card"],
+[data-theme="dark"] [class*="CourseCard"],
+[data-theme="dark"] .courses-section [class*="card"] {
+  background: #18181f !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 25. SECTIONS WITH WHITE BG ─────────────────────────────── */
+[data-theme="dark"] section {
+  background: transparent !important;
+}
+
+[data-theme="dark"] .stats-section,
+[data-theme="dark"] .courses-section,
+[data-theme="dark"] .materials-section,
+[data-theme="dark"] .features-section,
+[data-theme="dark"] .cta-section {
+  background: transparent !important;
+}
+
+/* ── 26. WHITE BACKGROUNDS (catch-all) ──────────────────────── */
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background:white"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="background-color:#fff"] {
+  background: #18181f !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 27. SCROLLBAR ──────────────────────────────────────────── */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #0e0e14;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #3a3a4a;
+  border-radius: 99px;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #5b4cf5;
+}
+
+/* ── 28. UPLOAD PAGE ─────────────────────────────────────────── */
+[data-theme="dark"] .upload-container,
+[data-theme="dark"] [class*="upload"] {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+[data-theme="dark"] [class*="dropzone"],
+[data-theme="dark"] [class*="Dropzone"],
+[data-theme="dark"] [class*="drop-zone"] {
+  background: #1e1e28 !important;
+  border-color: rgba(91,76,245,0.3) !important;
+  color: #a0a0b8 !important;
+}
+
+/* ── 29. 404 PAGE ────────────────────────────────────────────── */
+[data-theme="dark"] [class*="not-found"],
+[data-theme="dark"] [class*="NotFound"],
+[data-theme="dark"] [class*="error-page"] {
+  background: #0e0e14 !important;
+  color: #f0f0fa !important;
+}
+
+/* ── 30. SMOOTH TRANSITION ON EVERYTHING ────────────────────── */
+*,
+*::before,
+*::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.1s ease;
+}
+
+/* But don't transition things that shouldn't animate */
+[class*="spinner"],
+[class*="skeleton"],
+[class*="shimmer"],
+[class*="animation"],
+svg,
+img {
+  transition: none !important;
+}
