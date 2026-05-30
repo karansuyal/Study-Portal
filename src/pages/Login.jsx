@@ -10,8 +10,26 @@ const Login = () => {
   const [showToast, setShowToast] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [focused, setFocused] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // Check dark mode
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setDarkMode(isDark);
+    };
+    
+    checkDarkMode();
+    
+    const observer = new MutationObserver(() => {
+      checkDarkMode();
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -30,6 +48,11 @@ const Login = () => {
         font-family: 'DM Sans', sans-serif;
         position: relative;
         overflow: hidden;
+      }
+
+      /* Dark mode gradient override */
+      [data-theme="dark"] .sp-page {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
       }
 
       .sp-page::before {
@@ -62,6 +85,12 @@ const Login = () => {
         z-index: 1;
       }
 
+      /* Dark mode card */
+      [data-theme="dark"] .sp-card {
+        background: #18181f;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      }
+
       @keyframes sp-rise {
         from { opacity: 0; transform: translateY(24px) scale(0.97); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -74,6 +103,11 @@ const Login = () => {
         position: relative;
       }
 
+      /* Dark mode header - same gradient but with dark overlay */
+      [data-theme="dark"] .sp-header {
+        background: linear-gradient(135deg, #3730a3 0%, #5b21b6 100%);
+      }
+
       .sp-header::after {
         content: '';
         position: absolute;
@@ -81,6 +115,10 @@ const Login = () => {
         height: 44px;
         background: #ffffff;
         border-radius: 55% 55% 0 0 / 100% 100% 0 0;
+      }
+
+      [data-theme="dark"] .sp-header::after {
+        background: #18181f;
       }
 
       .sp-logo {
@@ -126,6 +164,11 @@ const Login = () => {
         gap: 8px;
       }
 
+      [data-theme="dark"] .sp-error {
+        background: rgba(220, 38, 38, 0.15);
+        color: #f87171;
+      }
+
       .sp-field { margin-bottom: 1.15rem; }
 
       .sp-label {
@@ -136,6 +179,10 @@ const Login = () => {
         font-weight: 500;
         color: #374151;
         margin-bottom: 7px;
+      }
+
+      [data-theme="dark"] .sp-label {
+        color: #a0a0b8;
       }
 
       .sp-label-icon { font-size: 13px; color: #818cf8; }
@@ -155,10 +202,25 @@ const Login = () => {
         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
       }
 
+      [data-theme="dark"] .sp-input {
+        background: #1e1e28;
+        border-color: #2a2a30;
+        color: #f0f0fa;
+      }
+
+      [data-theme="dark"] .sp-input::placeholder {
+        color: #6a6a88;
+      }
+
       .sp-input:focus {
         border-color: #4338ca;
         background: #fff;
         box-shadow: 0 0 0 3px rgba(67,56,202,0.1);
+      }
+
+      [data-theme="dark"] .sp-input:focus {
+        background: #252530;
+        border-color: #5b4cf5;
       }
 
       .sp-input.has-toggle { padding-right: 3rem; }
@@ -174,6 +236,14 @@ const Login = () => {
       }
       .sp-toggle:hover { color: #4338ca; }
 
+      [data-theme="dark"] .sp-toggle {
+        color: #6a6a88;
+      }
+      
+      [data-theme="dark"] .sp-toggle:hover {
+        color: #a78bfa;
+      }
+
       .sp-row {
         display: flex;
         justify-content: space-between;
@@ -186,10 +256,18 @@ const Login = () => {
         font-size: 0.82rem; color: #6b7280; cursor: pointer;
       }
 
+      [data-theme="dark"] .sp-check-lbl {
+        color: #a0a0b8;
+      }
+
       .sp-check {
         width: 15px; height: 15px;
         accent-color: #4338ca;
         cursor: pointer;
+      }
+
+      [data-theme="dark"] .sp-check {
+        accent-color: #5b4cf5;
       }
 
       .sp-forgot {
@@ -200,6 +278,14 @@ const Login = () => {
         transition: color 0.2s;
       }
       .sp-forgot:hover { color: #6d28d9; text-decoration: underline; }
+
+      [data-theme="dark"] .sp-forgot {
+        color: #a78bfa;
+      }
+      
+      [data-theme="dark"] .sp-forgot:hover {
+        color: #c4b5fd;
+      }
 
       .sp-btn {
         width: 100%;
@@ -228,6 +314,10 @@ const Login = () => {
       .sp-btn:active:not(:disabled) { transform: scale(0.98); }
       .sp-btn:disabled { opacity: 0.65; cursor: not-allowed; }
 
+      [data-theme="dark"] .sp-btn {
+        background: linear-gradient(135deg, #5b4cf5, #8b5cf6);
+      }
+
       .sp-spinner {
         width: 16px; height: 16px;
         border: 2px solid rgba(255,255,255,0.35);
@@ -242,7 +332,16 @@ const Login = () => {
         margin: 0.2rem 0 0.9rem;
       }
       .sp-div-line { flex: 1; height: 1px; background: #e5e7eb; }
+
+      [data-theme="dark"] .sp-div-line {
+        background: #2a2a30;
+      }
+
       .sp-div-txt { font-size: 0.75rem; color: #9ca3af; }
+
+      [data-theme="dark"] .sp-div-txt {
+        color: #6a6a88;
+      }
 
       .sp-google-btn {
         width: 100%;
@@ -265,12 +364,33 @@ const Login = () => {
         box-shadow: 0 2px 8px rgba(67,56,202,0.1);
       }
 
+      [data-theme="dark"] .sp-google-btn {
+        background: #1e1e28;
+        border-color: #2a2a30;
+        color: #f0f0fa;
+      }
+      
+      [data-theme="dark"] .sp-google-btn:hover {
+        border-color: #5b4cf5;
+        background: #252530;
+      }
+
       .sp-footer {
         text-align: center;
         padding-top: 1rem;
         border-top: 1px solid #f3f4f6;
       }
+
+      [data-theme="dark"] .sp-footer {
+        border-top-color: #2a2a30;
+      }
+
       .sp-footer p { font-size: 0.82rem; color: #9ca3af; margin: 0 0 5px; }
+
+      [data-theme="dark"] .sp-footer p {
+        color: #6a6a88;
+      }
+
       .sp-register-link {
         color: #4338ca;
         font-weight: 600;
@@ -279,6 +399,14 @@ const Login = () => {
         transition: color 0.2s;
       }
       .sp-register-link:hover { color: #6d28d9; }
+
+      [data-theme="dark"] .sp-register-link {
+        color: #a78bfa;
+      }
+      
+      [data-theme="dark"] .sp-register-link:hover {
+        color: #c4b5fd;
+      }
 
       .sp-toast {
         position: fixed;

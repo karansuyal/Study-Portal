@@ -1142,3 +1142,276 @@
   margin-top: 8px;
   font-family: monospace;
 }
+/* ============================================
+   DARK MODE STYLES FOR UPLOAD PAGE
+   ============================================ */
+
+[data-theme="dark"] .upload-container {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+}
+
+/* Header */
+[data-theme="dark"] .upload-title {
+  background: linear-gradient(135deg, #f0f0fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme="dark"] .upload-subtitle {
+  color: rgba(160, 160, 184, 0.9);
+}
+
+/* Auth Required Box */
+[data-theme="dark"] .auth-required-box {
+  background: rgba(24, 24, 31, 0.95);
+  backdrop-filter: blur(10px);
+  border-color: rgba(91, 76, 245, 0.3);
+}
+
+[data-theme="dark"] .auth-title {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .auth-message {
+  color: #a0a0b8;
+}
+
+/* User Info Card */
+[data-theme="dark"] .user-info {
+  background: rgba(24, 24, 31, 0.95);
+  backdrop-filter: blur(10px);
+  border-color: rgba(91, 76, 245, 0.3);
+}
+
+[data-theme="dark"] .user-name {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .user-name span {
+  color: #a78bfa;
+}
+
+[data-theme="dark"] .user-meta {
+  color: #a0a0b8;
+}
+
+[data-theme="dark"] .user-email {
+  color: #6a6a88;
+}
+
+/* Warning Box */
+[data-theme="dark"] .warning-box {
+  background: linear-gradient(135deg, #1a1a2e, #252530);
+  border-color: #f59e0b;
+}
+
+[data-theme="dark"] .warning-title {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .warning-message {
+  color: #fcd34d;
+}
+
+/* Info Box */
+[data-theme="dark"] .info-box {
+  background: linear-gradient(135deg, #1e1e28, #252530);
+  border-color: #5b4cf5;
+  color: #a0a0b8;
+}
+
+/* Upload Box */
+[data-theme="dark"] .upload-box {
+  background: rgba(24, 24, 31, 0.95);
+  backdrop-filter: blur(10px);
+  border-color: rgba(91, 76, 245, 0.5);
+}
+
+[data-theme="dark"] .upload-box:hover {
+  border-color: #5b4cf5;
+}
+
+/* File Info */
+[data-theme="dark"] .file-info {
+  background: linear-gradient(135deg, #1e1e28, #252530);
+}
+
+[data-theme="dark"] .file-info p {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .file-types {
+  color: rgba(160, 160, 184, 0.8);
+}
+
+/* Upload Form */
+[data-theme="dark"] .upload-form {
+  background: rgba(24, 24, 31, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .form-section-title {
+  color: #f0f0fa;
+  border-bottom-color: #2a2a30;
+}
+
+[data-theme="dark"] .form-label {
+  color: #a0a0b8;
+}
+
+[data-theme="dark"] .form-label small {
+  color: #6a6a88;
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-textarea,
+[data-theme="dark"] .form-select {
+  background: #1e1e28;
+  border-color: #2a2a30;
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-textarea:focus,
+[data-theme="dark"] .form-select:focus {
+  border-color: #5b4cf5;
+  box-shadow: 0 0 0 4px rgba(91, 76, 245, 0.2);
+}
+
+[data-theme="dark"] .form-input::placeholder,
+[data-theme="dark"] .form-textarea::placeholder {
+  color: #6a6a88;
+}
+
+/* Loading and No Courses */
+[data-theme="dark"] .loading-courses {
+  background: #1e1e28;
+  color: #a0a0b8;
+  border-color: #2a2a30;
+}
+
+[data-theme="dark"] .no-courses {
+  background: rgba(220, 38, 38, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Admin Note */
+[data-theme="dark"] .admin-note {
+  background: linear-gradient(135deg, #1e1e28, #252530);
+  color: #a0a0b8;
+  border-left-color: #5b4cf5;
+}
+
+[data-theme="dark"] .admin-note-content {
+  color: #a0a0b8;
+}
+
+/* Reset Button (if exists) */
+[data-theme="dark"] .reset-btn {
+  background: #1e1e28;
+  color: #a0a0b8;
+  border-color: #2a2a30;
+}
+
+[data-theme="dark"] .reset-btn:hover {
+  background: #252530;
+}
+
+/* YouTube Preview Section */
+[data-theme="dark"] .youtube-input-wrapper {
+  background: #1e1e28;
+}
+
+[data-theme="dark"] .youtube-label {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .youtube-input {
+  background: #18181f;
+  border-color: #2a2a30;
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .youtube-input:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+[data-theme="dark"] .youtube-hint {
+  color: #6a6a88;
+}
+
+[data-theme="dark"] .youtube-preview {
+  background: #1e1e28;
+  border-color: #2a2a30;
+}
+
+[data-theme="dark"] .video-id-hint {
+  color: #6a6a88;
+}
+
+/* Summary Preview */
+[data-theme="dark"] .summary-preview {
+  background: #1e1e28;
+  border-color: #2a2a30;
+}
+
+[data-theme="dark"] .summary-preview h4 {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .summary-details p {
+  color: #a0a0b8;
+}
+
+/* Remove underline from admin-note (as per your comment) */
+[data-theme="dark"] .admin-note {
+  border-left: none !important;
+}
+
+/* Mobile dark mode fixes */
+@media (max-width: 768px) {
+  [data-theme="dark"] .user-info {
+    background: rgba(24, 24, 31, 0.95);
+  }
+  
+  [data-theme="dark"] .upload-box,
+  [data-theme="dark"] .upload-form {
+    background: rgba(24, 24, 31, 0.95);
+  }
+  
+  [data-theme="dark"] .reset-btn {
+    background: #1e1e28;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  [data-theme="dark"] .auth-required-box {
+    background: rgba(24, 24, 31, 0.95);
+  }
+  
+  [data-theme="dark"] .form-input,
+  [data-theme="dark"] .form-textarea,
+  [data-theme="dark"] .form-select {
+    background: #18181f;
+  }
+}
+
+/* Any remaining white backgrounds */
+[data-theme="dark"] .upload-container * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dropdown options in dark mode */
+[data-theme="dark"] .form-select option {
+  background: #18181f;
+  color: #f0f0fa;
+}
+
+/* Spinner in dark mode */
+[data-theme="dark"] .spinner {
+  border-color: rgba(255,255,255,0.3);
+  border-top-color: white;
+}

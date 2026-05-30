@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Check dark mode
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setDarkMode(isDark);
+    };
+    
+    checkDarkMode();
+    
+    const observer = new MutationObserver(() => {
+      checkDarkMode();
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    
+    return () => observer.disconnect();
+  }, []);
 
   const handleClick = () => {
     navigate(`/course/${course.id}`);
@@ -75,7 +93,7 @@ const CourseCard = ({ course }) => {
     return (
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M22 9L12 5L2 9L12 13L22 9Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M6 12V16C6 16 8 18 12 18C16 18 18 16 18 16V12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M6 12V16C6 12 8 14 12 14C16 14 18 12 18 12V12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     );
   };
@@ -94,16 +112,17 @@ const CourseCard = ({ course }) => {
     return name;
   };
 
+  // Dynamic styles based on dark mode
   const styles = {
     card: {
-      background: 'white',
+      background: darkMode ? '#18181f' : 'white',
       borderRadius: '20px',
       padding: '2.5rem 1.5rem',
-      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
+      boxShadow: darkMode ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.08)',
       textAlign: 'center',
       transition: 'all 0.3s ease',
       cursor: 'pointer',
-      border: '1px solid #eef2f6',
+      border: darkMode ? '1px solid #2a2a30' : '1px solid #eef2f6',
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
@@ -126,20 +145,20 @@ const CourseCard = ({ course }) => {
     title: {
       fontSize: '1.6rem',
       fontWeight: '700',
-      color: '#1e293b',
+      color: darkMode ? '#f0f0fa' : '#1e293b',
       marginBottom: '0.5rem',
       letterSpacing: '-0.02em',
       fontFamily: "'Inter', sans-serif"
     },
     clickHint: {
       fontSize: '0.85rem',
-      color: '#64748b',
+      color: darkMode ? '#a0a0b8' : '#64748b',
       display: 'flex',
       alignItems: 'center',
       gap: '0.3rem',
       marginTop: '0.5rem',
       padding: '0.4rem 1rem',
-      background: '#f8fafc',
+      background: darkMode ? '#1e1e28' : '#f8fafc',
       borderRadius: '30px',
       transition: 'all 0.3s ease'
     }
@@ -151,7 +170,7 @@ const CourseCard = ({ course }) => {
       onClick={handleClick}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-8px)';
-        e.currentTarget.style.boxShadow = '0 25px 50px rgba(79, 70, 229, 0.15)';
+        e.currentTarget.style.boxShadow = darkMode ? '0 25px 50px rgba(0, 0, 0, 0.4)' : '0 25px 50px rgba(79, 70, 229, 0.15)';
         e.currentTarget.style.borderColor = '#4f46e5';
         
         // Icon hover effect
@@ -170,8 +189,8 @@ const CourseCard = ({ course }) => {
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
-        e.currentTarget.style.borderColor = '#eef2f6';
+        e.currentTarget.style.boxShadow = darkMode ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.08)';
+        e.currentTarget.style.borderColor = darkMode ? '#2a2a30' : '#eef2f6';
         
         // Icon hover effect reset
         const icon = e.currentTarget.querySelector('.course-icon');
@@ -183,8 +202,8 @@ const CourseCard = ({ course }) => {
         // Hint hover effect reset
         const hint = e.currentTarget.querySelector('.click-hint');
         if (hint) {
-          hint.style.background = '#f8fafc';
-          hint.style.color = '#64748b';
+          hint.style.background = darkMode ? '#1e1e28' : '#f8fafc';
+          hint.style.color = darkMode ? '#a0a0b8' : '#64748b';
         }
       }}
     >

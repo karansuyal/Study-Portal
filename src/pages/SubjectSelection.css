@@ -507,3 +507,171 @@
     padding: 1rem;
   }
 }
+
+/* ============================================
+   DARK MODE STYLES FOR SUBJECT SELECTION
+   ============================================ */
+
+[data-theme="dark"] .subject-container {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+}
+
+[data-theme="dark"] .subject-compact-back-button {
+  background: #5b4cf5;
+}
+
+[data-theme="dark"] .subject-compact-back-button:hover {
+  background: #7c6ff7;
+}
+
+[data-theme="dark"] .subject-compact-course-info {
+  background: #18181f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .subject-compact-course-name {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .subject-compact-course-details {
+  color: #a0a0b8;
+  border-left-color: #2a2a30;
+}
+
+/* Search Section */
+[data-theme="dark"] .subject-search-input {
+  background: #1e1e28;
+  border-color: #2a2a30;
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .subject-search-input:focus {
+  border-color: #5b4cf5;
+  box-shadow: 0 0 0 3px rgba(91, 76, 245, 0.2);
+}
+
+[data-theme="dark"] .subject-search-input::placeholder {
+  color: #6a6a88;
+}
+
+[data-theme="dark"] .subject-search-icon {
+  color: #6a6a88;
+}
+
+[data-theme="dark"] .subject-clear-button {
+  background: #ef4444;
+}
+
+/* Subject Cards */
+[data-theme="dark"] .subject-card {
+  background: #18181f;
+  border-color: #2a2a30;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .subject-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border-color: #5b4cf5;
+}
+
+[data-theme="dark"] .subject-name {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .subject-credits {
+  color: #a0a0b8;
+}
+
+[data-theme="dark"] .subject-code {
+  color: white;
+}
+
+/* Material Badges */
+[data-theme="dark"] .subject-material-badge {
+  background: #1e1e28;
+  color: #a0a0b8;
+  border-color: #2a2a30;
+}
+
+/* Stats */
+[data-theme="dark"] .subject-stats {
+  color: #a0a0b8;
+}
+
+[data-theme="dark"] .subject-stat {
+  background: #1e1e28;
+  color: #a0a0b8;
+}
+
+/* Select Button - Each subject ka apna color hai, isliye gradient maintain kiya */
+[data-theme="dark"] .subject-select-button {
+  background: linear-gradient(135deg, #5b4cf5, #8b5cf6);
+}
+
+[data-theme="dark"] .subject-select-button:hover {
+  filter: brightness(1.1);
+}
+
+/* Footer */
+[data-theme="dark"] .subject-simple-footer {
+  background: #18181f;
+  color: #a0a0b8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Empty State */
+[data-theme="dark"] .subject-empty-state {
+  background: #18181f;
+  border-color: #2a2a30;
+}
+
+[data-theme="dark"] .subject-empty-state h3 {
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .subject-empty-state p {
+  color: #a0a0b8;
+}
+
+/* Loading State */
+[data-theme="dark"] .subject-loading-container {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+}
+
+[data-theme="dark"] .subject-loading-spinner {
+  border-color: #2a2a30;
+  border-top-color: #5b4cf5;
+}
+
+/* Mobile Responsive Dark Mode */
+@media (max-width: 480px) {
+  [data-theme="dark"] .subject-compact-course-details {
+    border-top-color: #2a2a30;
+  }
+}
+
+@media (max-width: 768px) {
+  [data-theme="dark"] .subject-compact-course-details {
+    border-left-color: #2a2a30;
+  }
+}
+
+/* Subject Icon Circle (gradient wala) - already has gradient, no change needed */
+[data-theme="dark"] .subject-icon-circle {
+  background: linear-gradient(135deg, #5b4cf5, #8b5cf6);
+}
+
+/* Additional fix for any white backgrounds */
+[data-theme="dark"] .subject-container * {
+  /* Ensure variables are applied */
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Subject number circle text */
+[data-theme="dark"] .subject-number-circle {
+  background: linear-gradient(135deg, #5b4cf5, #8b5cf6);
+}
+
+[data-theme="dark"] .subject-number-circle span {
+  color: white;
+}
