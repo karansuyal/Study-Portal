@@ -900,3 +900,121 @@
     background: var(--surface-2) !important;
   }
 }
+/* ============================================
+   MOBILE HOME PAGE DARK MODE FIXES
+   ============================================ */
+
+@media (max-width: 768px) {
+  [data-theme="dark"] .hero {
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,76,245,0.15) 0%, transparent 70%),
+                #0a0a0a;
+  }
+  
+  [data-theme="dark"] .hero-h1 {
+    color: #f0f0fa;
+  }
+  
+  [data-theme="dark"] .hero-sub {
+    color: #a0a0b8;
+  }
+  
+  [data-theme="dark"] .hero-search {
+    background: #1e1e28;
+    border-color: #2a2a30;
+  }
+  
+  [data-theme="dark"] .hs-input {
+    color: #f0f0fa;
+  }
+  
+  [data-theme="dark"] .hs-input::placeholder {
+    color: #6a6a88;
+  }
+  
+  [data-theme="dark"] .hero-tag {
+    background: #1e1e28;
+    border-color: #2a2a30;
+    color: #a0a0b8;
+  }
+  
+  [data-theme="dark"] .hero-tag:hover {
+    background: #5b4cf5;
+    color: white;
+  }
+  
+  /* Course Cards Mobile Dark Mode */
+  [data-theme="dark"] .course-card,
+  [data-theme="dark"] .courses-grid .course-card,
+  [data-theme="dark"] .course-wrapper > div {
+    background: #18181f !important;
+    border-color: #2a2a30 !important;
+  }
+  
+  [data-theme="dark"] .course-card h3,
+  [data-theme="dark"] .course-card .course-name {
+    color: #f0f0fa !important;
+  }
+  
+  /* Material Cards Mobile Dark Mode */
+  [data-theme="dark"] .mat-card {
+    background: #18181f !important;
+    border-color: #2a2a30 !important;
+  }
+  
+  [data-theme="dark"] .mat-title {
+    color: #f0f0fa !important;
+  }
+  
+  [data-theme="dark"] .mat-meta-item {
+    color: #a0a0b8 !important;
+  }
+  
+  [data-theme="dark"] .mat-date {
+    color: #6a6a88 !important;
+  }
+  
+  [data-theme="dark"] .mat-stat {
+    color: #a0a0b8 !important;
+  }
+  
+  [data-theme="dark"] .mat-dl-btn {
+    background: linear-gradient(135deg, #5b4cf5, #8b5cf6) !important;
+  }
+  
+  /* Stats Cards Mobile Dark Mode */
+  [data-theme="dark"] .stat-card {
+    background: #18181f !important;
+    border-color: #2a2a30 !important;
+  }
+  
+  [data-theme="dark"] .stat-number {
+    color: #a78bfa !important;
+  }
+  
+  [data-theme="dark"] .stat-label {
+    color: #a0a0b8 !important;
+  }
+  
+  /* Features Cards Mobile Dark Mode */
+  [data-theme="dark"] .feature-card {
+    background: #18181f !important;
+    border-color: #2a2a30 !important;
+  }
+  
+  [data-theme="dark"] .feature-title {
+    color: #f0f0fa !important;
+  }
+  
+  [data-theme="dark"] .feature-desc {
+    color: #a0a0b8 !important;
+  }
+  
+  /* Section Headers Mobile Dark Mode */
+  [data-theme="dark"] .section-title {
+    color: #f0f0fa !important;
+  }
+  
+  [data-theme="dark"] .section-eyebrow {
+    color: #a78bfa !important;
+  }
+}
