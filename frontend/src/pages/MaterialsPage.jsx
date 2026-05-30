@@ -45,6 +45,9 @@ const MaterialsPage = () => {
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
   const [showFilters, setShowFilters] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [darkMode, setDarkMode] = useState(
+    document.documentElement.getAttribute('data-theme') === 'dark'
+  );
 
   //  FLAG for one-time view increment
   const [viewsIncremented, setViewsIncremented] = useState(false);
@@ -56,6 +59,22 @@ const MaterialsPage = () => {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Dark mode observer
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setDarkMode(isDark);
+    };
+    
+    checkDarkMode();
+    
+    const obs = new MutationObserver(() => {
+      checkDarkMode();
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
   }, []);
 
   // RATING COMPONENT - with useNoteStats
@@ -95,7 +114,7 @@ const MaterialsPage = () => {
           </button>
         ))}
         {!isMobile && (
-          <span style={{fontSize: "14px", color: "#6c757d", marginLeft: "5px"}}>
+          <span style={{fontSize: "14px", color: darkMode ? "#a0a0b8" : "#6c757d", marginLeft: "5px"}}>
             ({stats.rating?.toFixed(1) || "0"}) • {stats.ratingCount} ratings
           </span>
         )}
@@ -138,7 +157,7 @@ const MaterialsPage = () => {
     `;
 
     notification.innerHTML = `
-      <div style="font-size: 20px;">${type === "success" ? "" : ""}</div>
+      <div style="font-size: 20px;">${type === "success" ? "✅" : "❌"}</div>
       <div>
         <div style="font-weight: 600;">${title}</div>
         <div style="font-size: 12px; opacity: 0.9;">${message}</div>
@@ -204,7 +223,7 @@ const getCleanDescription = (desc) => {
 
     if (!isMobile) {
       return (
-        <div style={styles.laptopYoutubeCard}>
+        <div style={{...styles.laptopYoutubeCard, background: darkMode ? "#18181f" : "white", borderColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
           <div
             style={styles.laptopYoutubeThumbnail}
             onClick={handleWatchOnYouTube}
@@ -223,7 +242,7 @@ const getCleanDescription = (desc) => {
             <div style={styles.laptopYoutubePlayIcon}>▶</div>
           </div>
           <div style={styles.laptopYoutubeContent}>
-            <div style={styles.laptopMaterialHeader("#FF0000")}>
+            <div style={{...styles.laptopMaterialHeader("#FF0000"), borderBottomColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
               <div style={styles.laptopMaterialType}>
                 <span style={{color: "#FF0000", fontSize: "16px"}}>
                   <FaYoutube />
@@ -244,7 +263,7 @@ const getCleanDescription = (desc) => {
                     display: "flex",
                     alignItems: "center",
                     gap: "5px",
-                    color: "#6b7280",
+                    color: darkMode ? "#a0a0b8" : "#6b7280",
                     fontSize: "12px",
                   }}
                 >
@@ -253,17 +272,17 @@ const getCleanDescription = (desc) => {
               </div>
             </div>
             <div style={styles.laptopYoutubeTextContent}>
-              <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-              <div style={styles.laptopMaterialStats}>
-                <div style={styles.laptopStatItem}>
+              <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+              <div style={{...styles.laptopMaterialStats, background: darkMode ? "#1e1e28" : "#f9fafb"}}>
+                <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
                   <FaClock color="#9ca3af" size={12} />
                   <span>{material.uploadDate}</span>
                 </div>
-                <div style={styles.laptopStatItem}>
+                <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
                   <FaEye color="#9ca3af" size={12} />
                   <span>{stats.views} views</span>
                 </div>
-                <div style={styles.laptopStatItem}>
+                <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
                   <FaStar color="#fbbf24" size={12} />
                   <span>{stats.rating.toFixed(1)}/5</span>
                 </div>
@@ -275,7 +294,7 @@ const getCleanDescription = (desc) => {
                 </div>
               </div>
             </div>
-            <div style={styles.laptopMaterialActions}>
+            <div style={{...styles.laptopMaterialActions, background: darkMode ? "#1e1e28" : "#f9fafb", borderTopColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
               <button
                 style={styles.laptopYoutubeWatchButton}
                 onClick={handleWatchOnYouTube}
@@ -290,7 +309,7 @@ const getCleanDescription = (desc) => {
 
     // Mobile YouTube Card
     return (
-      <div style={styles.mobileYoutubeCard}>
+      <div style={{...styles.mobileYoutubeCard, background: darkMode ? "#18181f" : "white"}}>
         <div
           style={styles.mobileYoutubeThumbnail}
           onClick={handleWatchOnYouTube}
@@ -306,7 +325,7 @@ const getCleanDescription = (desc) => {
           <div style={styles.mobileYoutubePlayIcon}>▶</div>
         </div>
         <div style={styles.mobileYoutubeContent}>
-          <div style={styles.mobileMaterialHeader}>
+          <div style={{...styles.mobileMaterialHeader, background: darkMode ? "#1e1e28" : "#f9fafb", borderBottomColor: darkMode ? "rgba(255,255,255,0.06)" : "#e5e7eb"}}>
             <div style={styles.mobileMaterialType}>
               <span style={{color: "#FF0000"}}>
                 <FaYoutube />
@@ -315,8 +334,8 @@ const getCleanDescription = (desc) => {
             </div>
           </div>
           <div style={styles.mobileMaterialContent}>
-            <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-            <div style={styles.mobileMaterialMeta}>
+            <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            <div style={{...styles.mobileMaterialMeta, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
               <div style={styles.mobileMetaItem}>
                 <FaClock /> {material.uploadDate}
               </div>
@@ -328,7 +347,7 @@ const getCleanDescription = (desc) => {
               <Rating materialId={material.id} currentRating={stats.rating} />
             </div>
           </div>
-          <div style={styles.mobileMaterialActions}>
+          <div style={{...styles.mobileMaterialActions, background: darkMode ? "#1e1e28" : "#f9fafb", borderTopColor: darkMode ? "rgba(255,255,255,0.06)" : "#e5e7eb"}}>
             <button
               style={styles.mobileYoutubeWatchButton}
               onClick={handleWatchOnYouTube}
@@ -341,7 +360,7 @@ const getCleanDescription = (desc) => {
     );
   };
 
-  //  REGULAR MATERIAL CARD COMPONENT
+  //  REGULAR MATERIAL CARD COMPONENT - WITH VIEW BUTTON (NOT PREVIEW)
   const MaterialCard = ({material, typeInfo}) => {
     const [downloading, setDownloading] = useState(false);
 
@@ -368,7 +387,7 @@ const getCleanDescription = (desc) => {
           link.click();
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
-          showNotification(" Download Complete!", material.title, "success");
+          showNotification("Download Complete!", material.title, "success");
         } else {
           const token = localStorage.getItem("study_portal_token");
           if (!token) {
@@ -394,115 +413,179 @@ const getCleanDescription = (desc) => {
             link.download = material.file_name || `${material.title}.pdf`;
             link.click();
           }
-          showNotification(" Download Complete!", material.title, "success");
+          showNotification("Download Complete!", material.title, "success");
         }
       } catch (error) {
-        console.error(" Download error:", error);
+        console.error("Download error:", error);
         showNotification("Download Failed", error.message, "error");
       } finally {
         setDownloading(false);
       }
     };
 
+    // VIEW BUTTON HANDLER - Opens in Google Docs Viewer
     const handleView = () => {
-    if (material.cloudinary_url) {
-      const pdfUrl = material.cloudinary_url;
-      // Use Google Docs Viewer for PDFs
-      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-      window.open(viewerUrl, '_blank');
-    }
-  };
+      if (material.cloudinary_url) {
+        const pdfUrl = material.cloudinary_url;
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+        window.open(viewerUrl, '_blank');
+      }
+    };
 
-  if (!isMobile) {
-    return (
-      <div style={styles.laptopMaterialCard}>
-        <div style={styles.laptopMaterialHeader(typeInfo.color)}>
-          <div style={styles.laptopMaterialType}>
-            <span style={{ color: typeInfo.color, fontSize: "16px" }}>
-              {typeInfo.icon}
-            </span>
-            <span style={{ color: typeInfo.color, fontWeight: "600", fontSize: "14px" }}>
-              {typeInfo.name}
-            </span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px", color: "#6b7280", fontSize: "12px" }}>
-              <FaUser size={10} /> {material.user}
+    if (!isMobile) {
+      return (
+        <div style={{...styles.laptopMaterialCard, background: darkMode ? "#18181f" : "white", borderColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
+          <div style={{...styles.laptopMaterialHeader(typeInfo.color), borderBottomColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
+            <div style={styles.laptopMaterialType}>
+              <span style={{color: typeInfo.color, fontSize: "16px"}}>
+                {typeInfo.icon}
+              </span>
+              <span
+                style={{
+                  color: typeInfo.color,
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                {typeInfo.name}
+              </span>
+            </div>
+            <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  color: darkMode ? "#a0a0b8" : "#6b7280",
+                  fontSize: "12px",
+                }}
+              >
+                <FaUser size={10} /> {material.user}
+              </div>
             </div>
           </div>
-        </div>
-        <div style={styles.laptopMaterialContent}>
-          <h4 style={styles.laptopMaterialTitle}>{material.title}</h4>
-          <p style={styles.laptopMaterialDescription}>
-            {getCleanDescription(material.description)}
-          </p>
-          <div style={styles.laptopMaterialStats}>
-            <div style={styles.laptopStatItem}><FaClock color="#9ca3af" size={12} /><span>{material.uploadDate}</span></div>
-            <div style={styles.laptopStatItem}><FaDownload color="#9ca3af" size={12} /><span>{stats.downloads} downloads</span></div>
-            <div style={styles.laptopStatItem}><FaEye color="#9ca3af" size={12} /><span>{stats.views} views</span></div>
-            <div style={styles.laptopStatItem}><FaStar color="#fbbf24" size={12} /><span>{stats.rating.toFixed(1)}/5</span></div>
-            <div style={styles.laptopRatingContainer}><Rating materialId={material.id} currentRating={stats.rating} /></div>
+          <div style={styles.laptopMaterialContent}>
+            <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            <p style={{...styles.laptopMaterialDescription, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+              {getCleanDescription(material.description)}
+            </p>
+            <div style={{...styles.laptopMaterialStats, background: darkMode ? "#1e1e28" : "#f9fafb"}}>
+              <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+                <FaClock color="#9ca3af" size={12} />
+                <span>{material.uploadDate}</span>
+              </div>
+              <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+                <FaDownload color="#9ca3af" size={12} />
+                <span>{stats.downloads} downloads</span>
+              </div>
+              <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+                <FaEye color="#9ca3af" size={12} />
+                <span>{stats.views} views</span>
+              </div>
+              <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+                <FaStar color="#fbbf24" size={12} />
+                <span>{stats.rating.toFixed(1)}/5</span>
+              </div>
+              <div style={styles.laptopRatingContainer}>
+                <Rating materialId={material.id} currentRating={stats.rating} />
+              </div>
+            </div>
+            <div style={{...styles.laptopFileInfo, color: darkMode ? "#6a6a88" : "#9ca3af", borderTopColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
+              <span style={{display: "flex", alignItems: "center", gap: "5px"}}>
+                {getFileIcon(material.fileType)}{" "}
+                <span>{material.fileSize}</span>
+              </span>
+            </div>
           </div>
-          <div style={styles.laptopFileInfo}>
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              {getFileIcon(material.fileType)} <span>{material.fileSize}</span>
+          <div style={{...styles.laptopMaterialActions, background: darkMode ? "#1e1e28" : "#f9fafb", borderTopColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
+            {/* VIEW BUTTON - Opens in new tab with Google Viewer */}
+            <button style={{...styles.laptopViewButton, background: darkMode ? "#252530" : "white", borderColor: darkMode ? "rgba(255,255,255,0.1)" : "#e5e7eb", color: darkMode ? "#f0f0fa" : "#4b5563"}} onClick={handleView}>
+              <FaEye size={14} /> View
+            </button>
+            <button
+              style={styles.laptopDownloadButton(downloading)}
+              onClick={handleDownload}
+              disabled={downloading}
+            >
+              {downloading ? (
+                <>
+                  <FaSpinner
+                    style={{animation: "spin 1s linear infinite"}}
+                    size={14}
+                  />{" "}
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <FaDownload size={14} /> Download
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Mobile View
+    return (
+      <div style={{...styles.mobileMaterialCard, background: darkMode ? "#18181f" : "white"}}>
+        {material.isNew && <span style={styles.mobileNewBadge}>NEW</span>}
+        <div style={{...styles.mobileMaterialHeader, background: darkMode ? "#1e1e28" : "#f9fafb", borderBottomColor: darkMode ? "rgba(255,255,255,0.06)" : "#e5e7eb"}}>
+          <div style={styles.mobileMaterialType}>
+            <span style={{color: typeInfo?.color}}>{typeInfo?.icon}</span>
+            <span style={{color: typeInfo?.color, fontWeight: "500"}}>
+              {typeInfo?.name}
             </span>
           </div>
         </div>
-        <div style={styles.laptopMaterialActions}>
-          {/*  VIEW BUTTON - Opens in new tab with Google Viewer */}
-          <button style={styles.laptopPreviewButton} onClick={handleView}>
-            <FaEye size={14} /> View
+        <div style={styles.mobileMaterialContent}>
+          <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+          <p style={{...styles.mobileMaterialDescription, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+            {getCleanDescription(material.description)}
+          </p>
+          <div style={{...styles.mobileMaterialMeta, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
+            <div style={styles.mobileMetaItem}>
+              <FaClock /> {material.uploadDate}
+            </div>
+            <div style={styles.mobileMetaItem}>
+              <FaEye /> {stats.views}
+            </div>
+            <div style={styles.mobileMetaItem}>
+              <FaDownload /> {stats.downloads}
+            </div>
+          </div>
+          <div style={styles.mobileRatingContainer}>
+            <Rating materialId={material.id} currentRating={stats.rating} />
+          </div>
+          <div style={{...styles.mobileFileInfo, color: darkMode ? "#6a6a88" : "#9ca3af", borderTopColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
+            {getFileIcon(material.fileType)} <span>{material.fileSize}</span>
+          </div>
+        </div>
+        <div style={{...styles.mobileMaterialActions, background: darkMode ? "#1e1e28" : "#f9fafb", borderTopColor: darkMode ? "rgba(255,255,255,0.06)" : "#e5e7eb"}}>
+          {/* VIEW BUTTON - Mobile version */}
+          <button style={{...styles.mobileViewButton, background: darkMode ? "#252530" : "white", borderColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb", color: darkMode ? "#f0f0fa" : "#4b5563"}} onClick={handleView}>
+            <FaEye /> View
           </button>
-          <button style={styles.laptopDownloadButton(downloading)} onClick={handleDownload} disabled={downloading}>
+          <button
+            style={styles.mobileDownloadButton(downloading)}
+            onClick={handleDownload}
+            disabled={downloading}
+          >
             {downloading ? (
-              <><FaSpinner style={{ animation: "spin 1s linear infinite" }} size={14} /> Downloading...</>
+              <>
+                <FaSpinner style={{animation: "spin 1s linear infinite"}} />{" "}
+                Downloading
+              </>
             ) : (
-              <><FaDownload size={14} /> Download</>
+              <>
+                <FaDownload /> Download
+              </>
             )}
           </button>
         </div>
       </div>
     );
-  }
-
-  // Mobile View
-  return (
-    <div style={styles.mobileMaterialCard}>
-      {material.isNew && <span style={styles.mobileNewBadge}>NEW</span>}
-      <div style={styles.mobileMaterialHeader}>
-        <div style={styles.mobileMaterialType}>
-          <span style={{ color: typeInfo?.color }}>{typeInfo?.icon}</span>
-          <span style={{ color: typeInfo?.color, fontWeight: "500" }}>{typeInfo?.name}</span>
-        </div>
-      </div>
-      <div style={styles.mobileMaterialContent}>
-        <h4 style={styles.mobileMaterialTitle}>{material.title}</h4>
-        <p style={styles.mobileMaterialDescription}>{getCleanDescription(material.description)}</p>
-        <div style={styles.mobileMaterialMeta}>
-          <div style={styles.mobileMetaItem}><FaClock /> {material.uploadDate}</div>
-          <div style={styles.mobileMetaItem}><FaEye /> {stats.views}</div>
-          <div style={styles.mobileMetaItem}><FaDownload /> {stats.downloads}</div>
-        </div>
-        <div style={styles.mobileRatingContainer}><Rating materialId={material.id} currentRating={stats.rating} /></div>
-        <div style={styles.mobileFileInfo}>{getFileIcon(material.fileType)} <span>{material.fileSize}</span></div>
-      </div>
-      <div style={styles.mobileMaterialActions}>
-        {/* VIEW BUTTON - Mobile version */}
-        <button style={styles.mobilePreviewButton} onClick={handleView}>
-          <FaEye /> View
-        </button>
-        <button style={styles.mobileDownloadButton(downloading)} onClick={handleDownload} disabled={downloading}>
-          {downloading ? (
-            <><FaSpinner style={{ animation: "spin 1s linear infinite" }} /> Downloading</>
-          ) : (
-            <><FaDownload /> Download</>
-          )}
-        </button>
-      </div>
-    </div>
-  );
-};
+  };
     
   //  FETCH MATERIALS FUNCTION
   const fetchMaterialsFromBackend = async (showRefreshIndicator = false) => {
@@ -701,9 +784,10 @@ const getCleanDescription = (desc) => {
   const styles = {
     container: {
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      background: darkMode ? "#0e0e14" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       padding: isMobile ? "10px" : "20px",
       fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+      transition: "background 0.3s ease",
     },
     innerContainer: {maxWidth: "1200px", margin: "0 auto"},
 
@@ -715,11 +799,11 @@ const getCleanDescription = (desc) => {
     },
 
     laptopMaterialCard: {
-      border: "1px solid #e5e7eb",
+      border: darkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
       borderRadius: "12px",
       overflow: "hidden",
       transition: "all 0.4s ease",
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       position: "relative",
       display: "flex",
       flexDirection: "column",
@@ -727,11 +811,11 @@ const getCleanDescription = (desc) => {
     },
 
     laptopYoutubeCard: {
-      border: "1px solid #e5e7eb",
+      border: darkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
       borderRadius: "12px",
       overflow: "hidden",
       transition: "all 0.4s ease",
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       display: "flex",
       flexDirection: "column",
       height: "100%",
@@ -752,6 +836,31 @@ const getCleanDescription = (desc) => {
       objectPosition: "center",
       transition: "transform 0.3s ease",
     },
+    laptopYoutubePlayIcon: {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "50px",
+      height: "50px",
+      background: "rgba(0,0,0,0.7)",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "white",
+      fontSize: "24px",
+      transition: "all 0.3s ease",
+    },
+    laptopYoutubeContent: {
+      display: "flex",
+      flexDirection: "column",
+      flex: 1,
+    },
+    laptopYoutubeTextContent: {
+      padding: "15px",
+      flex: 1,
+    },
 
     mobileMaterialsList: {
       display: "grid",
@@ -759,13 +868,12 @@ const getCleanDescription = (desc) => {
       gap: "15px",
     },
 
-    // Mobile YouTube Card
     mobileYoutubeCard: {
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       borderRadius: "16px",
       overflow: "hidden",
       marginBottom: "15px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      boxShadow: darkMode ? "0 4px 12px rgba(0,0,0,0.4)" : "0 4px 12px rgba(0,0,0,0.1)",
       display: "flex",
       flexDirection: "column",
     },
@@ -783,7 +891,41 @@ const getCleanDescription = (desc) => {
       objectFit: "cover",
       objectPosition: "center",
     },
-    // Laptop Styles (existing)
+    mobileYoutubePlayIcon: {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "40px",
+      height: "40px",
+      background: "rgba(0,0,0,0.7)",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "white",
+      fontSize: "18px",
+    },
+    mobileYoutubeContent: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    mobileYoutubeWatchButton: {
+      width: "100%",
+      padding: "10px",
+      background: "#FF0000",
+      color: "white",
+      border: "none",
+      borderRadius: "8px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "8px",
+      fontWeight: "600",
+      fontSize: "14px",
+    },
+
     laptopHeaderButtons: {
       display: "flex",
       justifyContent: "space-between",
@@ -797,14 +939,14 @@ const getCleanDescription = (desc) => {
       alignItems: "center",
       gap: "8px",
       padding: "12px 24px",
-      background: "white",
-      color: "#4f46e5",
+      background: darkMode ? "#18181f" : "white",
+      color: "#7c6ff7",
       border: "none",
       borderRadius: "8px",
       cursor: "pointer",
       fontWeight: "600",
       fontSize: "16px",
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      boxShadow: darkMode ? "0 4px 6px rgba(0,0,0,0.3)" : "0 4px 6px rgba(0, 0, 0, 0.1)",
       transition: "all 0.3s ease",
     },
     laptopRefreshButton: {
@@ -823,11 +965,11 @@ const getCleanDescription = (desc) => {
       transition: "all 0.3s ease",
     },
     laptopSubjectHeader: {
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       padding: "30px",
       borderRadius: "16px",
       marginBottom: "30px",
-      boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+      boxShadow: darkMode ? "0 10px 25px rgba(0,0,0,0.4)" : "0 10px 25px rgba(0, 0, 0, 0.1)",
       display: "flex",
       alignItems: "center",
       gap: "25px",
@@ -848,12 +990,12 @@ const getCleanDescription = (desc) => {
     laptopSubjectName: {
       fontSize: "32px",
       fontWeight: "700",
-      color: "#1f2937",
+      color: darkMode ? "#f0f0fa" : "#1f2937",
       marginBottom: "10px",
     },
     laptopSubjectCode: {
       fontSize: "18px",
-      color: "#6b7280",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       marginBottom: "15px",
       display: "flex",
       alignItems: "center",
@@ -870,7 +1012,8 @@ const getCleanDescription = (desc) => {
     },
     laptopBreadcrumbItem: {
       padding: "6px 12px",
-      background: "#f3f4f6",
+      background: darkMode ? "#252530" : "#f3f4f6",
+      color: darkMode ? "#a0a0b8" : "#4b5563",
       borderRadius: "6px",
     },
     laptopCurrentBreadcrumb: {background: "#4f46e5", color: "white"},
@@ -890,40 +1033,21 @@ const getCleanDescription = (desc) => {
     laptopStatsLabel: {fontSize: "14px", opacity: "0.9"},
     laptopLastRefreshed: {
       fontSize: "12px",
-      color: "#9ca3af",
+      color: darkMode ? "#a0a0b8" : "#9ca3af",
       marginTop: "10px",
       textAlign: "right",
     },
-    laptopSearchContainer: {position: "relative", marginBottom: "25px"},
-    laptopSearchInput: {
-      width: "100%",
-      padding: "16px 20px 16px 50px",
-      fontSize: "16px",
-      border: "2px solid #e5e7eb",
-      borderRadius: "10px",
-      background: "#f9fafb",
-      transition: "all 0.3s",
-      outline: "none",
-    },
-    laptopSearchIcon: {
-      position: "absolute",
-      left: "20px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      color: "#9ca3af",
-      fontSize: "18px",
-    },
     laptopFiltersContainer: {
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       padding: "20px",
       borderRadius: "12px",
       marginBottom: "25px",
-      boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+      boxShadow: darkMode ? "0 4px 6px rgba(0,0,0,0.3)" : "0 4px 6px rgba(0,0,0,0.05)",
     },
     laptopFiltersTitle: {
       fontSize: "20px",
       fontWeight: "600",
-      color: "#1f2937",
+      color: darkMode ? "#f0f0fa" : "#1f2937",
       marginBottom: "15px",
       display: "flex",
       alignItems: "center",
@@ -932,7 +1056,7 @@ const getCleanDescription = (desc) => {
     laptopFiltersGrid: {display: "flex", flexWrap: "wrap", gap: "10px"},
     laptopFilterButton: (type, selected) => ({
       padding: "12px 20px",
-      border: `2px solid ${selected ? type.color : "#e5e7eb"}`,
+      border: `2px solid ${selected ? type.color : (darkMode ? "rgba(255,255,255,0.1)" : "#e5e7eb")}`,
       borderRadius: "8px",
       cursor: "pointer",
       display: "flex",
@@ -940,37 +1064,24 @@ const getCleanDescription = (desc) => {
       gap: "8px",
       fontSize: "14px",
       fontWeight: "500",
-      background: selected ? `${type.color}15` : "white",
-      color: selected ? type.color : "#4b5563",
+      background: selected ? `${type.color}15` : (darkMode ? "#252530" : "white"),
+      color: selected ? type.color : (darkMode ? "#f0f0fa" : "#4b5563"),
       transition: "all 0.3s",
     }),
     laptopFilterCount: {
-      background: "#f3f4f6",
-      color: "#6b7280",
+      background: darkMode ? "#3d3d4a" : "#f3f4f6",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       padding: "2px 8px",
       borderRadius: "12px",
       fontSize: "12px",
       fontWeight: "bold",
-    },
-    laptopMaterialsGrid: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-      gap: "25px",
-    },
-    laptopMaterialCard: {
-      border: "1px solid #e5e7eb",
-      borderRadius: "12px",
-      overflow: "hidden",
-      transition: "all 0.4s ease",
-      background: "white",
-      position: "relative",
     },
     laptopMaterialHeader: (color) => ({
       padding: "18px",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      borderBottom: "1px solid #e5e7eb",
+      borderBottom: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}`,
       background: `${color}10`,
     }),
     laptopMaterialType: {display: "flex", alignItems: "center", gap: "8px"},
@@ -978,12 +1089,12 @@ const getCleanDescription = (desc) => {
     laptopMaterialTitle: {
       fontSize: "18px",
       fontWeight: "600",
-      color: "#1f2937",
+      color: darkMode ? "#f0f0fa" : "#1f2937",
       marginBottom: "12px",
       lineHeight: "1.4",
     },
     laptopMaterialDescription: {
-      color: "#6b7280",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       fontSize: "14px",
       lineHeight: "1.6",
       marginBottom: "20px",
@@ -994,7 +1105,7 @@ const getCleanDescription = (desc) => {
       gridTemplateColumns: "1fr 1fr",
       gap: "15px",
       marginBottom: "20px",
-      background: "#f9fafb",
+      background: darkMode ? "#1e1e28" : "#f9fafb",
       padding: "15px",
       borderRadius: "8px",
     },
@@ -1002,7 +1113,7 @@ const getCleanDescription = (desc) => {
       display: "flex",
       alignItems: "center",
       gap: "8px",
-      color: "#6b7280",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       fontSize: "13px",
     },
     laptopRatingContainer: {
@@ -1016,22 +1127,22 @@ const getCleanDescription = (desc) => {
       justifyContent: "space-between",
       alignItems: "center",
       paddingTop: "15px",
-      borderTop: "1px solid #e5e7eb",
+      borderTop: darkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
       fontSize: "13px",
-      color: "#9ca3af",
+      color: darkMode ? "#6a6a88" : "#9ca3af",
     },
     laptopMaterialActions: {
       padding: "20px",
-      background: "#f9fafb",
-      borderTop: "1px solid #e5e7eb",
+      background: darkMode ? "#1e1e28" : "#f9fafb",
+      borderTop: darkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
       display: "flex",
       gap: "12px",
     },
-    laptopPreviewButton: {
+    laptopViewButton: {
       flex: 1,
       padding: "12px",
-      background: "white",
-      border: "2px solid #e5e7eb",
+      background: darkMode ? "#252530" : "white",
+      border: darkMode ? "2px solid rgba(255,255,255,0.1)" : "2px solid #e5e7eb",
       borderRadius: "8px",
       cursor: "pointer",
       display: "flex",
@@ -1039,7 +1150,7 @@ const getCleanDescription = (desc) => {
       justifyContent: "center",
       gap: "8px",
       fontWeight: "600",
-      color: "#4b5563",
+      color: darkMode ? "#f0f0fa" : "#4b5563",
       fontSize: "14px",
     },
     laptopDownloadButton: (downloading) => ({
@@ -1058,20 +1169,35 @@ const getCleanDescription = (desc) => {
       fontSize: "14px",
       opacity: downloading ? 0.7 : 1,
     }),
+    laptopYoutubeWatchButton: {
+      flex: 1,
+      padding: "12px",
+      background: "#FF0000",
+      color: "white",
+      border: "none",
+      borderRadius: "8px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "8px",
+      fontWeight: "600",
+      fontSize: "14px",
+    },
 
     // Mobile Styles
     mobileHeader: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       padding: "12px 15px",
       borderRadius: "12px",
       marginBottom: "15px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      boxShadow: darkMode ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 8px rgba(0,0,0,0.1)",
     },
     mobileBackButton: {
-      background: "#f3f4f6",
+      background: darkMode ? "#252530" : "#f3f4f6",
       border: "none",
       width: "40px",
       height: "40px",
@@ -1080,13 +1206,13 @@ const getCleanDescription = (desc) => {
       alignItems: "center",
       justifyContent: "center",
       fontSize: "18px",
-      color: "#4f46e5",
+      color: "#7c6ff7",
       cursor: "pointer",
     },
     mobileTitle: {
       fontSize: "16px",
       fontWeight: "600",
-      color: "#1f2937",
+      color: darkMode ? "#f0f0fa" : "#1f2937",
       flex: 1,
       textAlign: "center",
       padding: "0 10px",
@@ -1095,7 +1221,7 @@ const getCleanDescription = (desc) => {
       whiteSpace: "nowrap",
     },
     mobileRefreshButton: {
-      background: "#f3f4f6",
+      background: darkMode ? "#252530" : "#f3f4f6",
       border: "none",
       width: "40px",
       height: "40px",
@@ -1108,14 +1234,14 @@ const getCleanDescription = (desc) => {
       cursor: "pointer",
     },
     mobileSubjectCard: {
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       borderRadius: "16px",
       padding: "20px",
       marginBottom: "15px",
       display: "flex",
       alignItems: "center",
       gap: "15px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      boxShadow: darkMode ? "0 4px 12px rgba(0,0,0,0.4)" : "0 4px 12px rgba(0,0,0,0.1)",
     },
     mobileSubjectIconContainer: {
       width: "60px",
@@ -1132,56 +1258,25 @@ const getCleanDescription = (desc) => {
     mobileSubjectName: {
       fontSize: "18px",
       fontWeight: "700",
-      color: "#1f2937",
+      color: darkMode ? "#f0f0fa" : "#1f2937",
       marginBottom: "4px",
     },
     mobileSubjectCode: {
       fontSize: "13px",
-      color: "#6b7280",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       marginBottom: "6px",
     },
     mobileSubjectMeta: {
       display: "flex",
       gap: "12px",
       fontSize: "12px",
-      color: "#4f46e5",
+      color: "#7c6ff7",
       flexWrap: "wrap",
-    },
-    mobileSearchContainer: {position: "relative", marginBottom: "15px"},
-    mobileSearchIcon: {
-      position: "absolute",
-      left: "15px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      color: "#9ca3af",
-      fontSize: "16px",
-    },
-    mobileSearchInput: {
-      width: "100%",
-      padding: "14px 45px 14px 45px",
-      fontSize: "14px",
-      border: "none",
-      borderRadius: "12px",
-      background: "white",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-      outline: "none",
-    },
-    mobileClearButton: {
-      position: "absolute",
-      right: "15px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      background: "none",
-      border: "none",
-      color: "#9ca3af",
-      fontSize: "16px",
-      cursor: "pointer",
-      padding: "5px",
     },
     mobileFilterToggle: {
       width: "100%",
       padding: "12px",
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       border: "none",
       borderRadius: "12px",
       marginBottom: "10px",
@@ -1191,37 +1286,37 @@ const getCleanDescription = (desc) => {
       gap: "8px",
       fontSize: "14px",
       fontWeight: "500",
-      color: "#4f46e5",
+      color: "#7c6ff7",
       cursor: "pointer",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      boxShadow: darkMode ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 8px rgba(0,0,0,0.1)",
     },
     mobileFiltersContainer: {
       display: "flex",
       flexWrap: "wrap",
       gap: "8px",
       marginBottom: "15px",
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       padding: "15px",
       borderRadius: "12px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      boxShadow: darkMode ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 8px rgba(0,0,0,0.1)",
     },
     mobileFilterButton: (type, selected) => ({
       padding: "8px 12px",
-      border: `1px solid ${selected ? type.color : "#e5e7eb"}`,
+      border: `1px solid ${selected ? type.color : (darkMode ? "rgba(255,255,255,0.1)" : "#e5e7eb")}`,
       borderRadius: "20px",
-      background: selected ? `${type.color}15` : "white",
+      background: selected ? `${type.color}15` : (darkMode ? "#252530" : "white"),
       display: "flex",
       alignItems: "center",
       gap: "6px",
       fontSize: "12px",
       fontWeight: "500",
-      color: selected ? type.color : "#4b5563",
+      color: selected ? type.color : (darkMode ? "#f0f0fa" : "#4b5563"),
       cursor: "pointer",
       transition: "all 0.2s",
     }),
     mobileFilterCount: {
-      background: "#f3f4f6",
-      color: "#6b7280",
+      background: darkMode ? "#3d3d4a" : "#f3f4f6",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       padding: "2px 6px",
       borderRadius: "12px",
       fontSize: "10px",
@@ -1237,7 +1332,7 @@ const getCleanDescription = (desc) => {
       fontSize: "13px",
     },
     mobileEmptyState: {
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       padding: "40px 20px",
       borderRadius: "16px",
       textAlign: "center",
@@ -1246,7 +1341,7 @@ const getCleanDescription = (desc) => {
     mobileUploadButton: {
       marginTop: "15px",
       padding: "12px 24px",
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      background: darkMode ? "linear-gradient(135deg, #2d1f6e 0%, #3d1f6e 100%)" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       color: "white",
       border: "none",
       borderRadius: "8px",
@@ -1263,11 +1358,11 @@ const getCleanDescription = (desc) => {
       gap: "15px",
     },
     mobileMaterialCard: {
-      background: "white",
+      background: darkMode ? "#18181f" : "white",
       borderRadius: "16px",
       overflow: "hidden",
       position: "relative",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      boxShadow: darkMode ? "0 4px 12px rgba(0,0,0,0.4)" : "0 4px 12px rgba(0,0,0,0.1)",
     },
     mobileNewBadge: {
       position: "absolute",
@@ -1283,8 +1378,8 @@ const getCleanDescription = (desc) => {
     },
     mobileMaterialHeader: {
       padding: "12px 15px",
-      background: "#f9fafb",
-      borderBottom: "1px solid #e5e7eb",
+      background: darkMode ? "#1e1e28" : "#f9fafb",
+      borderBottom: darkMode ? "1px solid rgba(255,255,255,0.06)" : "1px solid #e5e7eb",
     },
     mobileMaterialType: {
       display: "flex",
@@ -1296,13 +1391,13 @@ const getCleanDescription = (desc) => {
     mobileMaterialTitle: {
       fontSize: "15px",
       fontWeight: "600",
-      color: "#1f2937",
+      color: darkMode ? "#f0f0fa" : "#1f2937",
       marginBottom: "8px",
       lineHeight: "1.4",
     },
     mobileMaterialDescription: {
       fontSize: "13px",
-      color: "#6b7280",
+      color: darkMode ? "#a0a0b8" : "#6b7280",
       marginBottom: "12px",
       lineHeight: "1.5",
       display: "-webkit-box",
@@ -1315,7 +1410,7 @@ const getCleanDescription = (desc) => {
       gap: "12px",
       marginBottom: "12px",
       fontSize: "11px",
-      color: "#9ca3af",
+      color: darkMode ? "#a0a0b8" : "#9ca3af",
       flexWrap: "wrap",
     },
     mobileMetaItem: {display: "flex", alignItems: "center", gap: "4px"},
@@ -1330,26 +1425,26 @@ const getCleanDescription = (desc) => {
       alignItems: "center",
       gap: "6px",
       fontSize: "11px",
-      color: "#9ca3af",
+      color: darkMode ? "#6a6a88" : "#9ca3af",
       paddingTop: "8px",
-      borderTop: "1px solid #e5e7eb",
+      borderTop: darkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
     },
     mobileMaterialActions: {
       display: "flex",
       gap: "8px",
       padding: "15px",
-      background: "#f9fafb",
-      borderTop: "1px solid #e5e7eb",
+      background: darkMode ? "#1e1e28" : "#f9fafb",
+      borderTop: darkMode ? "1px solid rgba(255,255,255,0.06)" : "1px solid #e5e7eb",
     },
-    mobilePreviewButton: {
+    mobileViewButton: {
       flex: 1,
       padding: "10px",
-      background: "white",
-      border: "1px solid #e5e7eb",
+      background: darkMode ? "#252530" : "white",
+      border: darkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
       borderRadius: "8px",
       fontSize: "12px",
       fontWeight: "500",
-      color: "#4b5563",
+      color: darkMode ? "#f0f0fa" : "#4b5563",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -1378,7 +1473,7 @@ const getCleanDescription = (desc) => {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      background: darkMode ? "#0e0e14" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       color: "white",
     },
     loadingSpinner: {
@@ -1398,7 +1493,7 @@ const getCleanDescription = (desc) => {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      background: darkMode ? "#0e0e14" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       color: "white",
       padding: "20px",
       textAlign: "center",
@@ -1597,11 +1692,11 @@ const getCleanDescription = (desc) => {
           {filteredMaterials.length === 0 ? (
             <div
               style={{
-                background: "white",
+                background: darkMode ? "#18181f" : "white",
                 padding: "60px 20px",
                 borderRadius: "12px",
                 textAlign: "center",
-                boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+                boxShadow: darkMode ? "0 4px 6px rgba(0,0,0,0.3)" : "0 4px 6px rgba(0,0,0,0.05)",
               }}
             >
               <div
@@ -1613,7 +1708,7 @@ const getCleanDescription = (desc) => {
                 style={{
                   fontSize: "24px",
                   fontWeight: "600",
-                  color: "#6b7280",
+                  color: darkMode ? "#a0a0b8" : "#6b7280",
                   marginBottom: "10px",
                 }}
               >
@@ -1621,7 +1716,7 @@ const getCleanDescription = (desc) => {
               </h3>
               <p
                 style={{
-                  color: "#9ca3af",
+                  color: darkMode ? "#a0a0b8" : "#9ca3af",
                   fontSize: "16px",
                   marginBottom: "30px",
                 }}
@@ -1653,7 +1748,7 @@ const getCleanDescription = (desc) => {
                   <button
                     style={{
                       padding: "12px 30px",
-                      background: "#6b7280",
+                      background: darkMode ? "#3d3d4a" : "#6b7280",
                       color: "white",
                       border: "none",
                       borderRadius: "8px",
@@ -1671,10 +1766,10 @@ const getCleanDescription = (desc) => {
           ) : (
             <div
               style={{
-                background: "white",
+                background: darkMode ? "#18181f" : "white",
                 padding: "30px",
                 borderRadius: "12px",
-                boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+                boxShadow: darkMode ? "0 4px 6px rgba(0,0,0,0.3)" : "0 4px 6px rgba(0,0,0,0.05)",
               }}
             >
               <div
@@ -1689,7 +1784,7 @@ const getCleanDescription = (desc) => {
                   style={{
                     fontSize: "24px",
                     fontWeight: "700",
-                    color: "#1f2937",
+                    color: darkMode ? "#f0f0fa" : "#1f2937",
                   }}
                 >
                   {selectedType === "all"
@@ -1698,10 +1793,10 @@ const getCleanDescription = (desc) => {
                 </h3>
                 <span
                   style={{
-                    background: "#f3f4f6",
+                    background: darkMode ? "#252530" : "#f3f4f6",
                     padding: "5px 15px",
                     borderRadius: "20px",
-                    color: "#6b7280",
+                    color: darkMode ? "#a0a0b8" : "#6b7280",
                     fontWeight: "500",
                   }}
                 >
@@ -1798,11 +1893,11 @@ const getCleanDescription = (desc) => {
         {filteredMaterials.length === 0 ? (
           <div style={styles.mobileEmptyState}>
             <div style={styles.mobileEmptyIcon}>📭</div>
-            <h3 style={{fontSize: "18px", marginBottom: "10px"}}>
+            <h3 style={{fontSize: "18px", marginBottom: "10px", color: darkMode ? "#f0f0fa" : "#1f2937"}}>
               No materials found
             </h3>
             <p
-              style={{fontSize: "14px", color: "#6b7280", marginBottom: "20px"}}
+              style={{fontSize: "14px", color: darkMode ? "#a0a0b8" : "#6b7280", marginBottom: "20px"}}
             >
               {searchQuery
                 ? `No results for "${searchQuery}"`

@@ -182,10 +182,10 @@ const About = () => {
   ];
 
   const stats = [
-    { number: '500+', label: 'Study Materials' },
+    { number: '1000+', label: 'Study Materials' },
     { number: '50+', label: 'Courses Covered' },
-    { number: '100+', label: 'Student Users' },
-    { number: '500+', label: 'Total Downloads' }
+    { number: '500+', label: 'Student Users' },
+    { number: '1000+', label: 'Total Downloads' }
   ];
 
   return (

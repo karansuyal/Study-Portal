@@ -637,3 +637,266 @@
   .announcement-bar { font-size: 12px; }
   .hero-pill { font-size: 12px; }
 }
+/* ========== ADDITIONAL DARK MODE FIXES ========== */
+
+/* Force fix for white backgrounds in dark mode */
+[data-theme="dark"] .home {
+  background: var(--surface-2);
+}
+
+[data-theme="dark"] .hero {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,76,245,0.15) 0%, transparent 70%),
+              var(--surface-1);
+}
+
+[data-theme="dark"] .hero-pill {
+  background: rgba(91,76,245,0.2);
+  border-color: rgba(91,76,245,0.3);
+}
+
+[data-theme="dark"] .hero-h1 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .hero-sub {
+  color: var(--text-2);
+}
+
+/* Search bar dark mode */
+[data-theme="dark"] .hero-search {
+  background: var(--surface-1);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .hs-input {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .hs-input::placeholder {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .hs-btn {
+  background: var(--brand);
+}
+
+/* Quick tags */
+[data-theme="dark"] .hero-tag {
+  background: var(--surface-1);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .hero-tag:hover {
+  background: var(--brand-glow);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+/* Floating deco cards */
+[data-theme="dark"] .deco-card {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .deco-card span {
+  color: var(--text-2);
+}
+
+/* Stats cards */
+[data-theme="dark"] .stat-card {
+  background: var(--surface-1);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .stat-number {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme="dark"] .stat-label {
+  color: var(--text-3);
+}
+
+/* Section headers */
+[data-theme="dark"] .section-eyebrow {
+  color: var(--brand);
+}
+
+[data-theme="dark"] .section-title {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .section-link {
+  background: var(--surface-1);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .section-link:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-glow);
+}
+
+/* Material Cards - CRITICAL FIX */
+[data-theme="dark"] .mat-card {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .mat-badge {
+  background: rgba(91,76,245,0.15) !important;
+}
+
+[data-theme="dark"] .mat-title {
+  color: var(--text-1) !important;
+}
+
+[data-theme="dark"] .mat-meta-item {
+  color: var(--text-2) !important;
+}
+
+[data-theme="dark"] .mat-meta-item svg {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .mat-stat {
+  color: var(--text-3) !important;
+}
+
+[data-theme="dark"] .mat-date {
+  color: var(--text-3) !important;
+}
+
+[data-theme="dark"] .mat-stats {
+  border-top-color: var(--border);
+}
+
+[data-theme="dark"] .mat-dl-btn {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%) !important;
+}
+
+[data-theme="dark"] .mat-dl-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--brand-2) 0%, var(--brand) 100%) !important;
+}
+
+/* Features cards */
+[data-theme="dark"] .feature-card {
+  background: var(--surface-1);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .feature-title {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .feature-desc {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .feature-icon-wrap {
+  background: var(--surface-2);
+}
+
+/* CTA section - already has gradient, no change needed for background */
+[data-theme="dark"] .cta-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .cta-sub {
+  color: rgba(255,255,255,0.8);
+}
+
+[data-theme="dark"] .cta-btn-secondary {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+  color: #ffffff;
+}
+
+/* Empty state */
+[data-theme="dark"] .empty-state {
+  background: transparent;
+}
+
+[data-theme="dark"] .empty-state h3 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .empty-state p {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .primary-btn {
+  background: var(--brand);
+}
+
+[data-theme="dark"] .primary-btn:hover {
+  background: var(--brand-2);
+}
+
+/* Skeleton cards */
+[data-theme="dark"] .skeleton-card {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+}
+
+/* Announcement bar in dark mode - keep gradient but adjust */
+[data-theme="dark"] .announcement-bar {
+  background: linear-gradient(90deg, #5b4cf5, #8b5cf6);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .ann-close {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .ann-close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Add courses button */
+[data-theme="dark"] .add-courses-btn {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+/* Course wrapper - ensure text colors */
+[data-theme="dark"] .course-wrapper .course-card {
+  background: var(--surface-1) !important;
+  border-color: var(--border) !important;
+}
+
+/* Any remaining white elements */
+[data-theme="dark"] .home * {
+  /* This ensures any hardcoded white gets overridden by variables */
+  --surface-1: #18181f;
+  --surface-2: #1e1e28;
+  --text-1: #f0f0fa;
+  --text-2: #a0a0b8;
+}
+
+/* Buttons that might have white background */
+[data-theme="dark"] button:not(.hs-btn):not(.mat-dl-btn):not(.cta-btn-primary):not(.cta-btn-secondary):not(.primary-btn):not(.add-courses-btn):not(.ann-close):not(.section-link):not(.hero-tag) {
+  background: var(--surface-2);
+  color: var(--text-1);
+  border-color: var(--border);
+}
+
+/* Responsive fixes for dark mode */
+@media (max-width: 768px) {
+  [data-theme="dark"] .hero {
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,76,245,0.15) 0%, transparent 70%),
+                var(--surface-1);
+  }
+  
+  [data-theme="dark"] .materials-section {
+    background: var(--surface-1);
+  }
+  
+  [data-theme="dark"] .mat-card {
+    background: var(--surface-2) !important;
+  }
+}

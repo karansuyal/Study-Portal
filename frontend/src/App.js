@@ -24,6 +24,7 @@ import { CounterProvider } from './contexts/CounterContext';
 import Chatbot from './components/Chatbot';  
 import AuthCallback from './pages/AuthCallback';
 import { ThemeProvider } from './contexts/ThemeContext';
+import DarkModeInjector from './components/DarkModeInjector';
 
 
 //  HIERARCHICAL PAGES IMPORTS
@@ -38,6 +39,7 @@ function App() {
   return (
     <ThemeProvider>
     <Router>
+      <DarkModeInjector />
       <Analytics />
       <AuthProvider>  {}
         <CounterProvider>  {}

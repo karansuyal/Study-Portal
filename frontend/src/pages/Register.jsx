@@ -69,6 +69,11 @@ const Register = () => {
   overflow-x: hidden;
 }
 
+/* Dark mode gradient override */
+[data-theme="dark"] .rg-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
+}
+
 .rg-card {
   width: 100%;
   max-width: 520px;
@@ -79,6 +84,12 @@ const Register = () => {
   animation: rg-rise .45s cubic-bezier(.4,0,.2,1);
   position: relative;
   z-index: 1;
+}
+
+/* Dark mode card */
+[data-theme="dark"] .rg-card {
+  background: #18181f;
+  box-shadow: 0 32px 72px rgba(0,0,0,.5);
 }
 
 @keyframes rg-rise {
@@ -92,6 +103,12 @@ const Register = () => {
   text-align: center;
   position: relative;
 }
+
+/* Dark mode header */
+[data-theme="dark"] .rg-head {
+  background: linear-gradient(135deg, #3730a3 0%, #5b21b6 100%);
+}
+
 .rg-head::after {
   content: '';
   position: absolute;
@@ -99,6 +116,12 @@ const Register = () => {
   background: #fff;
   border-radius: 55% 55% 0 0 / 100% 100% 0 0;
 }
+
+/* Dark mode header curve */
+[data-theme="dark"] .rg-head::after {
+  background: #18181f;
+}
+
 .rg-logo {
   width: 54px; height: 54px; border-radius: 50%;
   background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.28);
@@ -124,11 +147,37 @@ const Register = () => {
   border: 2px solid #e5e7eb; color: #9ca3af; background: #f9fafb;
   transition: .25s; flex-shrink: 0;
 }
+
+/* Dark mode step num */
+[data-theme="dark"] .rg-step-num {
+  background: #1e1e28;
+  border-color: #2a2a30;
+  color: #6a6a88;
+}
+
 .rg-step-num.done   { background: #4338ca; border-color: #4338ca; color: #fff; }
 .rg-step-num.active { background: #4338ca; border-color: #4338ca; color: #fff; box-shadow: 0 0 0 3px rgba(67,56,202,.18); }
 .rg-step-lbl { font-size: .7rem; color: #9ca3af; font-weight: 500; white-space: nowrap; }
+
+/* Dark mode step label */
+[data-theme="dark"] .rg-step-lbl {
+  color: #6a6a88;
+}
+
 .rg-step-lbl.active { color: #4338ca; font-weight: 600; }
+
+/* Dark mode active step label */
+[data-theme="dark"] .rg-step-lbl.active {
+  color: #a78bfa;
+}
+
 .rg-connector { height: 2px; width: 28px; background: #e5e7eb; margin: 0 4px; flex-shrink: 0; transition: .25s; }
+
+/* Dark mode connector */
+[data-theme="dark"] .rg-connector {
+  background: #2a2a30;
+}
+
 .rg-connector.done { background: #4338ca; }
 
 /* Body */
@@ -141,6 +190,13 @@ const Register = () => {
   font-size: .8rem; color: #1d4ed8;
   display: flex; align-items: flex-start; gap: 7px; line-height: 1.5;
 }
+
+/* Dark mode info */
+[data-theme="dark"] .rg-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
 .rg-err {
   background: #fee2e2; border-left: 3px solid #dc2626; border-radius: 10px;
   padding: .65rem .9rem; margin-bottom: 1.1rem;
@@ -148,11 +204,23 @@ const Register = () => {
   display: flex; align-items: flex-start; gap: 7px;
 }
 
+/* Dark mode error */
+[data-theme="dark"] .rg-err {
+  background: rgba(220, 38, 38, 0.15);
+  color: #f87171;
+}
+
 /* Form */
 .rg-grid { display: grid; gap: .9rem; }
 .rg-row  { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
 
 .rg-lbl { display: block; font-size: .76rem; font-weight: 500; color: #374151; margin-bottom: 5px; }
+
+/* Dark mode label */
+[data-theme="dark"] .rg-lbl {
+  color: #a0a0b8;
+}
+
 .rg-req { color: #ef4444; margin-left: 2px; }
 
 .rg-inp, .rg-sel {
@@ -163,14 +231,41 @@ const Register = () => {
   transition: border-color .2s, box-shadow .2s, background .2s;
   appearance: none; -webkit-appearance: none;
 }
+
+/* Dark mode inputs */
+[data-theme="dark"] .rg-inp,
+[data-theme="dark"] .rg-sel {
+  background: #1e1e28;
+  border-color: #2a2a30;
+  color: #f0f0fa;
+}
+
+[data-theme="dark"] .rg-inp::placeholder {
+  color: #6a6a88;
+}
+
 .rg-inp:focus, .rg-sel:focus {
   border-color: #4338ca; background: #fff;
   box-shadow: 0 0 0 3px rgba(67,56,202,.1);
 }
+
+/* Dark mode focus */
+[data-theme="dark"] .rg-inp:focus,
+[data-theme="dark"] .rg-sel:focus {
+  background: #252530;
+  border-color: #5b4cf5;
+  box-shadow: 0 0 0 3px rgba(91, 76, 245, 0.2);
+}
+
 .rg-sel-wrap { position: relative; }
 .rg-sel-wrap::after {
   content: '▾'; position: absolute; right: 11px; top: 50%;
   transform: translateY(-50%); color: #9ca3af; font-size: .72rem; pointer-events: none;
+}
+
+/* Dark mode select arrow */
+[data-theme="dark"] .rg-sel-wrap::after {
+  color: #6a6a88;
 }
 
 .rg-pw-wrap { position: relative; }
@@ -182,10 +277,30 @@ const Register = () => {
 }
 .rg-pw-btn:hover { color: #4338ca; }
 
+/* Dark mode password toggle */
+[data-theme="dark"] .rg-pw-btn {
+  color: #6a6a88;
+}
+[data-theme="dark"] .rg-pw-btn:hover {
+  color: #a78bfa;
+}
+
 .rg-strength { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .rg-bars     { display: flex; gap: 3px; flex: 1; }
 .rg-bar      { height: 4px; flex: 1; border-radius: 3px; background: #e5e7eb; transition: background .3s; }
+
+/* Dark mode bar background */
+[data-theme="dark"] .rg-bar {
+  background: #2a2a30;
+}
+
 .rg-str-txt  { font-size: .7rem; color: #9ca3af; min-width: 48px; text-align: right; }
+
+/* Dark mode strength text */
+[data-theme="dark"] .rg-str-txt {
+  color: #6a6a88;
+}
+
 .rg-mismatch { font-size: .72rem; color: #ef4444; margin-top: 4px; }
 
 /* Buttons */
@@ -200,6 +315,12 @@ const Register = () => {
   background: linear-gradient(135deg, #4338ca, #6d28d9); color: #fff;
   box-shadow: 0 4px 14px rgba(67,56,202,.3);
 }
+
+/* Dark mode primary button */
+[data-theme="dark"] .rg-btn-primary {
+  background: linear-gradient(135deg, #5b4cf5, #8b5cf6);
+}
+
 .rg-btn-primary:hover:not(:disabled)  { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(67,56,202,.4); }
 .rg-btn-primary:active:not(:disabled) { transform: scale(.98); }
 .rg-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
@@ -207,7 +328,19 @@ const Register = () => {
   background: #f3f4f6; color: #374151; border: 1.5px solid #e5e7eb;
   flex: 0 0 auto; padding: .78rem 1.1rem;
 }
+
+/* Dark mode ghost button */
+[data-theme="dark"] .rg-btn-ghost {
+  background: #1e1e28;
+  color: #a0a0b8;
+  border-color: #2a2a30;
+}
+
 .rg-btn-ghost:hover { background: #e9e9f0; }
+
+[data-theme="dark"] .rg-btn-ghost:hover {
+  background: #252530;
+}
 
 /* Process box */
 .rg-process {
@@ -215,17 +348,55 @@ const Register = () => {
   padding: .9rem 1.1rem; margin-top: 1rem;
   font-size: .78rem; color: #374151;
 }
+
+/* Dark mode process box */
+[data-theme="dark"] .rg-process {
+  background: #1e1e28;
+  color: #a0a0b8;
+}
+
 .rg-process h5 {
   color: #4338ca; font-family: 'Sora', sans-serif;
   font-size: .78rem; font-weight: 600; margin-bottom: .45rem;
 }
+
+/* Dark mode process h5 */
+[data-theme="dark"] .rg-process h5 {
+  color: #a78bfa;
+}
+
 .rg-process ol { padding-left: 1.15rem; color: #6b7280; line-height: 1.85; }
+
+/* Dark mode process ol */
+[data-theme="dark"] .rg-process ol {
+  color: #a0a0b8;
+}
 
 /* Footer */
 .rg-footer { text-align: center; padding-top: 1rem; border-top: 1px solid #f3f4f6; margin-top: 1.1rem; }
+
+/* Dark mode footer */
+[data-theme="dark"] .rg-footer {
+  border-top-color: #2a2a30;
+}
+
 .rg-footer p { font-size: .8rem; color: #9ca3af; margin-bottom: 3px; }
+
+/* Dark mode footer text */
+[data-theme="dark"] .rg-footer p {
+  color: #6a6a88;
+}
+
 .rg-link { color: #4338ca; font-weight: 600; font-size: .85rem; text-decoration: none; }
 .rg-link:hover { color: #6d28d9; }
+
+/* Dark mode link */
+[data-theme="dark"] .rg-link {
+  color: #a78bfa;
+}
+[data-theme="dark"] .rg-link:hover {
+  color: #c4b5fd;
+}
 
 /* Spinner */
 .rg-spinner {
@@ -241,6 +412,13 @@ const Register = () => {
   box-shadow: 0 32px 72px rgba(0,0,0,.32); overflow: hidden;
   animation: rg-rise .45s cubic-bezier(.4,0,.2,1); position: relative; z-index: 1;
 }
+
+/* Dark mode verify card */
+[data-theme="dark"] .rg-verify {
+  background: #18181f;
+  box-shadow: 0 32px 72px rgba(0,0,0,.5);
+}
+
 .rg-verify-head {
   background: linear-gradient(135deg, #059669, #10b981);
   padding: 1.75rem 1.5rem 2.75rem; text-align: center; position: relative;
@@ -249,6 +427,12 @@ const Register = () => {
   content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 40px;
   background: #fff; border-radius: 55% 55% 0 0 / 100% 100% 0 0;
 }
+
+/* Dark mode verify head curve */
+[data-theme="dark"] .rg-verify-head::after {
+  background: #18181f;
+}
+
 .rg-check-ring {
   width: 62px; height: 62px; border-radius: 50%;
   background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.32);
@@ -256,21 +440,65 @@ const Register = () => {
   font-size: 26px; margin: 0 auto .85rem;
 }
 .rg-verify-body { padding: 1.5rem; }
+
+/* Dark mode verify body text */
+[data-theme="dark"] .rg-verify-body p {
+  color: #a0a0b8;
+}
+
 .rg-email-badge {
   background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px;
   padding: .6rem .9rem; margin: .85rem 0; text-align: center;
   font-size: .85rem; font-weight: 500; color: #065f46; word-break: break-all;
 }
+
+/* Dark mode email badge */
+[data-theme="dark"] .rg-email-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
 .rg-steps-box {
   background: #f8f7ff; border-radius: 12px; padding: .9rem 1.1rem; margin: .85rem 0;
 }
+
+/* Dark mode steps box */
+[data-theme="dark"] .rg-steps-box {
+  background: #1e1e28;
+}
+
 .rg-steps-box h5 { color: #4338ca; font-family: 'Sora',sans-serif; font-size: .78rem; font-weight: 600; margin-bottom: .45rem; }
+
+/* Dark mode steps h5 */
+[data-theme="dark"] .rg-steps-box h5 {
+  color: #a78bfa;
+}
+
 .rg-steps-box ol { padding-left: 1.15rem; color: #6b7280; font-size: .8rem; line-height: 1.85; }
+
+/* Dark mode steps ol */
+[data-theme="dark"] .rg-steps-box ol {
+  color: #a0a0b8;
+}
+
 .rg-verify-actions { display: flex; flex-direction: column; gap: .6rem; }
 .rg-btn-green  { background: linear-gradient(135deg,#059669,#10b981); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,.28); }
 .rg-btn-green:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,.38); }
 .rg-btn-outline { background: #fff; color: #4338ca; border: 1.5px solid #c7d2fe; }
+
+/* Dark mode outline button */
+[data-theme="dark"] .rg-btn-outline {
+  background: #1e1e28;
+  color: #a78bfa;
+  border-color: #2a2a30;
+}
+
 .rg-btn-outline:hover { background: #f5f4ff; }
+
+[data-theme="dark"] .rg-btn-outline:hover {
+  background: #252530;
+}
 
 /* ─── MOBILE FIX ─── */
 @media (max-width: 480px) {
@@ -528,6 +756,15 @@ const Register = () => {
                 {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
                   <div className="rg-mismatch">⚠ Passwords don't match</div>
                 )}
+              </div>
+
+              <div className="rg-process">
+                <h5>✅ Why verify your email?</h5>
+                <ol>
+                  <li>Confirm you're a real student</li>
+                  <li>Receive upload/download updates</li>
+                  <li>Reset your password securely</li>
+                </ol>
               </div>
 
               <div className="rg-actions">
