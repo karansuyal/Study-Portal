@@ -477,7 +477,7 @@ input, textarea, select {
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
   background: #475569;
 }
-/* ========== GLOBAL DARK MODE — index.css ke END mein add karo ========== */
+
 
 /* Page backgrounds */
 [data-theme="dark"] body {
@@ -485,7 +485,7 @@ input, textarea, select {
   color: #f1f5f9 !important;
 }
 
-/* Har page ka main container */
+
 [data-theme="dark"] .semester-container,
 [data-theme="dark"] .year-container,
 [data-theme="dark"] .subject-container,
@@ -549,3 +549,21 @@ input, textarea, select {
 [data-theme="dark"] table { background: #1e293b !important; }
 [data-theme="dark"] tr:hover { background: #334155 !important; }
 [data-theme="dark"] hr { border-color: #334155 !important; }
+
+/* Emergency dark mode - Forcefully apply */
+body.dark-mode {
+  background: #0a0a0a !important;
+  color: white !important;
+}
+
+body.dark-mode * {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+body.dark-mode input,
+body.dark-mode textarea {
+  background: #2a2a2a !important;
+  color: white !important;
+}
