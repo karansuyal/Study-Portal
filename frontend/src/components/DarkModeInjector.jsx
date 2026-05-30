@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 // ── COLOUR MAPS ───────────────────────────────────────────────────
 const LIGHT = {
@@ -62,8 +63,6 @@ function patchElement(el, dark) {
         s.setProperty('background', 'linear-gradient(135deg,#2d1f6e 0%,#3d1f6e 100%)', 'important');
     } else {
       // reset to nothing — CSS class or original will take over
-      // We don't reset here because we don't store originals
-      // The page reload resets everything
     }
   }
 
@@ -99,7 +98,6 @@ function patchElement(el, dark) {
 
   // ── box-shadow (keep structure, just darken colour) ─────────
   if (dark && s.boxShadow && s.boxShadow.includes('rgba(0,0,0,')) {
-    // make shadows more visible
     s.setProperty('box-shadow',
       s.boxShadow.replace(/rgba\(0,0,0,[\d.]+\)/g, 'rgba(0,0,0,0.5)'),
       'important');
@@ -110,7 +108,7 @@ function patchElement(el, dark) {
 const ORIG_KEY = '__sp_orig_style__';
 
 function saveOriginals(el) {
-  if (el[ORIG_KEY]) return; // already saved
+  if (el[ORIG_KEY]) return;
   el[ORIG_KEY] = {
     background:      el.style.background,
     backgroundColor: el.style.backgroundColor,
@@ -125,13 +123,16 @@ function restoreOriginals(el) {
   const orig = el[ORIG_KEY];
   if (!orig) return;
   Object.entries(orig).forEach(([k, v]) => {
-    el.style[k] = v;
+    if (v === null || v === undefined) {
+      el.style.removeProperty(k.replace(/([A-Z])/g, '-$1').toLowerCase());
+    } else {
+      el.style[k] = v;
+    }
   });
 }
 
 // ── MAIN APPLY FUNCTION ───────────────────────────────────────────
 function applyDarkMode(dark) {
-  // All elements that have any inline style
   const elements = document.querySelectorAll('[style]');
   elements.forEach(el => {
     if (dark) {
@@ -143,7 +144,7 @@ function applyDarkMode(dark) {
   });
 }
 
-// ── MUTATION OBSERVER: patch newly added elements ─────────────────
+// ── MUTATION OBSERVER ───────────────────────────────────────────────
 let observer = null;
 
 function startObserver(dark) {
@@ -152,7 +153,6 @@ function startObserver(dark) {
 
   observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
-      // New nodes added to DOM
       mutation.addedNodes.forEach(node => {
         if (node.nodeType !== 1) return;
         if (node.style) { saveOriginals(node); patchElement(node, true); }
@@ -160,7 +160,6 @@ function startObserver(dark) {
           saveOriginals(el); patchElement(el, true);
         });
       });
-      // Attribute changed (style attribute updated on existing node)
       if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
         const el = mutation.target;
         if (el && document.documentElement.getAttribute('data-theme') === 'dark') {
@@ -181,31 +180,16 @@ function startObserver(dark) {
 
 // ── REACT COMPONENT ───────────────────────────────────────────────
 const DarkModeInjector = () => {
+  const { theme } = useTheme(); // Get theme from context
+
   useEffect(() => {
-    // Initial apply on mount
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    // Apply dark mode based on current theme
+    const isDark = theme === 'dark';
     applyDarkMode(isDark);
     startObserver(isDark);
+  }, [theme]); // Re-run when theme changes
 
-    // Watch for theme changes (Navbar toggle sets data-theme on <html>)
-    const themeObserver = new MutationObserver(() => {
-      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      applyDarkMode(dark);
-      startObserver(dark);
-    });
-
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
-
-    return () => {
-      themeObserver.disconnect();
-      if (observer) observer.disconnect();
-    };
-  }, []);
-
-  return null; // renders nothing
+  return null;
 };
 
 export default DarkModeInjector;
