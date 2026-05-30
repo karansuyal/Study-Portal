@@ -1415,3 +1415,258 @@
   border-color: rgba(255,255,255,0.3);
   border-top-color: white;
 }
+/* ============================================
+   UPLOAD PAGE MOBILE FIXES
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* Main Container */
+  .upload-container {
+    padding: 1rem 0.75rem !important;
+    min-height: 100vh;
+  }
+  
+  /* Header */
+  .upload-header {
+    margin-bottom: 1rem !important;
+  }
+  
+  .upload-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .upload-subtitle {
+    font-size: 0.85rem !important;
+  }
+  
+  /* User Info Card */
+  .user-info {
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 0.8rem !important;
+    gap: 0.8rem !important;
+    margin-bottom: 1rem !important;
+    flex-wrap: wrap !important;
+  }
+  
+  .user-avatar {
+    width: 45px !important;
+    height: 45px !important;
+    font-size: 1.1rem !important;
+  }
+  
+  .user-details {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  .user-name {
+    font-size: 0.9rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  .user-meta, .user-email {
+    font-size: 0.7rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* Logout Button */
+  .logout-btn-mobile {
+    margin-left: auto !important;
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Upload Box */
+  .upload-box {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .upload-label {
+    padding: 0.8rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .file-info {
+    padding: 0.8rem !important;
+    margin-top: 0.8rem !important;
+  }
+  
+  .file-info p {
+    font-size: 0.8rem !important;
+    word-break: break-word !important;
+  }
+  
+  /* Form */
+  .upload-form {
+    padding: 1rem !important;
+  }
+  
+  .form-section-title {
+    font-size: 1rem !important;
+    margin: 0.8rem 0 0.5rem 0 !important;
+  }
+  
+  .form-group {
+    margin-bottom: 0.8rem !important;
+  }
+  
+  .form-label {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.3rem !important;
+  }
+  
+  .form-label small {
+    display: block !important;
+    margin-left: 0 !important;
+    margin-top: 0.2rem !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 0.7rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+  }
+  
+  .form-textarea {
+    min-height: 80px !important;
+  }
+  
+  /* Form Row - Stack on mobile */
+  .form-row {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  
+  .form-group.half {
+    margin-bottom: 0.8rem !important;
+  }
+  
+  /* Info Box */
+  .info-box {
+    padding: 0.8rem !important;
+    margin-bottom: 1rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  /* Warning Box */
+  .warning-box {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .warning-title {
+    font-size: 1rem !important;
+  }
+  
+  .warning-message {
+    font-size: 0.8rem !important;
+  }
+  
+  /* YouTube Preview */
+  .youtube-input-wrapper {
+    padding: 0.8rem !important;
+  }
+  
+  .youtube-label {
+    font-size: 0.85rem !important;
+  }
+  
+  .youtube-input {
+    padding: 0.7rem 0.8rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .youtube-preview {
+    padding: 0.8rem !important;
+  }
+  
+  /* Upload Button */
+  .upload-btn {
+    padding: 0.9rem !important;
+    font-size: 0.9rem !important;
+    margin-top: 1rem !important;
+    border-radius: 40px !important;
+  }
+  
+  /* Admin Note */
+  .admin-note {
+    padding: 0.8rem !important;
+    margin-top: 1rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .admin-note-content {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 0.3rem !important;
+  }
+}
+
+/* Extra small devices (max-width: 480px) */
+@media (max-width: 480px) {
+  .upload-container {
+    padding: 0.75rem 0.5rem !important;
+  }
+  
+  .user-info {
+    flex-wrap: wrap !important;
+  }
+  
+  .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .user-name {
+    font-size: 0.85rem !important;
+  }
+  
+  .upload-title {
+    font-size: 1.3rem !important;
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 0.6rem 0.7rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Landscape mode fix */
+@media (max-height: 600px) and (orientation: landscape) {
+  .upload-container {
+    padding: 0.5rem !important;
+  }
+  
+  .upload-header {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .user-info {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .upload-box {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .upload-form {
+    padding: 0.8rem !important;
+  }
+  
+  .form-group {
+    margin-bottom: 0.5rem !important;
+  }
+}
