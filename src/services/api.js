@@ -2,266 +2,154 @@ export const API_URL = 'https://study-portal-ill8.onrender.com/api';
 
 // Helper function for API calls
 async function fetchAPI(endpoint, options = {}) {
-  try {
-    const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
-    
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+  const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
 
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
 
-    console.log(`🌐 Fetching: ${API_URL}${endpoint}`);
-
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      headers,
-      ...options,
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || `API Error: ${response.status}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error(' API Error:', error);
-    throw error;
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    headers,
+    ...options,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || `API Error: ${response.status}`);
+  }
+
+  return response.json();
 }
 
 //  HEALTH CHECK
-export const checkHealth = async () => {
-  return fetchAPI('/health');
-};
-
-export const healthCheck = async () => {
-  return checkHealth();
-};
+export const checkHealth = async () => fetchAPI('/health');
+export const healthCheck = async () => checkHealth();
 
 //  AUTH APIs
-export const register = async (userData) => {
-  return fetchAPI('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(userData)
-  });
-};
+export const register = async (userData) =>
+  fetchAPI('/auth/register', { method: 'POST', body: JSON.stringify(userData) });
 
-export const login = async (email, password) => {
-  return fetchAPI('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password })
-  });
-};
+export const login = async (email, password) =>
+  fetchAPI('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
 
-export const getCurrentUser = async () => {
-  return fetchAPI('/auth/profile');
-};
+export const getCurrentUser = async () => fetchAPI('/auth/profile');
 
-//  COURSE APIs
-export const getCourses = async () => {
-  try {
-    const response = await fetchAPI('/programs');
-    return response;
-  } catch (error) {
-    console.log('Using mock courses');
-    return {
-      programs: [
-        { id: 1, name: 'B.Tech (Computer Science)', icon: '💻', duration: '4 Years' },
-        { id: 2, name: 'BCA', icon: '📱', duration: '3 Years' },
-        { id: 3, name: 'BBA', icon: '📊', duration: '3 Years' },
-        { id: 4, name: 'MBA', icon: '🎓', duration: '2 Years' },
-        { id: 5, name: 'MCA', icon: '💼', duration: '2 Years' }
-      ]
-    };
-  }
-};
+//  COURSE APIs — real backend data only, no more mock fallback
+export const getCourses = async () => fetchAPI('/programs');
 
+// NOTE: backend has /api/courses/:id, not /api/programs/:id — using the real one
 export const getCourseById = async (courseId) => {
-  try {
-    return await fetchAPI(`/programs/${courseId}`);
-  } catch (error) {
-    return {
-      id: courseId,
-      name: 'Course',
-      duration: '4 Years'
-    };
-  }
+  const res = await fetchAPI(`/courses/${courseId}`);
+  return res.course;
 };
 
-//  FEATURED COURSES
 export const getFeaturedCourses = async (limit = 6) => {
-  try {
-    const data = await getCourses();
-    return {
-      courses: data.programs ? data.programs.slice(0, limit) : [],
-      total: data.programs ? data.programs.length : 0
-    };
-  } catch (error) {
-    return { courses: [], total: 0 };
-  }
+  const data = await getCourses();
+  const programs = data.programs || [];
+  return { courses: programs.slice(0, limit), total: programs.length };
 };
 
-//  YEARS APIs
+//  YEARS — real subject + material counts, computed from actual DB rows
+// instead of Math.random(). A "year" = 2 semesters (sem 1-2 = Year 1, etc).
 export const getCourseYears = async (courseId) => {
-  try {
-    const durations = { 1: 4, 2: 3, 3: 3, 4: 2, 5: 2 };
-    const yearsCount = durations[courseId] || 4;
-    const years = [];
-    
-    for (let i = 1; i <= yearsCount; i++) {
-      years.push({
-        id: i,
-        name: i === 1 ? 'First Year' : i === 2 ? 'Second Year' : i === 3 ? 'Third Year' : 'Final Year',
-        subjects: Math.floor(Math.random() * 10) + 5,
-        materials: Math.floor(Math.random() * 200) + 100
-      });
+  const [subjectsRes, notesRes] = await Promise.all([
+    fetchAPI(`/subjects?course_id=${courseId}`),
+    fetchAPI(`/notes?course_id=${courseId}`),
+  ]);
+
+  const subjects = subjectsRes.subjects || [];
+  const notes = notesRes.notes || [];
+
+  const materialsBySubject = {};
+  notes.forEach((n) => {
+    materialsBySubject[n.subject_id] = (materialsBySubject[n.subject_id] || 0) + 1;
+  });
+
+  const yearNames = { 1: 'First Year', 2: 'Second Year', 3: 'Third Year', 4: 'Final Year' };
+  const years = {};
+
+  subjects.forEach((s) => {
+    const yearId = Math.ceil(s.semester / 2);
+    if (!years[yearId]) {
+      years[yearId] = { id: yearId, name: yearNames[yearId] || `Year ${yearId}`, subjects: 0, materials: 0 };
     }
-    return years;
-  } catch (error) {
-    return [
-      { id: 1, name: 'First Year', subjects: 8, materials: 200 },
-      { id: 2, name: 'Second Year', subjects: 7, materials: 250 },
-      { id: 3, name: 'Third Year', subjects: 6, materials: 300 },
-      { id: 4, name: 'Final Year', subjects: 5, materials: 150 }
-    ];
-  }
+    years[yearId].subjects += 1;
+    years[yearId].materials += materialsBySubject[s.id] || 0;
+  });
+
+  return Object.values(years).sort((a, b) => a.id - b.id);
 };
 
-//  SEMESTERS APIs
+//  SEMESTERS — real subject counts per semester, not a hardcoded "6, credits: 24"
 export const getSemestersForYear = async (courseId, yearId) => {
-  try {
-    return [
-      { id: (yearId * 2) - 1, name: `Semester ${(yearId * 2) - 1}`, subjects: 6, credits: 24 },
-      { id: yearId * 2, name: `Semester ${yearId * 2}`, subjects: 6, credits: 24 }
-    ];
-  } catch (error) {
-    return [
-      { id: 1, name: 'Semester 1', subjects: 6, credits: 24 },
-      { id: 2, name: 'Semester 2', subjects: 6, credits: 24 }
-    ];
-  }
+  const subjectsRes = await fetchAPI(`/subjects?course_id=${courseId}`);
+  const subjects = subjectsRes.subjects || [];
+
+  const semA = (yearId * 2) - 1;
+  const semB = yearId * 2;
+
+  return [semA, semB].map((sem) => ({
+    id: sem,
+    name: `Semester ${sem}`,
+    subjects: subjects.filter((s) => s.semester === sem).length,
+  }));
 };
 
-//  SUBJECT APIs
-const getMockSubjects = (semesterId) => {
-  const semesterSubjects = {
-    1: [
-      { id: 101, name: 'Mathematics-I', code: 'MATH101', credits: 4, materials: 25, rating: 4.5, type: 'Theory' },
-      { id: 102, name: 'Physics', code: 'PHY101', credits: 4, materials: 20, rating: 4.3, type: 'Theory' },
-      { id: 103, name: 'Chemistry', code: 'CHE101', credits: 4, materials: 18, rating: 4.2, type: 'Theory' },
-      { id: 104, name: 'Programming in C', code: 'CSE101', credits: 3, materials: 35, rating: 4.8, type: 'Lab' },
-      { id: 105, name: 'English', code: 'ENG101', credits: 2, materials: 12, rating: 4.0, type: 'Theory' }
-    ],
-    2: [
-      { id: 201, name: 'Mathematics-II', code: 'MATH201', credits: 4, materials: 22, rating: 4.4, type: 'Theory' },
-      { id: 202, name: 'Digital Electronics', code: 'ECE202', credits: 4, materials: 28, rating: 4.6, type: 'Theory' },
-      { id: 203, name: 'Data Structures', code: 'CSE201', credits: 4, materials: 40, rating: 4.9, type: 'Lab' }
-    ],
-    3: [
-      { id: 301, name: 'Discrete Mathematics', code: 'MATH301', credits: 4, materials: 18, rating: 4.4, type: 'Theory' },
-      { id: 302, name: 'Computer Organization', code: 'CSE301', credits: 4, materials: 30, rating: 4.7, type: 'Theory' },
-      { id: 303, name: 'Object Oriented Programming', code: 'CSE302', credits: 4, materials: 35, rating: 4.8, type: 'Lab' }
-    ]
-  };
-  return semesterSubjects[semesterId] || semesterSubjects[1];
-};
-
+//  SUBJECT APIs — hits real /api/subjects directly.
+// (Old code called /programs/:id/branches -> /branches/:id/subjects, a route
+// that never existed on the backend — that's why it always silently fell
+// back to fake subjects before. Fixed to use the real endpoint.)
 export const getSubjectsForSemester = async (courseId, yearId, semesterId) => {
-  try {
-    const branchesResponse = await fetchAPI(`/programs/${courseId}/branches`);
-    if (!branchesResponse.branches || branchesResponse.branches.length === 0) {
-      return getMockSubjects(semesterId);
-    }
-    const branchId = branchesResponse.branches[0].id;
-    const subjectsResponse = await fetchAPI(`/branches/${branchId}/subjects?semester=${semesterId}`);
-    return subjectsResponse.subjects || getMockSubjects(semesterId);
-  } catch (error) {
-    return getMockSubjects(semesterId);
-  }
+  const response = await fetchAPI(`/subjects?course_id=${courseId}&semester=${semesterId}`);
+  return response.subjects || [];
 };
 
 export const getSubjectsByCourse = async (courseId, semester = null) => {
-  try {
-    const branchesResponse = await fetchAPI(`/programs/${courseId}/branches`);
-    if (!branchesResponse.branches || branchesResponse.branches.length === 0) {
-      return { subjects: [] };
-    }
-    const branchId = branchesResponse.branches[0].id;
-    const url = semester ? `/branches/${branchId}/subjects?semester=${semester}` : `/branches/${branchId}/subjects`;
-    return fetchAPI(url);
-  } catch (error) {
-    return { subjects: getMockSubjects(semester || 1) };
-  }
+  const url = semester
+    ? `/subjects?course_id=${courseId}&semester=${semester}`
+    : `/subjects?course_id=${courseId}`;
+  return fetchAPI(url);
 };
 
+// Needs a new backend route — see courses.py patch below
 export const getSubject = async (subjectId) => {
-  try {
-    return await fetchAPI(`/subjects/${subjectId}`);
-  } catch (error) {
-    return {
-      subject: { id: subjectId, name: 'Subject', code: 'SUB001', credits: 3 }
-    };
-  }
+  const res = await fetchAPI(`/subjects/${subjectId}`);
+  return res.subject;
 };
 
-//  MATERIAL APIs
-const getMockMaterials = () => {
-  return [
-    {
-      id: 1, title: 'Complete Syllabus', description: 'Official syllabus',
-      material_type: 'syllabus', file_size: '1.2 MB', downloads: 245, views: 500,
-      uploaded_at: '2024-01-15T00:00:00Z', user_name: 'Admin'
-    },
-    {
-      id: 2, title: 'Complete Notes', description: 'Comprehensive notes',
-      material_type: 'notes', file_size: '4.5 MB', downloads: 420, views: 800,
-      uploaded_at: '2024-01-20T00:00:00Z', user_name: 'Professor'
-    }
-  ];
-};
-
+//  MATERIAL APIs — real data, empty result instead of fake notes on failure
 export const getMaterials = async (filters = {}) => {
-  try {
-    const params = new URLSearchParams();
-    if (filters.subject_id) params.append('subject_id', filters.subject_id);
-    if (filters.material_type) params.append('material_type', filters.material_type);
-    if (filters.search) params.append('search', filters.search);
-    
-    const queryString = params.toString();
-    const url = queryString ? `/notes?${queryString}` : '/notes';
-    
-    const response = await fetchAPI(url);
-    return response;
-  } catch (error) {
-    console.log('Using mock materials');
-    return { notes: getMockMaterials(), count: 2 };
-  }
+  const params = new URLSearchParams();
+  if (filters.subject_id) params.append('subject_id', filters.subject_id);
+  if (filters.course_id) params.append('course_id', filters.course_id);
+  if (filters.material_type) params.append('material_type', filters.material_type);
+  if (filters.search) params.append('search', filters.search);
+
+  const queryString = params.toString();
+  const url = queryString ? `/notes?${queryString}` : '/notes';
+  return fetchAPI(url);
 };
 
-export const getMaterialsForSubject = async (subjectId) => {
-  return getMaterials({ subject_id: subjectId });
-};
+export const getMaterialsForSubject = async (subjectId) => getMaterials({ subject_id: subjectId });
 
 export const getMaterial = async (materialId) => {
-  try {
-    return await fetchAPI(`/notes/${materialId}`);
-  } catch (error) {
-    return { note: getMockMaterials()[0] };
-  }
+  const res = await fetchAPI(`/notes/${materialId}`);
+  return res.note;
 };
 
 //  FILE UPLOAD
 export const uploadMaterial = async (formData) => {
   const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
-  
+
   const response = await fetch(`${API_URL}/upload`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}` },
-    body: formData
+    body: formData,
   });
 
   if (!response.ok) {
@@ -274,10 +162,10 @@ export const uploadMaterial = async (formData) => {
 //  FILE DOWNLOAD
 export const downloadMaterial = async (materialId, filename) => {
   const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
-  
+
   const response = await fetch(`${API_URL}/notes/${materialId}/download`, {
     method: 'GET',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { 'Authorization': `Bearer ${token}` },
   });
 
   if (!response.ok) {
@@ -293,119 +181,83 @@ export const downloadMaterial = async (materialId, filename) => {
   a.click();
   document.body.removeChild(a);
   window.URL.revokeObjectURL(url);
-  
+
   return { success: true };
 };
 
-//  SEARCH
-export const searchMaterials = async (query, filters = {}) => {
-  try {
-    const response = await getMaterials({ search: query, ...filters });
-    return { query, results: response.notes || [], total: response.count || 0 };
-  } catch (error) {
-    return { query, results: [], total: 0 };
-  }
+//  SEARCH — uses the real Postgres full-text search endpoint
+export const searchNotes = async (query, filters = {}) => {
+  const params = new URLSearchParams({ q: query });
+  if (filters.course_id) params.append('course_id', filters.course_id);
+  if (filters.subject_id) params.append('subject_id', filters.subject_id);
+
+  const response = await fetchAPI(`/search?${params.toString()}`);
+  return {
+    query,
+    notes: response.notes || [],
+    total: response.total || 0,
+    fuzzy: response.fuzzy || false,
+  };
 };
 
-//  REAL NOTES/MATERIALS SEARCH (Postgres full-text search on the backend)
-// Searches note titles + descriptions, not just course names.
-// filters: { course_id, subject_id }
-export const searchNotes = async (query, filters = {}) => {
-  try {
-    const params = new URLSearchParams({ q: query });
-    if (filters.course_id) params.append('course_id', filters.course_id);
-    if (filters.subject_id) params.append('subject_id', filters.subject_id);
-
-    const response = await fetchAPI(`/search?${params.toString()}`);
-    return {
-      query,
-      notes: response.notes || [],
-      total: response.total || 0,
-      fuzzy: response.fuzzy || false
-    };
-  } catch (error) {
-    console.error(' Search failed:', error);
-    return { query, notes: [], total: 0, fuzzy: false };
-  }
+export const searchMaterials = async (query, filters = {}) => {
+  const response = await getMaterials({ search: query, ...filters });
+  return { query, results: response.notes || [], total: response.total || 0 };
 };
 
 //  USER DOWNLOADS
 export const getUserDownloads = async () => {
-  try {
-    const response = await fetchAPI('/my-uploads');
-    return response.uploads || [];
-  } catch (error) {
-    return [];
-  }
+  const response = await fetchAPI('/my-uploads');
+  return response.uploads || [];
 };
 
-//  NOTES
-export const getNotes = async () => {
-  return getMaterials();
+export const getNotes = async () => getMaterials();
+
+//  RATING — wired to the real /api/notes/:id/rate + /user-rating endpoints
+// (these already existed on the backend; frontend was just stubbing fake success)
+export const rateMaterial = async (noteId, rating) =>
+  fetchAPI(`/notes/${noteId}/rate`, { method: 'POST', body: JSON.stringify({ rating }) });
+
+export const getUserRatingForNote = async (noteId) => fetchAPI(`/notes/${noteId}/user-rating`);
+
+//  BOOKMARKS — backend has no bookmarks table/routes yet, so these throw
+// clearly instead of silently pretending to succeed. Wire these up once
+// the backend bookmarks feature exists.
+export const addBookmark = async () => {
+  throw new Error('Bookmarks are not implemented on the backend yet');
+};
+export const removeBookmark = async () => {
+  throw new Error('Bookmarks are not implemented on the backend yet');
+};
+export const getUserBookmarks = async () => {
+  throw new Error('Bookmarks are not implemented on the backend yet');
 };
 
-//  ADD SAMPLE COURSES
-export const addSampleCourses = async () => {
-  try {
-    return await fetchAPI('/reset-db', { method: 'POST' });
-  } catch (error) {
-    return { success: true, message: 'Sample courses would be added here' };
-  }
-};
-
-//  DATABASE INFO
+//  DATABASE INFO / STATS — real admin stats, zeros instead of fake numbers on failure
 export const getDBInfo = async () => {
-  try {
-    const response = await fetchAPI('/admin/stats');
-    return {
-      tables: {
-        notes: response.stats?.total_notes || 0,
-        pyqs: response.stats?.notes_by_type?.pyq || 0,
-        courses: response.stats?.total_programs || 0,
-        downloads: response.stats?.total_downloads || 0,
-        subjects: response.stats?.total_subjects || 0,
-        users: response.stats?.total_users || 0
-      }
-    };
-  } catch (error) {
-    return {
-      tables: { notes: 500, pyqs: 1000, courses: 5, downloads: 1500, subjects: 50, users: 100 }
-    };
-  }
+  const response = await fetchAPI('/admin/stats');
+  return {
+    tables: {
+      notes: response.stats?.total_notes || 0,
+      pyqs: response.stats?.notes_by_type?.pyq || 0,
+      courses: response.stats?.total_programs || 0,
+      downloads: response.stats?.total_downloads || 0,
+      subjects: response.stats?.total_subjects || 0,
+      users: response.stats?.total_users || 0,
+    },
+  };
 };
 
-//  STATISTICS - FIXED with error handling
 export const getStats = async () => {
-  try {
-    const dbInfo = await getDBInfo();
-    return {
-      totalNotes: dbInfo.tables.notes,
-      totalPYQs: dbInfo.tables.pyqs,
-      totalCourses: dbInfo.tables.courses,
-      totalDownloads: dbInfo.tables.downloads,
-      totalSubjects: dbInfo.tables.subjects,
-      totalUsers: dbInfo.tables.users
-    };
-  } catch (error) {
-    console.log('Stats not available (requires admin login)');
-    return { 
-      totalNotes: 5000, 
-      totalPYQs: 2000, 
-      totalCourses: 5, 
-      totalDownloads: 15000, 
-      totalSubjects: 50, 
-      totalUsers: 100 
-    };
-  }
-};
-
-//  DATABASE INITIALIZATION
-export const initDatabase = async () => {
-  try {
-    return await fetchAPI('/init-db', { method: 'GET' });
-  } catch (error) {
-    return { success: true, message: 'Database initialized automatically' };
-  }
+  const dbInfo = await getDBInfo();
+  return {
+    totalNotes: dbInfo.tables.notes,
+    totalPYQs: dbInfo.tables.pyqs,
+    totalCourses: dbInfo.tables.courses,
+    totalDownloads: dbInfo.tables.downloads,
+    totalSubjects: dbInfo.tables.subjects,
+    totalUsers: dbInfo.tables.users,
+  };
 };
 
 //  DEFAULT EXPORT
@@ -430,16 +282,15 @@ const api = {
   downloadMaterial,
   getUserDownloads,
   getNotes,
-  addSampleCourses,
+  rateMaterial,
+  getUserRatingForNote,
+  addBookmark,
+  removeBookmark,
+  getUserBookmarks,
   getDBInfo,
   getStats,
-  initDatabase,
   healthCheck,
-  addBookmark: async () => ({ success: true }),
-  removeBookmark: async () => ({ success: true }),
-  getUserBookmarks: async () => ({ bookmarks: [] }),
-  rateMaterial: async () => ({ success: true }),
-  checkHealth
+  checkHealth,
 };
 
 export default api;
