@@ -403,6 +403,14 @@ body {
 .s-result-name { font-size: 14px; font-weight: 600; color: var(--text-1); }
 .s-result-full { font-size: 11px; color: var(--text-3); }
 
+.s-see-all {
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand, #5b4cf5);
+  border-top: 1px solid var(--surface-2);
+}
+
 .s-no-results {
   padding: 20px 14px;
   text-align: center;

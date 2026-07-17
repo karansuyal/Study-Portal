@@ -3,9 +3,18 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   FaSearch, FaUpload, FaInfoCircle, FaHome, 
   FaGraduationCap, FaSignInAlt, FaUserPlus, FaBars, FaTimes,
-  FaSignOutAlt, FaAngleDown, FaUserCircle, FaMoon, FaSun
+  FaSignOutAlt, FaAngleDown, FaUserCircle, FaMoon, FaSun,
+  FaFilePdf, FaFileWord, FaYoutube, FaFileAlt
 } from 'react-icons/fa';
+import { searchNotes } from '../services/api';
 import './Navbar.css';
+
+const noteIcon = (note) => {
+  if (note.is_youtube) return <FaYoutube />;
+  if (note.file_type === 'pdf') return <FaFilePdf />;
+  if (note.file_type === 'doc' || note.file_type === 'docx') return <FaFileWord />;
+  return <FaFileAlt />;
+};
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -92,11 +101,17 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     const timer = setTimeout(() => {
-      if (searchQuery.length > 1) performSearch();
-      else setSearchResults([]);
+      if (searchQuery.trim().length > 1) {
+        performSearch(searchQuery.trim(), (results) => {
+          if (!cancelled) setSearchResults(results);
+        });
+      } else {
+        setSearchResults([]);
+      }
     }, 300);
-    return () => clearTimeout(timer);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [searchQuery]);
 
   const fetchCourses = async () => {
@@ -123,25 +138,16 @@ const Navbar = () => {
     ]);
   };
 
-  const performSearch = () => {
+  const performSearch = async (query, onResults) => {
     setLoading(true);
-    const allCourses = [
-      { id: 1, name: 'B.Tech', fullName: 'Bachelor of Technology', icon: '💻', category: 'Engineering' },
-      { id: 2, name: 'BCA', fullName: 'Bachelor of Computer Applications', icon: '📱', category: 'Computer Applications' },
-      { id: 3, name: 'BBA', fullName: 'Bachelor of Business Administration', icon: '📊', category: 'Management' },
-      { id: 4, name: 'MBA', fullName: 'Master of Business Administration', icon: '🎓', category: 'Management' },
-      { id: 5, name: 'MCA', fullName: 'Master of Computer Applications', icon: '💼', category: 'Computer Applications' },
-    ];
-    const query = searchQuery.toLowerCase().trim();
-    const filtered = allCourses.filter(c =>
-      c.name.toLowerCase().includes(query) ||
-      c.fullName.toLowerCase().includes(query) ||
-      c.category.toLowerCase().includes(query)
-    );
-    setTimeout(() => {
-      setSearchResults(filtered);
+    try {
+      const result = await searchNotes(query);
+      onResults((result.notes || []).slice(0, 6));
+    } catch (error) {
+      onResults([]);
+    } finally {
       setLoading(false);
-    }, 200);
+    }
   };
 
   const handleSearch = (e) => {
@@ -260,7 +266,7 @@ const Navbar = () => {
               <FaSearch className="s-icon" />
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder="Search notes, PYQs, syllabus..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -281,29 +287,43 @@ const Navbar = () => {
                   <div className="s-loading"><div className="s-spinner" /><span>Searching...</span></div>
                 ) : searchResults.length > 0 ? (
                   <>
-                    <div className="s-results-label">Courses</div>
+                    <div className="s-results-label">Notes & PYQs</div>
                     {searchResults.map(r => (
                       <div
                         key={r.id}
                         className="s-result-item"
                         onClick={() => {
-                          navigate(`/course/${r.id}`);
+                          if (r.is_youtube && r.youtube_url) {
+                            window.open(r.youtube_url, '_blank');
+                          } else if (r.cloudinary_url) {
+                            window.open(r.cloudinary_url, '_blank');
+                          }
                           setShowSearchResults(false);
                           setSearchQuery('');
                         }}
                       >
-                        <span className="s-result-icon">{r.icon}</span>
+                        <span className="s-result-icon">{noteIcon(r)}</span>
                         <div>
-                          <div className="s-result-name">{r.name}</div>
-                          <div className="s-result-full">{r.fullName}</div>
+                          <div className="s-result-name">{r.title}</div>
+                          <div className="s-result-full">{r.course_name} • {r.subject_name}</div>
                         </div>
                       </div>
                     ))}
+                    <div
+                      className="s-result-item s-see-all"
+                      onClick={() => {
+                        navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                        setShowSearchResults(false);
+                        setSearchQuery('');
+                      }}
+                    >
+                      See all results for "{searchQuery}"
+                    </div>
                   </>
                 ) : (
                   <div className="s-no-results">
                     <span>No results for "{searchQuery}"</span>
-                    <span className="s-hint">Try: BCA, BBA, B.Tech, MBA, MCA</span>
+                    <span className="s-hint">Try a subject name, note title, or PYQ</span>
                   </div>
                 )}
               </div>
@@ -384,7 +404,7 @@ const Navbar = () => {
             <FaSearch />
             <input
               type="text"
-              placeholder="Search courses..."
+              placeholder="Search notes, PYQs, syllabus..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
