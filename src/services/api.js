@@ -1,4 +1,4 @@
-export const API_URL = 'http://127.0.0.1:5000/api';
+export const API_URL = 'https://study-portal-ill8.onrender.com/api';
 
 // Helper function for API calls
 async function fetchAPI(endpoint, options = {}) {
