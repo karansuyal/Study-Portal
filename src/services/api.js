@@ -1,4 +1,4 @@
-export const API_URL = 'https://study-portal-ill8.onrender.com/api';
+export const API_URL = 'http://127.0.0.1:5000/api';
 
 // Helper function for API calls
 async function fetchAPI(endpoint, options = {}) {
@@ -307,6 +307,28 @@ export const searchMaterials = async (query, filters = {}) => {
   }
 };
 
+//  REAL NOTES/MATERIALS SEARCH (Postgres full-text search on the backend)
+// Searches note titles + descriptions, not just course names.
+// filters: { course_id, subject_id }
+export const searchNotes = async (query, filters = {}) => {
+  try {
+    const params = new URLSearchParams({ q: query });
+    if (filters.course_id) params.append('course_id', filters.course_id);
+    if (filters.subject_id) params.append('subject_id', filters.subject_id);
+
+    const response = await fetchAPI(`/search?${params.toString()}`);
+    return {
+      query,
+      notes: response.notes || [],
+      total: response.total || 0,
+      fuzzy: response.fuzzy || false
+    };
+  } catch (error) {
+    console.error(' Search failed:', error);
+    return { query, notes: [], total: 0, fuzzy: false };
+  }
+};
+
 //  USER DOWNLOADS
 export const getUserDownloads = async () => {
   try {
@@ -403,6 +425,7 @@ const api = {
   getMaterialsForSubject,
   getMaterial,
   searchMaterials,
+  searchNotes,
   uploadMaterial,
   downloadMaterial,
   getUserDownloads,
@@ -420,6 +443,3 @@ const api = {
 };
 
 export default api;
-
-
-

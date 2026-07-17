@@ -1,159 +1,80 @@
-// SearchResults.js - Fixed B.Tech Search with Dark Mode
+// SearchResults.js - Real notes/PYQ/syllabus search (Postgres full-text search on the backend)
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaSearch, FaArrowLeft, FaGraduationCap } from 'react-icons/fa';
+import { FaSearch, FaArrowLeft, FaFilePdf, FaFileWord, FaYoutube, FaFileAlt, FaDownload, FaEye, FaStar } from 'react-icons/fa';
+import { searchNotes } from '../services/api';
+
+const typeIcon = (note) => {
+  if (note.is_youtube) return <FaYoutube />;
+  if (note.file_type === 'pdf') return <FaFilePdf />;
+  if (note.file_type === 'doc' || note.file_type === 'docx') return <FaFileWord />;
+  return <FaFileAlt />;
+};
 
 const SearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const query = new URLSearchParams(location.search).get('q') || '';
-  
-  const [results, setResults] = useState([]);
+
+  const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fuzzy, setFuzzy] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
+    const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Check dark mode
   useEffect(() => {
     const checkDarkMode = () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      setDarkMode(isDark);
+      setDarkMode(document.documentElement.getAttribute('data-theme') === 'dark');
     };
-    
     checkDarkMode();
-    
-    const observer = new MutationObserver(() => {
-      checkDarkMode();
-    });
+    const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (query) {
-      fetchSearchResults(query);
+    if (!query) {
+      setNotes([]);
+      setLoading(false);
+      return;
     }
-  }, [query]);
 
-  const fetchSearchResults = (searchQuery) => {
+    let cancelled = false;
     setLoading(true);
-    
-    //  5 COURSES with multiple search variations
-    const courses = [
-      { 
-        id: 1, 
-        type: 'course', 
-        title: 'BCA', 
-        fullTitle: 'Bachelor of Computer Applications',
-        description: '3 years undergraduate program in Computer Applications', 
-        icon: '📱', 
-        path: '/course/2',
-        duration: '3 Years',
-        subjects: 'Programming, Web Development, Database',
-        keywords: ['bca', 'bachelor', 'computer applications', 'computer', 'applications']
-      },
-      { 
-        id: 2, 
-        type: 'course', 
-        title: 'BBA', 
-        fullTitle: 'Bachelor of Business Administration',
-        description: '3 years undergraduate program in Business Management', 
-        icon: '📊', 
-        path: '/course/3',
-        duration: '3 Years',
-        subjects: 'Marketing, Finance, HR',
-        keywords: ['bba', 'bachelor', 'business', 'administration', 'management']
-      },
-      { 
-        id: 3, 
-        type: 'course', 
-        title: 'B.Tech', 
-        fullTitle: 'Bachelor of Technology',
-        description: '4 years engineering program in various specializations', 
-        icon: '💻', 
-        path: '/course/1',
-        duration: '4 Years',
-        subjects: 'Computer Science, Electronics, Mechanical',
-        keywords: [
-          'b.tech', 'btech', 'bt', 'tech', 'bachelor', 
-          'technology', 'engineering', 'engineer', 'be', 'b.e',
-          'bachelor of technology', 'b tech'
-        ]
-      },
-      { 
-        id: 4, 
-        type: 'course', 
-        title: 'MBA', 
-        fullTitle: 'Master of Business Administration',
-        description: '2 years postgraduate program in Business Management', 
-        icon: '🎓', 
-        path: '/course/4',
-        duration: '2 Years',
-        subjects: 'Leadership, Strategy, Operations',
-        keywords: ['mba', 'master', 'business', 'administration', 'postgraduate']
-      },
-      { 
-        id: 5, 
-        type: 'course', 
-        title: 'MCA', 
-        fullTitle: 'Master of Computer Applications',
-        description: '2 years postgraduate program in Computer Applications', 
-        icon: '💼', 
-        path: '/course/5',
-        duration: '2 Years',
-        subjects: 'Advanced Programming, AI, Networking',
-        keywords: ['mca', 'master', 'computer', 'applications', 'postgraduate']
-      }
-    ];
 
-    const searchLower = searchQuery.toLowerCase().trim();
-    
-    const filteredResults = courses.filter(course => {
-      const titleMatch = course.title.toLowerCase().includes(searchLower);
-      const fullTitleMatch = course.fullTitle.toLowerCase().includes(searchLower);
-      const descMatch = course.description.toLowerCase().includes(searchLower);
-      const subjectsMatch = course.subjects.toLowerCase().includes(searchLower);
-      const keywordMatch = course.keywords.some(keyword => 
-        keyword.toLowerCase().includes(searchLower) || 
-        searchLower.includes(keyword.toLowerCase())
-      );
-      
-      const btechVariations = [
-        'b.tech', 'btech', 'b tech', 'bt', 'b.tech', 'b. tech',
-        'bachelor of technology', 'be', 'b.e', 'b.e.', 'engineering'
-      ];
-      
-      if (course.title === 'B.Tech') {
-        const btechMatch = btechVariations.some(variant => 
-          searchLower.includes(variant) || variant.includes(searchLower)
-        );
-        return btechMatch || titleMatch || fullTitleMatch || descMatch || subjectsMatch || keywordMatch;
-      }
-      
-      return titleMatch || fullTitleMatch || descMatch || subjectsMatch || keywordMatch;
+    searchNotes(query).then((result) => {
+      if (cancelled) return;
+      setNotes(result.notes);
+      setFuzzy(result.fuzzy);
+      setLoading(false);
     });
 
-    console.log(`Search for "${searchQuery}" found ${filteredResults.length} courses`);
-
-    setTimeout(() => {
-      setResults(filteredResults);
-      setLoading(false);
-    }, 500);
-  };
+    return () => { cancelled = true; };
+  }, [query]);
 
   const isMobile = windowWidth <= 768;
 
-  // Dynamic styles based on dark mode
+  const openNote = (note) => {
+    if (note.is_youtube && note.youtube_url) {
+      window.open(note.youtube_url, '_blank');
+      return;
+    }
+    if (note.cloudinary_url) {
+      const isPDF = note.cloudinary_url.includes('.pdf') || note.file_type === 'pdf';
+      if (isPDF) {
+        window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(note.cloudinary_url)}&embedded=true`, '_blank');
+      } else {
+        window.open(note.cloudinary_url, '_blank');
+      }
+    }
+  };
+
   const styles = {
     container: {
       padding: isMobile ? '1rem' : '2rem',
@@ -184,13 +105,8 @@ const SearchResults = () => {
       color: darkMode ? '#a0a0b8' : '#4b5563',
       fontWeight: '500',
       cursor: 'pointer',
-      transition: 'all 0.3s',
       width: isMobile ? '100%' : 'auto',
-      boxShadow: darkMode ? '0 2px 4px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.05)',
       minHeight: '44px'
-    },
-    searchQuery: {
-      flex: 1
     },
     title: {
       fontSize: isMobile ? '1.5rem' : '2rem',
@@ -217,6 +133,11 @@ const SearchResults = () => {
       fontSize: isMobile ? '0.9rem' : '1rem',
       fontWeight: '500'
     },
+    fuzzyNote: {
+      color: darkMode ? '#eab308' : '#b45309',
+      fontSize: '0.85rem',
+      marginTop: '0.25rem'
+    },
     resultsGrid: {
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
@@ -229,38 +150,32 @@ const SearchResults = () => {
       boxShadow: darkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.05)',
       border: darkMode ? '1px solid #2a2a30' : '1px solid #e5e7eb',
       cursor: 'pointer',
-      transition: 'all 0.3s ease',
       display: 'flex',
-      gap: '1.25rem',
-      WebkitTapHighlightColor: 'transparent',
-      position: 'relative',
-      overflow: 'hidden'
+      gap: '1.25rem'
     },
     resultIcon: {
-      fontSize: isMobile ? '2rem' : '2.5rem',
+      fontSize: isMobile ? '1.6rem' : '2rem',
       background: darkMode ? 'rgba(91, 76, 245, 0.15)' : 'linear-gradient(135deg, #667eea20, #764ba220)',
-      width: isMobile ? '70px' : '80px',
-      height: isMobile ? '70px' : '80px',
+      width: isMobile ? '60px' : '70px',
+      height: isMobile ? '60px' : '70px',
       borderRadius: '18px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       flexShrink: 0,
+      color: '#a78bfa',
       border: darkMode ? '2px solid rgba(91, 76, 245, 0.3)' : '2px solid #667eea30'
     },
-    resultContent: {
-      flex: 1,
-      minWidth: 0
-    },
+    resultContent: { flex: 1, minWidth: 0 },
     resultTitle: {
-      fontSize: isMobile ? '1.3rem' : '1.5rem',
+      fontSize: isMobile ? '1.1rem' : '1.25rem',
       fontWeight: '700',
       color: darkMode ? '#f0f0fa' : '#1f2937',
       marginBottom: '0.25rem',
       lineHeight: '1.3'
     },
-    resultFullTitle: {
-      fontSize: isMobile ? '0.9rem' : '1rem',
+    resultSub: {
+      fontSize: isMobile ? '0.85rem' : '0.9rem',
       color: '#a78bfa',
       fontWeight: '500',
       marginBottom: '0.5rem'
@@ -275,35 +190,19 @@ const SearchResults = () => {
       WebkitBoxOrient: 'vertical',
       overflow: 'hidden'
     },
-    resultMeta: {
-      display: 'flex',
-      gap: '1rem',
-      alignItems: 'center',
-      flexWrap: 'wrap'
-    },
-    duration: {
+    resultMeta: { display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' },
+    pill: {
       background: darkMode ? '#1e1e28' : '#f3f4f6',
-      padding: '0.3rem 0.8rem',
+      padding: '0.25rem 0.7rem',
       borderRadius: '20px',
-      fontSize: isMobile ? '0.75rem' : '0.8rem',
+      fontSize: isMobile ? '0.7rem' : '0.75rem',
       fontWeight: '600',
-      color: darkMode ? '#a0a0b8' : '#4b5563'
-    },
-    type: {
-      background: darkMode ? 'rgba(91, 76, 245, 0.15)' : '#667eea20',
-      padding: '0.3rem 0.8rem',
-      borderRadius: '20px',
-      fontSize: isMobile ? '0.75rem' : '0.8rem',
-      fontWeight: '600',
-      color: '#a78bfa',
+      color: darkMode ? '#a0a0b8' : '#4b5563',
       display: 'flex',
       alignItems: 'center',
       gap: '0.3rem'
     },
-    loading: {
-      textAlign: 'center',
-      padding: isMobile ? '3rem 1rem' : '4rem'
-    },
+    loading: { textAlign: 'center', padding: isMobile ? '3rem 1rem' : '4rem' },
     spinner: {
       width: isMobile ? '40px' : '50px',
       height: isMobile ? '40px' : '50px',
@@ -320,36 +219,7 @@ const SearchResults = () => {
       borderRadius: '24px',
       maxWidth: '500px',
       margin: '2rem auto',
-      boxShadow: darkMode ? '0 4px 6px rgba(0,0,0,0.3)' : '0 4px 6px rgba(0,0,0,0.05)',
       border: darkMode ? '1px solid #2a2a30' : '1px solid #e5e7eb'
-    },
-    suggestionsBox: {
-      background: darkMode ? '#1e1e28' : '#f3f4f6',
-      borderRadius: '12px',
-      padding: '1rem',
-      marginTop: '1rem',
-      textAlign: 'left'
-    },
-    suggestionTitle: {
-      fontSize: '0.9rem',
-      color: darkMode ? '#a0a0b8' : '#4b5563',
-      marginBottom: '0.5rem',
-      fontWeight: '600'
-    },
-    suggestionTags: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '0.5rem'
-    },
-    suggestionTag: {
-      background: darkMode ? '#18181f' : 'white',
-      padding: '0.5rem 1rem',
-      borderRadius: '20px',
-      fontSize: '0.8rem',
-      color: '#a78bfa',
-      border: darkMode ? '1px solid #2a2a30' : '1px solid #e5e7eb',
-      cursor: 'pointer',
-      transition: 'all 0.3s'
     },
     searchAgainBtn: {
       padding: isMobile ? '0.75rem 1.5rem' : '0.75rem 2rem',
@@ -359,7 +229,6 @@ const SearchResults = () => {
       borderRadius: '30px',
       fontWeight: '600',
       cursor: 'pointer',
-      transition: 'all 0.3s',
       marginTop: '1.5rem',
       fontSize: isMobile ? '0.9rem' : '1rem',
       width: isMobile ? '100%' : 'auto',
@@ -367,79 +236,50 @@ const SearchResults = () => {
     }
   };
 
-  // Handle suggestion click
-  const handleSuggestionClick = (suggestion) => {
-    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
-  };
-
   return (
     <div style={styles.container}>
-      {/* Header */}
       <div style={styles.header}>
-        <button 
-          style={styles.backBtn}
-          onClick={() => navigate(-1)}
-          onTouchStart={(e) => {
-            e.currentTarget.style.background = darkMode ? '#252530' : '#f3f4f6';
-            e.currentTarget.style.transform = 'scale(0.98)';
-          }}
-          onTouchEnd={(e) => {
-            e.currentTarget.style.background = darkMode ? '#18181f' : 'white';
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
-        >
+        <button style={styles.backBtn} onClick={() => navigate(-1)}>
           <FaArrowLeft /> {!isMobile && 'Back'}
         </button>
-        
-        <div style={styles.searchQuery}>
+
+        <div style={{ flex: 1 }}>
           <h1 style={styles.title}>
-            <FaSearch style={{ color: '#a78bfa' }} /> 
-            {!isMobile ? 'Search Courses' : 'Search'}
+            <FaSearch style={{ color: '#a78bfa' }} />
+            {!isMobile ? 'Search Notes & PYQs' : 'Search'}
           </h1>
           <p style={styles.queryText}>"{query}"</p>
           <p style={styles.resultCount}>
-            {results.length} {results.length === 1 ? 'course' : 'courses'} found
+            {notes.length} {notes.length === 1 ? 'result' : 'results'} found
           </p>
+          {fuzzy && notes.length > 0 && (
+            <p style={styles.fuzzyNote}>Showing similar matches for "{query}"</p>
+          )}
         </div>
       </div>
 
-      {/* Results */}
       <div>
         {loading ? (
           <div style={styles.loading}>
             <div style={styles.spinner}></div>
-            <p style={{ color: darkMode ? '#a0a0b8' : '#6b7280', fontSize: isMobile ? '1rem' : '1.1rem' }}>
-              Searching for courses...
-            </p>
+            <p style={{ color: darkMode ? '#a0a0b8' : '#6b7280' }}>Searching...</p>
           </div>
-        ) : results.length > 0 ? (
+        ) : notes.length > 0 ? (
           <div style={styles.resultsGrid}>
-            {results.map((course) => (
-              <div 
-                key={course.id} 
-                style={styles.resultCard}
-                onClick={() => navigate(course.path)}
-                onTouchStart={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.98)';
-                  e.currentTarget.style.backgroundColor = darkMode ? '#1e1e28' : '#f9fafb';
-                }}
-                onTouchEnd={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = darkMode ? '#18181f' : 'white';
-                }}
-              >
-                <div style={styles.resultIcon}>{course.icon}</div>
+            {notes.map((note) => (
+              <div key={note.id} style={styles.resultCard} onClick={() => openNote(note)}>
+                <div style={styles.resultIcon}>{typeIcon(note)}</div>
                 <div style={styles.resultContent}>
-                  <h3 style={styles.resultTitle}>{course.title}</h3>
-                  <p style={styles.resultFullTitle}>{course.fullTitle}</p>
-                  <p style={styles.resultDesc}>{course.description}</p>
+                  <h3 style={styles.resultTitle}>{note.title}</h3>
+                  <p style={styles.resultSub}>{note.course_name} • {note.subject_name}</p>
+                  {note.description && <p style={styles.resultDesc}>{note.description}</p>}
                   <div style={styles.resultMeta}>
-                    <span style={styles.duration}>
-                      📅 {course.duration}
-                    </span>
-                    <span style={styles.type}>
-                      <FaGraduationCap /> Course
-                    </span>
+                    <span style={styles.pill}>{note.note_type}</span>
+                    <span style={styles.pill}><FaDownload /> {note.downloads}</span>
+                    <span style={styles.pill}><FaEye /> {note.views}</span>
+                    {note.rating > 0 && (
+                      <span style={styles.pill}><FaStar style={{ color: '#eab308' }} /> {note.rating.toFixed(1)}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -447,68 +287,25 @@ const SearchResults = () => {
           </div>
         ) : (
           <div style={styles.noResults}>
-            <FaGraduationCap style={{ fontSize: isMobile ? '3rem' : '4rem', color: darkMode ? '#3a3a4a' : '#d1d5db', marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: isMobile ? '1.3rem' : '1.5rem', color: darkMode ? '#f0f0fa' : '#374151', marginBottom: '0.5rem' }}>
-              No courses found
+            <FaSearch style={{ fontSize: '3rem', color: darkMode ? '#3a3a4a' : '#d1d5db', marginBottom: '1rem' }} />
+            <h3 style={{ fontSize: '1.3rem', color: darkMode ? '#f0f0fa' : '#374151', marginBottom: '0.5rem' }}>
+              No results found
             </h3>
-            <p style={{ color: darkMode ? '#a0a0b8' : '#6b7280', marginBottom: '1rem', fontSize: isMobile ? '0.9rem' : '1rem' }}>
-              We couldn't find any courses matching "{query}"
+            <p style={{ color: darkMode ? '#a0a0b8' : '#6b7280' }}>
+              We couldn't find any notes, PYQs, or materials matching "{query}"
             </p>
-            
-            {/* Suggestions */}
-            <div style={styles.suggestionsBox}>
-              <p style={styles.suggestionTitle}>Try searching:</p>
-              <div style={styles.suggestionTags}>
-                {['BCA', 'BBA', 'B.Tech', 'MBA', 'MCA', 'btech', 'b.tech', 'engineering'].map((suggestion) => (
-                  <span
-                    key={suggestion}
-                    style={styles.suggestionTag}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.background = '#5b4cf5';
-                      e.currentTarget.style.color = 'white';
-                    }}
-                    onTouchEnd={(e) => {
-                      e.currentTarget.style.background = darkMode ? '#18181f' : 'white';
-                      e.currentTarget.style.color = '#a78bfa';
-                    }}
-                  >
-                    {suggestion}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <button 
-              style={styles.searchAgainBtn}
-              onClick={() => navigate('/')}
-              onTouchStart={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
-              }}
-              onTouchEnd={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              Browse All Courses
+            <button style={styles.searchAgainBtn} onClick={() => navigate('/all-materials')}>
+              Browse All Materials
             </button>
           </div>
         )}
       </div>
 
-      {/* CSS Animations */}
       <style>
         {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-          
-          * {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-          }
+          * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         `}
       </style>
     </div>
