@@ -17,12 +17,91 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, request, jsonify, send_file, send_from_directory, redirect, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import text
 
 from extensions import db
 from models import Note, User, Course, Subject, UserRating
 from utils import allowed_file, format_bytes
 
 notes_bp = Blueprint('notes', __name__)
+
+
+@notes_bp.route('/api/search', methods=['GET'])
+def search_notes():
+    """
+    Full-text search across note titles and descriptions.
+
+    Uses Postgres full-text search (search_vector column, see
+    migrations/002_add_search.sql) ranked by relevance. If that finds
+    nothing — e.g. because of a typo — falls back to trigram similarity
+    matching on the title, which tolerates misspellings.
+
+    Query params:
+      q          - search text (required)
+      course_id  - optional, restrict to one course
+      subject_id - optional, restrict to one subject
+    """
+    try:
+        q = request.args.get('q', '').strip()
+        if not q:
+            return jsonify({'success': True, 'notes': [], 'total': 0})
+
+        course_id = request.args.get('course_id')
+        subject_id = request.args.get('subject_id')
+
+        filters_sql = "AND status = 'approved'"
+        params = {'q': q}
+        if course_id:
+            filters_sql += " AND course_id = :course_id"
+            params['course_id'] = int(course_id)
+        if subject_id:
+            filters_sql += " AND subject_id = :subject_id"
+            params['subject_id'] = int(subject_id)
+
+        fts_sql = text(f"""
+            SELECT id, ts_rank(search_vector, websearch_to_tsquery('english', :q)) AS rank
+            FROM notes
+            WHERE search_vector @@ websearch_to_tsquery('english', :q)
+            {filters_sql}
+            ORDER BY rank DESC
+            LIMIT 30
+        """)
+        rows = db.session.execute(fts_sql, params).all()
+
+        used_fallback = False
+        if not rows:
+            # Nothing matched exactly — try fuzzy matching on the title,
+            # which catches typos that full-text search won't.
+            used_fallback = True
+            trgm_sql = text(f"""
+                SELECT id, similarity(title, :q) AS rank
+                FROM notes
+                WHERE similarity(title, :q) > 0.2
+                {filters_sql}
+                ORDER BY rank DESC
+                LIMIT 30
+            """)
+            rows = db.session.execute(trgm_sql, params).all()
+
+        ids_in_order = [r[0] for r in rows]
+        if not ids_in_order:
+            return jsonify({'success': True, 'notes': [], 'total': 0, 'fuzzy': used_fallback})
+
+        notes = Note.query.filter(Note.id.in_(ids_in_order)).all()
+        order_map = {note_id: i for i, note_id in enumerate(ids_in_order)}
+        notes.sort(key=lambda n: order_map[n.id])
+
+        return jsonify({
+            'success': True,
+            'notes': [note.to_dict() for note in notes],
+            'total': len(notes),
+            'fuzzy': used_fallback
+        })
+
+    except Exception as e:
+        print(f" Search error: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @notes_bp.route('/api/notes', methods=['GET'])
