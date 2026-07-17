@@ -52,3 +52,10 @@ def get_subjects():
 
     subjects = db.session.execute(query).scalars().all()
     return jsonify({'success': True, 'subjects': [s.to_dict() for s in subjects]})
+
+@courses_bp.route('/api/subjects/<int:subject_id>', methods=['GET'])
+def get_subject(subject_id):
+    subject = db.session.get(Subject, subject_id)
+    if not subject:
+        return jsonify({'success': False, 'error': 'Subject not found'}), 404
+    return jsonify({'success': True, 'subject': subject.to_dict()})
