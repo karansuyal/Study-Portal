@@ -99,11 +99,11 @@ print(f" 📁 Upload folder: {UPLOAD_FOLDER}")
 print("=" * 70 + "\n")
 
 # ==================== BLUEPRINTS ====================
-from routes.auth import auth_bp
-from routes.courses import courses_bp
-from routes.notes import notes_bp
-from routes.admin import admin_bp
-from routes.chatbot import chatbot_bp
+from .routes.auth import auth_bp
+from .routes.courses import courses_bp
+from .routes.notes import notes_bp
+from .routes.admin import admin_bp
+from .routes.chatbot import chatbot_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(courses_bp)
