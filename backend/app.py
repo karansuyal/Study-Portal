@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from .cloudinary_config import configure_cloudinary
 import resend
 
-from extensions import db, jwt, mail, oauth, limiter
+from .extensions import db, jwt, mail, oauth, limiter
 from models import User, Course, Subject, Note
 
 load_dotenv()
