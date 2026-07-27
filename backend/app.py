@@ -10,7 +10,7 @@ from flask_cors import CORS
 from sqlalchemy import text
 from dotenv import load_dotenv
 
-from cloudinary_config import configure_cloudinary
+from .cloudinary_config import configure_cloudinary
 import resend
 
 from extensions import db, jwt, mail, oauth, limiter
