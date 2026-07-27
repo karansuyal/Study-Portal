@@ -16,7 +16,7 @@ import secrets
 import random
 from datetime import datetime, timezone, timedelta
 
-from extensions import db
+from .extensions import db
 
 
 class User(db.Model):

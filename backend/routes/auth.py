@@ -18,9 +18,9 @@ from urllib.parse import quote
 from flask import Blueprint, request, jsonify, redirect, url_for
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-from extensions import db, oauth, limiter
-from models import User
-from email_service import send_verification_email, send_password_reset_email
+from ..extensions import db, oauth, limiter
+from ..models import User
+from ..email_service import send_verification_email, send_password_reset_email
 
 # No url_prefix here on purpose: the original app had /api/auth/... for most
 # auth routes but /api/verify-email (no /auth/) for email verification.

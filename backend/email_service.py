@@ -4,7 +4,7 @@ import traceback
 from flask import current_app
 from flask_mail import Message
 
-from extensions import mail
+from .extensions import mail
 
 
 def send_verification_email(to_email, token, name):

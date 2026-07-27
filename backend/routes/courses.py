@@ -2,8 +2,8 @@
 
 from flask import Blueprint, request, jsonify
 
-from extensions import db
-from models import Course, Subject
+from ..extensions import db
+from ..models import Course, Subject
 
 courses_bp = Blueprint('courses', __name__)
 

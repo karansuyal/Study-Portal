@@ -18,9 +18,9 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, request, jsonify, current_app
 
-from extensions import db
-from models import User, Note, Course, Subject
-from decorators import admin_required
+from ..extensions import db
+from ..models import User, Note, Course, Subject
+from ..decorators import admin_required
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 

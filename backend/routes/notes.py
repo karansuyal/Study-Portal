@@ -19,9 +19,9 @@ from flask import Blueprint, request, jsonify, send_file, send_from_directory, r
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import text
 
-from extensions import db
-from models import Note, User, Course, Subject, UserRating
-from utils import allowed_file, format_bytes
+from ..extensions import db
+from ..models import Note, User, Course, Subject, UserRating
+from ..utils import allowed_file, format_bytes
 
 notes_bp = Blueprint('notes', __name__)
 
