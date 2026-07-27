@@ -6,13 +6,13 @@ function UsersPage() {
   const [email, setEmail] = useState("");
 
   const fetchUsers = async () => {
-    const res = await fetch("https://study-portal-ill8.onrender.com/users"); 
+    const res = await fetch("https://study-portal-pi2w.onrender.com/users"); 
     const data = await res.json();
     setUsers(data);
   };
 
   const addUser = async () => {
-    const res = await fetch("https://study-portal-ill8.onrender.com/users", {
+    const res = await fetch("https://study-portal-pi2w.onrender.com/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email }),

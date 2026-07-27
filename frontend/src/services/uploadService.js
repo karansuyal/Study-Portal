@@ -1,5 +1,5 @@
 // src/services/uploadService.js
-const API_URL = process.env.REACT_APP_API_URL || 'https://study-portal-ill8.onrender.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://study-portal-pi2w.onrender.com';
 
 // Get courses for upload dropdown
 export const getCoursesForUpload = async () => {
