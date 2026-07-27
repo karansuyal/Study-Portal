@@ -5,7 +5,7 @@ import './Upload.css';
 import { coursesData } from '../data/coursesData';
 
 //  FIXED: Use Render backend URL
-const API_URL = 'https://study-portal-ill8.onrender.com/api';
+const API_URL = 'https://study-portal-pi2w.onrender.com/api';
 
 const Upload = () => {
   const navigate = useNavigate();

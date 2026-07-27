@@ -446,7 +446,7 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/auth/login', {
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -468,7 +468,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'https://study-portal-ill8.onrender.com/api/auth/google';
+    window.location.href = 'https://study-portal-pi2w.onrender.com/api/auth/google';
   };
 
   return (

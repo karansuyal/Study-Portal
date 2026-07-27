@@ -9,7 +9,7 @@ from .extensions import mail
 
 def send_verification_email(to_email, token, name):
     try:
-        verification_link = f"https://study-portal-ill8.onrender.com/api/verify-email?token={token}"
+        verification_link = f"https://study-portal-pi2w.onrender.com/api/verify-email?token={token}"
 
         msg = Message(
             subject="Verify Your Study Portal Account",

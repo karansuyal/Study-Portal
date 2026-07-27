@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setAuthError(null);
       
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/auth/login', {
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setAuthError(null);
       
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/auth/register', {
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -41,7 +41,7 @@ const Chatbot = () => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/chat', {
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/chat', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({ message: userMessage })

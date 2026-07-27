@@ -116,7 +116,7 @@ const Navbar = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/courses');
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/courses');
       const data = await response.json();
       if (data.success) {
         setCourses(data.courses.slice(0, 6));

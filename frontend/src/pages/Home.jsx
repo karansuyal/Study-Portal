@@ -11,7 +11,7 @@ import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { useNoteStats } from "../hooks/useNoteStats";
 
-const API_URL = "https://study-portal-ill8.onrender.com/api";
+const API_URL = "https://study-portal-pi2w.onrender.com/api";
 
 /* ── Animated counter hook ─────────────────────── */
 const useCountUp = (target, duration = 1600) => {

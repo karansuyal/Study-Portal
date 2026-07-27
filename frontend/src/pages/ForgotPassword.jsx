@@ -15,7 +15,7 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/auth/forgot-password', {
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

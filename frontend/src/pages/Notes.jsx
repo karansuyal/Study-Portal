@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-const API_URL = 'https://study-portal-ill8.onrender.com/api';
+const API_URL = 'https://study-portal-pi2w.onrender.com/api';
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);

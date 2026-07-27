@@ -16,7 +16,7 @@ export const CounterProvider = ({ children }) => {
   // Fetch latest stats from backend
   const refreshStats = async (noteId) => {
     try {
-      const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${noteId}/stats`);
+      const response = await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${noteId}/stats`);
       const data = await response.json();
       if (data.success) {
         setCounters(prev => ({
@@ -43,7 +43,7 @@ export const CounterProvider = ({ children }) => {
 
       // Backend call
       const token = localStorage.getItem('study_portal_token');
-      await fetch(`https://study-portal-ill8.onrender.com/api/notes/${noteId}`, {
+      await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${noteId}`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       
@@ -68,7 +68,7 @@ export const CounterProvider = ({ children }) => {
 
       // Backend call
       const token = localStorage.getItem('study_portal_token');
-      await fetch(`https://study-portal-ill8.onrender.com/api/notes/${noteId}/download`, {
+      await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${noteId}/download`, {
         method: 'POST',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
@@ -84,7 +84,7 @@ export const CounterProvider = ({ children }) => {
   const updateRating = async (noteId, ratingValue) => {
     try {
       const token = localStorage.getItem('study_portal_token');
-      const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${noteId}/rate`, {
+      const response = await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${noteId}/rate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

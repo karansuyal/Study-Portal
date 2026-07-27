@@ -16,7 +16,7 @@ const AllMaterials = () => {
   const fetchAllMaterials = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://study-portal-ill8.onrender.com/api/materials');
+      const response = await fetch('https://study-portal-pi2w.onrender.com/api/materials');
       const data = await response.json();
       
       if (data.success) {
@@ -90,7 +90,7 @@ const AllMaterials = () => {
       }
 
       const token = localStorage.getItem('study_portal_token');
-      const testUrl = `https://study-portal-ill8.onrender.com/api/files/${material.file_name}`;
+      const testUrl = `https://study-portal-pi2w.onrender.com/api/files/${material.file_name}`;
       
       fetch(testUrl, {
         method: 'HEAD',
@@ -140,7 +140,7 @@ const AllMaterials = () => {
           
         } else {
           const token = localStorage.getItem('study_portal_token');
-          const response = await fetch(`https://study-portal-ill8.onrender.com/api/notes/${material.id}/download`, {
+          const response = await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${material.id}/download`, {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
           });
 
