@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Upload.css';
 import { coursesData } from '../data/coursesData';
+import config from '../config/config';
 
 //  FIXED: Use Render backend URL
-const API_URL = 'https://study-portal-pi2w.onrender.com/api';
+const API_URL = `${config.API_BASE_URL}/api`;
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -621,7 +622,7 @@ Upload Date: ${new Date().toLocaleDateString()}
       </div>
 
       <div className="user-info">
-        <div className="user-avatar">
+        <div className="upload-user-avatar">
           {user?.name?.charAt(0)?.toUpperCase() || 'U'}
         </div>
         <div className="user-details">
