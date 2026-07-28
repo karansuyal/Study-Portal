@@ -1,14 +1,26 @@
-"""AI chatbot (GroqCloud). Logic unchanged from original app.py, just moved into its own file."""
+"""AI chatbot (Groq / Llama models under the hood).
+
+Upgraded from a single-turn, non-streaming, globally-rate-limited endpoint to:
+  - Real token-by-token streaming via Server-Sent Events (SSE)
+  - Multi-turn memory (client sends conversation history, we forward it to Groq)
+  - Per-user (or per-IP for guests) rate limiting, instead of one global lock
+    that let a single spammy user block the chatbot for every other user
+  - Stronger input validation (message + history shape/size limits)
+
+NOTE on branding: this bot is powered by GroqCloud (Llama models), never Gemini.
+Any "Powered by Google Gemini" text was incorrect and has been removed on the
+frontend — this file never claimed that, the label lived in the React component.
+"""
 
 import os
 import time
 import json
-import hashlib
 import traceback
 from collections import defaultdict
+from threading import Lock
 
 import requests
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response, stream_with_context
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ..extensions import db
@@ -25,108 +37,86 @@ GROQ_MODELS = {
     'coding': 'qwen-2.5-coder-32b',
 }
 
+# ==================== RATE LIMITING (per-user, not global) ====================
+# BUG FIX: the old implementation called `is_rate_limited()` with no argument,
+# so every request (from every user, everywhere) shared a single "global" bucket
+# in `last_request_time`. One person spamming the bot would block the chatbot
+# for ALL users for RATE_LIMIT_SECONDS. Now every caller is keyed by their JWT
+# user id when logged in, or their IP address as a fallback for guests, so
+# limits are isolated per-caller.
 RATE_LIMIT_SECONDS = 2
-CACHE_TTL = 300
+MAX_MESSAGE_LENGTH = 2000
+MAX_HISTORY_MESSAGES = 20          # how many past turns we keep/accept
+MAX_HISTORY_MESSAGE_LENGTH = 4000  # guard against a single huge history entry
 
-cache = {}
-cache_time = {}
-last_request_time = defaultdict(float)
-
-
-def get_cache_key(prompt):
-    return hashlib.md5(prompt.encode()).hexdigest()
+_last_request_time = defaultdict(float)
+_rate_limit_lock = Lock()
 
 
-def get_from_cache(prompt):
-    key = get_cache_key(prompt)
-    if key in cache:
-        if time.time() - cache_time[key] < CACHE_TTL:
-            return cache[key]
-    return None
-
-
-def save_to_cache(prompt, response):
-    key = get_cache_key(prompt)
-    cache[key] = response
-    cache_time[key] = time.time()
-
-
-def is_rate_limited(user_id="global"):
-    now = time.time()
-    if now - last_request_time[user_id] < RATE_LIMIT_SECONDS:
-        return True
-    last_request_time[user_id] = now
-    return False
-
-
-def get_groq_response(prompt, model_name=GROQ_MODELS['balanced']):
-    if not GROQ_API_KEY:
-        return None
-
-    if is_rate_limited():
-        return "⏳ Too many requests. Please wait a second."
-
-    cached = get_from_cache(prompt)
-    if cached:
-        return cached
-
+def get_rate_limit_key():
+    """Per-user key when authenticated, otherwise per-IP for guests."""
     try:
-        headers = {'Authorization': f'Bearer {GROQ_API_KEY}', 'Content-Type': 'application/json'}
+        user_id = get_jwt_identity()
+    except Exception:
+        user_id = None
+    if user_id:
+        return f"user:{user_id}"
+    # request.remote_addr respects X-Forwarded-For if ProxyFix/behind a proxy;
+    # good enough as a fallback isolation key for anonymous users.
+    return f"ip:{request.remote_addr or 'unknown'}"
 
-        payload = {
-            'model': model_name,
-            'messages': [
-                {'role': 'system', 'content': '''You are a helpful study assistant for Study Portal.
 
-**About Study Portal:**
-- Created by: Karan Suyal
-- Purpose: Free study materials platform for students
-- Features: Notes, PYQs, Syllabus, Lab Manuals, Dark Mode, AI Chatbot
-- Website: study-portal-app.vercel.app
+def is_rate_limited(key):
+    with _rate_limit_lock:
+        now = time.time()
+        if now - _last_request_time[key] < RATE_LIMIT_SECONDS:
+            return True
+        _last_request_time[key] = now
+        return False
 
-**Your Role:**
-1. Help students with academic questions
-2. Guide them to study materials on the portal
-3. Be friendly, encouraging, and concise (max 150 words)
-4. If asked "who created this portal" or "who made study portal", say it was created by Karan Suyal
 
-**Rules:**
-- Keep responses helpful and educational
-- Suggest checking Materials section for notes/PYQs
-- Don't give wrong academic information
-- Be positive and supportive'''},
-                {'role': 'user', 'content': prompt}
-            ],
-            'temperature': 0.7,
-            'max_tokens': 1024,
-            'top_p': 0.9,
-            'stream': False
-        }
+# ==================== VALIDATION ====================
 
-        response = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=30)
+def validate_chat_payload(data):
+    """Returns (error_message_or_None, cleaned_message, cleaned_history)."""
+    if not isinstance(data, dict):
+        return "Invalid request body.", None, None
 
-        if response.status_code == 200:
-            result = response.json()
-            ai_response = result['choices'][0]['message']['content'].strip()
-            save_to_cache(prompt, ai_response)
-            return ai_response
-        else:
-            error_detail = response.json() if response.text else {}
-            error_msg = error_detail.get('error', {}).get('message', 'Unknown error')
-            print(f"❌ Groq API Error {response.status_code}: {error_msg}")
+    message = data.get('message', '')
+    if not isinstance(message, str):
+        return "Message must be a string.", None, None
+    message = message.strip()
+    if not message:
+        return "Message is required.", None, None
+    if len(message) > MAX_MESSAGE_LENGTH:
+        return f"Message is too long (max {MAX_MESSAGE_LENGTH} characters).", None, None
 
-            if response.status_code == 429:
-                return "⏳ API rate limit reached. Please try again in a few seconds."
+    raw_history = data.get('history', [])
+    if raw_history is None:
+        raw_history = []
+    if not isinstance(raw_history, list):
+        return "History must be a list.", None, None
 
-            return None
+    cleaned_history = []
+    for item in raw_history[-MAX_HISTORY_MESSAGES:]:
+        if not isinstance(item, dict):
+            continue
+        role = item.get('role')
+        content = item.get('text', item.get('content', ''))
+        if role not in ('user', 'assistant', 'bot'):
+            continue
+        if not isinstance(content, str) or not content.strip():
+            continue
+        role = 'assistant' if role == 'bot' else role
+        cleaned_history.append({
+            'role': role,
+            'content': content.strip()[:MAX_HISTORY_MESSAGE_LENGTH]
+        })
 
-    except requests.exceptions.Timeout:
-        print("⏰ Groq API timeout")
-        return None
-    except Exception as e:
-        print(f"❌ Groq API exception: {str(e)}")
-        return None
+    return None, message, cleaned_history
 
+
+# ==================== CONTEXT / KNOWLEDGE BASE (unchanged logic) ====================
 
 def get_user_context(user_id):
     try:
@@ -187,51 +177,48 @@ def search_knowledge_base(query, user_id=None):
         return {'subjects': [], 'notes': [], 'pyqs': []}
 
 
-@chatbot_bp.route('/chat', methods=['POST', 'OPTIONS'])
-@jwt_required(optional=True)
-def chat_with_ai():
-    if request.method == 'OPTIONS':
-        response = jsonify({'success': True})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        return response, 200
+SYSTEM_PROMPT = """You are a helpful study assistant for Study Portal.
 
-    try:
-        user_id = get_jwt_identity()
-        user_context = None
+**About Study Portal:**
+- Created by: Karan Suyal
+- Purpose: Free study materials platform for students
+- Features: Notes, PYQs, Syllabus, Lab Manuals, Dark Mode, AI Chatbot
+- Website: study-portal-app.vercel.app
 
-        if user_id:
-            user = db.session.get(User, int(user_id))
-            if user:
-                user_context = get_user_context(user.id)
+**Your Role:**
+1. Help students with academic questions
+2. Guide them to study materials on the portal
+3. Be friendly, encouraging, and concise (max 150 words)
+4. If asked "who created this portal" or "who made study portal", say it was created by Karan Suyal
+5. You remember the earlier messages in this conversation, so use that context naturally
 
-        data = request.get_json()
-        user_message = data.get('message', '')
+**Rules:**
+- Keep responses helpful and educational
+- Suggest checking Materials section for notes/PYQs
+- Don't give wrong academic information
+- Be positive and supportive
+- Use Markdown formatting where useful (bold, bullet lists, code blocks) since the UI renders it"""
 
-        if not user_message:
-            return jsonify({'success': False, 'error': 'Message is required'}), 400
 
-        search_results = search_knowledge_base(user_message, user_id)
+def build_user_turn(user_message, user_context, search_results):
+    context = ""
+    if search_results['subjects']:
+        context += "\n📚 **Relevant Subjects:**\n"
+        for sub in search_results['subjects'][:3]:
+            context += f"- {sub.name}\n"
 
-        context = ""
-        if search_results['subjects']:
-            context += "\n📚 **Relevant Subjects:**\n"
-            for sub in search_results['subjects'][:3]:
-                context += f"- {sub.name}\n"
+    if search_results['notes']:
+        context += "\n📄 **Available Notes:**\n"
+        for note in search_results['notes'][:3]:
+            context += f"- {note.title}\n"
 
-        if search_results['notes']:
-            context += "\n📄 **Available Notes:**\n"
-            for note in search_results['notes'][:3]:
-                context += f"- {note.title}\n"
+    if search_results['pyqs']:
+        context += "\n📝 **PYQs Available:**\n"
+        for pyq in search_results['pyqs'][:2]:
+            context += f"- {pyq.title}\n"
 
-        if search_results['pyqs']:
-            context += "\n📝 **PYQs Available:**\n"
-            for pyq in search_results['pyqs'][:2]:
-                context += f"- {pyq.title}\n"
-
-        if user_context:
-            prompt = f"""**Student Profile:**
+    if user_context:
+        return f"""**Student Profile:**
 - Name: {user_context['name']}
 - Course: {user_context['course']}
 - Semester: {user_context['semester']}
@@ -250,47 +237,22 @@ def chat_with_ai():
 5. If you don't know something, suggest checking the study portal or asking a teacher
 
 **Your Response:**"""
-        else:
-            prompt = f"""**About Study Portal:**
-- Created by Karan Suyal
-- Free study materials for students
-- Website: study-portal-app.vercel.app
 
-**Relevant Materials from Portal:**
+    return f"""**Relevant Materials from Portal:**
 {context if context else "No specific materials found."}
 
 **Student's Question:** {user_message}
 
 **Instructions:**
-1. Be friendly and helpful 
+1. Be friendly and helpful
 2. Give concise answers (max 150 words)
 3. If asked "who created this" or "who made study portal", say it was created by Karan Suyal
 4. Suggest checking the study portal for more resources
 
 **Your Response:**"""
 
-        ai_response = None
 
-        if GROQ_API_KEY:
-            ai_response = get_groq_response(prompt, GROQ_MODELS['balanced'])
-            if not ai_response:
-                ai_response = get_groq_response(prompt, GROQ_MODELS['fast'])
-
-        if not ai_response:
-            ai_response = fallback_response(user_message, context)
-
-        if search_results['notes'] or search_results['pyqs']:
-            ai_response += "\n\n💡 **Tip:** Check the Materials section on the portal for more study resources!"
-
-        return jsonify({'success': True, 'response': ai_response})
-
-    except Exception as e:
-        print(f"❌ Chat error: {str(e)}")
-        traceback.print_exc()
-        return jsonify({'success': True, 'response': "I'm having a bit of trouble right now. Please try again in a moment! 🙏"})
-
-
-def fallback_response(question, context):
+def fallback_response(question):
     question_lower = question.lower()
 
     if 'who made' in question_lower or 'who created' in question_lower or 'who built' in question_lower:
@@ -303,7 +265,7 @@ def fallback_response(question, context):
         return "📝 Previous Year Questions are available in the Materials section. Select your course and subject to find PYQs for exam preparation!"
 
     elif 'exam' in question_lower or 'prepare' in question_lower:
-        return "🎯 Exam preparation tips:\n• Review all PYQs\n• Make short notes\n• Practice regularly\n• Check the syllabus for important topics\n\nGood luck with your exams! 💪"
+        return "🎯 Exam preparation tips:\n- Review all PYQs\n- Make short notes\n- Practice regularly\n- Check the syllabus for important topics\n\nGood luck with your exams! 💪"
 
     elif 'syllabus' in question_lower:
         return "📋 Syllabus for all courses is available in the Materials section. Select your course, year, and semester to find the complete syllabus."
@@ -312,7 +274,150 @@ def fallback_response(question, context):
         return "🌙 Dark mode is available! Look for the moon/sun icon in the navbar or at the bottom right corner to toggle between light and dark themes."
 
     else:
-        return "👋 Hi there! I'm your study assistant. You can ask me about:\n\n📚 Notes & Study Materials\n📝 Previous Year Questions (PYQs)\n📋 Syllabus\n🎯 Exam Preparation\n🌙 Dark Mode\n\nWhat would you like to know?"
+        return "👋 Hi there! I'm your study assistant. You can ask me about:\n\n- 📚 Notes & Study Materials\n- 📝 Previous Year Questions (PYQs)\n- 📋 Syllabus\n- 🎯 Exam Preparation\n- 🌙 Dark Mode\n\nWhat would you like to know?"
+
+
+def sse_event(payload):
+    return f"data: {json.dumps(payload)}\n\n"
+
+
+def stream_groq(messages, model_name):
+    """Yields raw text chunks (deltas) from Groq's streaming completion API.
+    Raises on failure so the caller can fall back."""
+    headers = {'Authorization': f'Bearer {GROQ_API_KEY}', 'Content-Type': 'application/json'}
+    payload = {
+        'model': model_name,
+        'messages': messages,
+        'temperature': 0.7,
+        'max_tokens': 1024,
+        'top_p': 0.9,
+        'stream': True
+    }
+
+    with requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=60, stream=True) as resp:
+        if resp.status_code != 200:
+            detail = ''
+            try:
+                detail = resp.json().get('error', {}).get('message', '')
+            except Exception:
+                pass
+            raise RuntimeError(f"Groq API error {resp.status_code}: {detail}")
+
+        for raw_line in resp.iter_lines(decode_unicode=True):
+            if not raw_line:
+                continue
+            if not raw_line.startswith('data: '):
+                continue
+            chunk_data = raw_line[len('data: '):]
+            if chunk_data.strip() == '[DONE]':
+                break
+            try:
+                chunk = json.loads(chunk_data)
+            except json.JSONDecodeError:
+                continue
+            delta = chunk.get('choices', [{}])[0].get('delta', {}).get('content')
+            if delta:
+                yield delta
+
+
+def stream_fallback_text(text):
+    """Chunk a canned fallback response into small pieces so the frontend's
+    typewriter effect still animates even when Groq is unavailable."""
+    words = text.split(' ')
+    buf = ''
+    for word in words:
+        buf += word + ' '
+        if len(buf) >= 8:
+            yield buf
+            buf = ''
+    if buf:
+        yield buf
+
+
+@chatbot_bp.route('/chat', methods=['POST'])
+@jwt_required(optional=True)
+def chat_with_ai():
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json(silent=True) or {}
+
+        error, user_message, history = validate_chat_payload(data)
+        if error:
+            return jsonify({'success': False, 'error': error}), 400
+
+        rate_key = get_rate_limit_key()
+        if is_rate_limited(rate_key):
+            return jsonify({
+                'success': False,
+                'error': 'You are sending messages too fast. Please wait a moment.'
+            }), 429
+
+        user_context = None
+        if user_id:
+            user = db.session.get(User, int(user_id))
+            if user:
+                user_context = get_user_context(user.id)
+
+        search_results = search_knowledge_base(user_message, user_id)
+        current_turn = build_user_turn(user_message, user_context, search_results)
+
+        messages = [{'role': 'system', 'content': SYSTEM_PROMPT}]
+        messages.extend(history)
+        messages.append({'role': 'user', 'content': current_turn})
+
+        has_extra_materials = bool(search_results['notes'] or search_results['pyqs'])
+
+        def generate():
+            full_text = ''
+            streamed_ok = False
+
+            if GROQ_API_KEY:
+                for model_key in ('balanced', 'fast'):
+                    try:
+                        full_text = ''
+                        for delta in stream_groq(messages, GROQ_MODELS[model_key]):
+                            full_text += delta
+                            yield sse_event({'content': delta})
+                        streamed_ok = True
+                        break
+                    except Exception as e:
+                        print(f"❌ Groq stream error ({model_key}): {e}")
+                        full_text = ''
+                        continue
+
+            if not streamed_ok:
+                fb = fallback_response(user_message)
+                for chunk in stream_fallback_text(fb):
+                    full_text += chunk
+                    yield sse_event({'content': chunk})
+
+            if has_extra_materials:
+                tip = "\n\n💡 **Tip:** Check the Materials section on the portal for more study resources!"
+                full_text += tip
+                yield sse_event({'content': tip})
+
+            yield sse_event({'done': True, 'full_text': full_text})
+
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'X-Accel-Buffering': 'no',
+                'Connection': 'keep-alive',
+            }
+        )
+
+    except Exception as e:
+        print(f"❌ Chat error: {str(e)}")
+        traceback.print_exc()
+
+        def error_stream():
+            msg = "I'm having a bit of trouble right now. Please try again in a moment! 🙏"
+            yield sse_event({'content': msg})
+            yield sse_event({'done': True, 'full_text': msg})
+
+        return Response(stream_with_context(error_stream()), mimetype='text/event-stream')
 
 
 @chatbot_bp.route('/chat/test', methods=['GET'])
@@ -320,9 +425,13 @@ def test_groq():
     if not GROQ_API_KEY:
         return jsonify({'success': False, 'error': 'GROQ_API_KEY not configured'})
 
-    test_response = get_groq_response("Say 'Hello! I am working!' in one sentence.")
-
-    if test_response:
-        return jsonify({'success': True, 'response': test_response})
-    else:
-        return jsonify({'success': False, 'error': 'Groq API not responding'})
+    try:
+        text = ''
+        for delta in stream_groq(
+            [{'role': 'user', 'content': "Say 'Hello! I am working!' in one sentence."}],
+            GROQ_MODELS['balanced']
+        ):
+            text += delta
+        return jsonify({'success': True, 'response': text})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
