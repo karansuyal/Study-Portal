@@ -7,7 +7,11 @@ import {
 import config from '../config/config.jsx';
 import './Chatbot.css';
 
-const API_BASE = config.API_BASE_URL;
+// Some deployments set REACT_APP_API_URL already ending in "/api"
+// (e.g. "https://xyz.onrender.com/api"), others set it without.
+// Normalize so we always end up with exactly one "/api/chat" below,
+// instead of accidentally hitting ".../api/api/chat".
+const API_BASE = config.API_BASE_URL.replace(/\/+$/, '').replace(/\/api$/i, '');
 const STORAGE_KEY = 'study_portal_chat_history';
 const MAX_STORED_MESSAGES = 50;
 const MAX_HISTORY_SENT = 20;
