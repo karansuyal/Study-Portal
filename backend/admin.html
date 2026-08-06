@@ -812,6 +812,11 @@
               >0</span
             >)
           </div>
+          <div class="tab" onclick="switchTab('payments')">
+            <i class="fas fa-qrcode"></i> Payments (<span id="paymentsCount"
+              >0</span
+            >)
+          </div>
           <div class="tab" onclick="switchTab('approved')">
             <i class="fas fa-check-circle"></i> Approved
           </div>
@@ -904,6 +909,37 @@
           </div>
         </div>
 
+        <!-- Payments Tab (Premium Notes) -->
+        <div id="paymentsTab" class="tab-content">
+          <div class="content-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+              "
+            >
+              <h2>
+                <i class="fas fa-qrcode"></i> UPI Payments awaiting review (<span
+                  id="paymentsPendingCount"
+                  >0</span
+                >)
+              </h2>
+              <button class="btn btn-info btn-sm" onclick="loadPendingPayments()">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+            <p style="color: #6b7280; margin: -10px 0 16px; font-size: 13px;">
+              Razorpay payments are verified automatically and never show up
+              here — this queue is only for manual UPI-QR payments waiting on
+              a human check of the UTR / screenshot.
+            </p>
+            <div id="paymentsMessage"></div>
+            <div id="paymentsList" class="notes-list"></div>
+          </div>
+        </div>
+
         <!-- Users Tab -->
         <div id="usersTab" class="tab-content">
           <div class="content-card">
@@ -985,6 +1021,7 @@
           showDashboard();
           loadStats();
           loadPendingNotes();
+          loadPendingPayments();
         }
         checkConnection();
       };
@@ -1029,6 +1066,7 @@
               showDashboard();
               loadStats();
               loadPendingNotes();
+              loadPendingPayments();
             }, 1000);
           } else {
             showLoginMessage(" Login failed: " + data.error, "error");
@@ -1071,6 +1109,7 @@
         if (tabName === "pending") loadPendingNotes();
         if (tabName === "approved") loadApprovedNotes();
         if (tabName === "users") loadUsers();
+        if (tabName === "payments") loadPendingPayments();
       }
 
       // ==================== STATS FUNCTIONS ====================
@@ -1433,6 +1472,121 @@
           }
         } catch (error) {
           notesList.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+        }
+      }
+
+      // ==================== PREMIUM NOTES: PAYMENTS TAB ====================
+      function createPaymentCard(purchase) {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        card.id = `payment-${purchase.id}`;
+
+        const date = new Date(purchase.created_at).toLocaleString();
+        const proof = purchase.proof_url
+          ? `<div><a href="${purchase.proof_url}" target="_blank" rel="noopener">
+                <i class="fas fa-image"></i> View payment screenshot</a></div>`
+          : `<div style="color:#9ca3af"><i class="fas fa-image"></i> No screenshot uploaded</div>`;
+
+        card.innerHTML = `
+                <div class="note-header">
+                    <div class="note-title">${escapeHtml(purchase.note_title || "Untitled note")} — ${escapeHtml(purchase.amount_display)}</div>
+                    <div class="note-status status-pending">⏳ Awaiting review</div>
+                </div>
+                <div class="note-meta">
+                    <div><i class="fas fa-user"></i> ${escapeHtml(purchase.user_name || "Unknown")} (${escapeHtml(purchase.user_email || "")})</div>
+                    <div><i class="fas fa-hashtag"></i> UTR: ${escapeHtml(purchase.utr_reference || "—")}</div>
+                    <div><i class="fas fa-calendar"></i> ${date}</div>
+                </div>
+                <div class="note-description clean-description">
+                    ${proof}
+                </div>
+                <div class="note-actions">
+                    <button class="btn btn-success btn-sm" onclick="approvePayment(${purchase.id})">
+                        <i class="fas fa-check"></i> Approve — unlock note
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="rejectPayment(${purchase.id})">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </div>
+            `;
+        return card;
+      }
+
+      async function loadPendingPayments() {
+        const list = document.getElementById("paymentsList");
+        list.innerHTML =
+          '<div class="message loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+        try {
+          const response = await fetch(`${API_URL}/admin/payments/pending`, {
+            headers: {Authorization: `Bearer ${token}`},
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            const purchases = data.purchases || [];
+            document.getElementById("paymentsCount").textContent = purchases.length;
+            document.getElementById("paymentsPendingCount").textContent = purchases.length;
+
+            if (purchases.length === 0) {
+              list.innerHTML =
+                '<div class="empty-state"><i class="fas fa-inbox"></i><h3>No payments waiting on review</h3></div>';
+              return;
+            }
+
+            list.innerHTML = "";
+            purchases.forEach((p) => list.appendChild(createPaymentCard(p)));
+          }
+        } catch (error) {
+          list.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+        }
+      }
+
+      async function approvePayment(purchaseId) {
+        if (!confirm("Approve this payment? The note unlocks for the student immediately.")) return;
+        try {
+          const response = await fetch(
+            `${API_URL}/admin/payments/${purchaseId}/approve`,
+            {method: "POST", headers: {Authorization: `Bearer ${token}`}},
+          );
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById(`payment-${purchaseId}`)?.remove();
+            loadPendingPayments();
+            showMessage(" Payment approved — note unlocked!", "success", "paymentsMessage");
+          } else {
+            showMessage(data.error || "Could not approve", "error", "paymentsMessage");
+          }
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
+      }
+
+      async function rejectPayment(purchaseId) {
+        const reason = prompt("Reason for rejecting this payment:", "UTR does not match any received payment");
+        if (!reason) return;
+        try {
+          const response = await fetch(
+            `${API_URL}/admin/payments/${purchaseId}/reject`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({reason}),
+            },
+          );
+          const data = await response.json();
+          if (data.success) {
+            document.getElementById(`payment-${purchaseId}`)?.remove();
+            loadPendingPayments();
+            showMessage(" Payment rejected", "success", "paymentsMessage");
+          } else {
+            showMessage(data.error || "Could not reject", "error", "paymentsMessage");
+          }
+        } catch (error) {
+          alert("Error: " + error.message);
         }
       }
 

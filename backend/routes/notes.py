@@ -21,6 +21,7 @@ from sqlalchemy import text
 
 from ..extensions import db
 from ..models import Note, User, Course, Subject, UserRating
+from ..decorators import get_current_user_optional
 from ..utils import allowed_file, format_bytes
 
 notes_bp = Blueprint('notes', __name__)
@@ -91,9 +92,10 @@ def search_notes():
         order_map = {note_id: i for i, note_id in enumerate(ids_in_order)}
         notes.sort(key=lambda n: order_map[n.id])
 
+        viewer = get_current_user_optional()
         return jsonify({
             'success': True,
-            'notes': [note.to_dict() for note in notes],
+            'notes': [note.to_dict(viewer=viewer) for note in notes],
             'total': len(notes),
             'fuzzy': used_fallback
         })
@@ -126,7 +128,8 @@ def get_notes():
 
         print(f" Found {len(notes)} notes")
 
-        return jsonify({'success': True, 'notes': [note.to_dict() for note in notes], 'total': len(notes)})
+        viewer = get_current_user_optional()
+        return jsonify({'success': True, 'notes': [note.to_dict(viewer=viewer) for note in notes], 'total': len(notes)})
 
     except Exception as e:
         print(f" Error: {str(e)}")
@@ -143,7 +146,8 @@ def get_note_detail(note_id):
         note.views += 1
         db.session.commit()
 
-        return jsonify({'success': True, 'note': note.to_dict()})
+        viewer = get_current_user_optional()
+        return jsonify({'success': True, 'note': note.to_dict(viewer=viewer)})
 
     except Exception as e:
         db.session.rollback()
@@ -257,8 +261,10 @@ def get_all_materials():
             db.joinedload(Note.uploader)
         ).filter(Note.status == 'approved').order_by(Note.uploaded_at.desc()).all()
 
+        viewer = get_current_user_optional()
         materials_list = []
         for note in notes:
+            unlocked = note.has_access(viewer)
             materials_list.append({
                 'id': note.id,
                 'title': note.title,
@@ -268,15 +274,19 @@ def get_all_materials():
                 'course_id': note.course_id,
                 'subject': note.subject_ref.name if note.subject_ref else 'General',
                 'subject_id': note.subject_id,
-                'file_name': note.file_name,
+                'file_name': note.file_name if unlocked else None,
                 'file_size': format_bytes(note.file_size),
                 'file_type': note.file_type,
                 'downloads': note.downloads,
                 'views': note.views,
                 'uploaded_at': note.uploaded_at.isoformat() if note.uploaded_at else None,
                 'user_name': note.uploader.name if note.uploader else 'Unknown',
-                'cloudinary_url': note.cloudinary_url,
-                'download_url': f'/api/notes/{note.id}/download'
+                'cloudinary_url': note.cloudinary_url if unlocked else None,
+                'download_url': f'/api/notes/{note.id}/download' if unlocked else None,
+                'is_premium': note.is_premium,
+                'price': note.price,
+                'price_display': f"₹{note.price / 100:.0f}" if note.price else None,
+                'locked': note.is_premium and not unlocked
             })
 
         print(f" Found {len(materials_list)} materials")
@@ -512,10 +522,28 @@ def upload_note():
 
 
 @notes_bp.route('/api/files/<path:filepath>', methods=['GET'])
+@jwt_required(optional=True)
 def get_file(filepath):
     try:
-        directory = os.path.dirname(filepath)
         filename = os.path.basename(filepath)
+
+        # PREMIUM GATE: this route serves raw files straight off disk by
+        # filename, bypassing the /download route above entirely — so it
+        # needs its own independent access check, not just a shared one.
+        # Locked down by matching the requested filename back to its Note
+        # row (file_name is unique per upload: timestamp_uuid_original).
+        note = db.session.execute(db.select(Note).filter_by(file_name=filename)).scalar_one_or_none()
+        if note:
+            viewer = get_current_user_optional()
+            if not note.has_access(viewer):
+                return jsonify({
+                    'success': False,
+                    'error': 'This is a premium note. Purchase it to download.',
+                    'locked': True,
+                    'price': note.price
+                }), 402
+
+        directory = os.path.dirname(filepath)
 
         possible_paths = []
         if directory:
@@ -537,11 +565,24 @@ def get_file(filepath):
 
 
 @notes_bp.route('/api/notes/<int:note_id>/download', methods=['GET'])
+@jwt_required(optional=True)
 def download_note(note_id):
     try:
         note = db.session.get(Note, note_id)
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
+
+        # PREMIUM GATE: this is the actual file hand-off, so the access
+        # check happens here regardless of what the frontend already showed
+        # the user — never trust the client to have hidden the button.
+        viewer = get_current_user_optional()
+        if not note.has_access(viewer):
+            return jsonify({
+                'success': False,
+                'error': 'This is a premium note. Purchase it to download.',
+                'locked': True,
+                'price': note.price
+            }), 402
 
         if note.cloudinary_url:
             return redirect(note.cloudinary_url)
@@ -609,6 +650,7 @@ def get_note_stats(note_id):
 
 
 @notes_bp.route('/api/notes/<int:note_id>/download', methods=['POST', 'OPTIONS'])
+@jwt_required(optional=True)
 def increment_download_count(note_id):
     if request.method == 'OPTIONS':
         response = jsonify({'success': True})
@@ -621,6 +663,10 @@ def increment_download_count(note_id):
         note = db.session.get(Note, note_id)
         if not note:
             return jsonify({'success': False, 'error': 'Note not found'}), 404
+
+        viewer = get_current_user_optional()
+        if not note.has_access(viewer):
+            return jsonify({'success': False, 'error': 'Premium note — purchase required', 'locked': True, 'price': note.price}), 402
 
         note.downloads += 1
         db.session.commit()

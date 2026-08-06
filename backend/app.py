@@ -63,6 +63,23 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png'}
 
+# ==================== PREMIUM NOTES / PAYMENTS ====================
+# UPI: pay-to-personal-QR, manually reviewed by an admin. Required for the
+# manual flow — if unset, /api/payments/orders with method='upi_manual'
+# returns 503 instead of crashing.
+app.config['UPI_ID'] = os.environ.get('UPI_ID')  # e.g. "yourname@okhdfcbank"
+app.config['UPI_PAYEE_NAME'] = os.environ.get('UPI_PAYEE_NAME', 'Study Portal')
+# Optional: if you'd rather show your own saved QR image instead of a
+# freshly generated one, host it somewhere and set this to its URL.
+app.config['STATIC_QR_IMAGE_URL'] = os.environ.get('STATIC_QR_IMAGE_URL')
+
+# Razorpay: automatic, gateway-verified payments. Both optional — if unset,
+# method='razorpay' returns 503 instead of crashing, so the UPI flow alone
+# works fine without ever creating a Razorpay account.
+app.config['RAZORPAY_KEY_ID'] = os.environ.get('RAZORPAY_KEY_ID')
+app.config['RAZORPAY_KEY_SECRET'] = os.environ.get('RAZORPAY_KEY_SECRET')
+app.config['RAZORPAY_WEBHOOK_SECRET'] = os.environ.get('RAZORPAY_WEBHOOK_SECRET')
+
 # ==================== EXTENSIONS ====================
 db.init_app(app)
 jwt.init_app(app)
@@ -104,12 +121,14 @@ from .routes.courses import courses_bp
 from .routes.notes import notes_bp
 from .routes.admin import admin_bp
 from .routes.chatbot import chatbot_bp
+from .routes.payments import payments_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(courses_bp)
 app.register_blueprint(notes_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(chatbot_bp)
+app.register_blueprint(payments_bp)
 
 
 # ==================== DATABASE INIT ====================

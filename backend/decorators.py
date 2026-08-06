@@ -15,10 +15,29 @@ open to any logged-in user. @admin_required makes that impossible to forget.
 
 from functools import wraps
 from flask import jsonify, g
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
 from .extensions import db
 from .models import User
+
+
+def get_current_user_optional():
+    """
+    Returns the logged-in User, or None if there's no/invalid token.
+
+    Used on public endpoints (note listing, note detail) that need to know
+    *who's asking* to decide whether to include the file URL for a premium
+    note, but must still work for anonymous/logged-out visitors browsing
+    the catalog.
+    """
+    try:
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+        if not user_id:
+            return None
+        return db.session.get(User, int(user_id))
+    except Exception:
+        return None
 
 
 def admin_required(fn):

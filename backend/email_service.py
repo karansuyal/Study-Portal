@@ -71,3 +71,27 @@ def send_password_reset_email(to_email, token, name):
     except Exception as e:
         print(f" Email failed: {str(e)}")
         return True
+
+
+def send_purchase_approved_email(to_email, name, note_title):
+    """Best-effort notification when an admin approves a premium note payment."""
+    try:
+        msg = Message(
+            subject="Your Study Portal purchase is approved! 🎉",
+            recipients=[to_email],
+            html=f"""
+            <div style="font-family: Arial, sans-serif; text-align: center;">
+                <h2>You're in, {name}! 🎉</h2>
+                <p>Your payment for <strong>{note_title}</strong> has been verified and approved.</p>
+                <p>Head back to Study Portal and it'll be unlocked for download.</p>
+                <hr>
+                <p style="color: #999; font-size: 12px;">© 2026 Study Portal</p>
+            </div>
+            """,
+            sender=current_app.config['MAIL_DEFAULT_SENDER']
+        )
+        mail.send(msg)
+        return True
+    except Exception as e:
+        print(f" Purchase approval email failed: {str(e)}")
+        return False

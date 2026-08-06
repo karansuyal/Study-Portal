@@ -175,17 +175,52 @@ class Note(db.Model):
     subject_id = db.Column(db.Integer, db.ForeignKey('subjects.id'), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
 
-    def to_dict(self):
+    # ==================== PREMIUM NOTES ====================
+    # price is stored in PAISE (smallest INR unit) to avoid floating point
+    # rounding issues with money — 1900 paise = ₹19.00. is_premium is indexed
+    # since /api/notes and the materials feed both filter on it.
+    is_premium = db.Column(db.Boolean, default=False, nullable=False, index=True)
+    price = db.Column(db.Integer, default=0, nullable=False)
+
+    def has_access(self, user):
+        """
+        True if `user` (a User instance, or None if anonymous) is allowed to
+        see the actual file (file_path/cloudinary_url) for this note.
+
+        Free notes: always. Premium notes: only the uploader, an admin, or
+        someone with an *approved* Purchase row for this note. This is the
+        single source of truth other code should call — never re-derive
+        this logic elsewhere, so there's exactly one place to get it right.
+        """
+        if not self.is_premium:
+            return True
+        if not user:
+            return False
+        if user.role == 'admin' or user.id == self.user_id:
+            return True
+        return db.session.execute(
+            db.select(Purchase.id).filter_by(
+                user_id=user.id, note_id=self.id, status='approved'
+            )
+        ).first() is not None
+
+    def to_dict(self, viewer=None):
         user = db.session.get(User, self.user_id) if self.user_id else None
         course = db.session.get(Course, self.course_id) if self.course_id else None
         subject = db.session.get(Subject, self.subject_id) if self.subject_id else None
 
-        return {
+        # SECURITY: for a locked premium note, never put file_path,
+        # cloudinary_url, or file_name in the response — a curious user
+        # could otherwise just read them out of the JSON in devtools and
+        # download the file directly, completely bypassing payment.
+        unlocked = self.has_access(viewer)
+
+        result = {
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'file_name': self.file_name,
-            'original_filename': self.original_filename,
+            'file_name': self.file_name if unlocked else None,
+            'original_filename': self.original_filename if unlocked else None,
             'file_type': self.file_type,
             'file_size': self.file_size,
             'note_type': self.note_type,
@@ -204,11 +239,85 @@ class Note(db.Model):
             'user_id': self.user_id,
             'user_name': user.name if user else 'Unknown',
             'user_email': user.email if user else 'Unknown',
-            'cloudinary_url': self.cloudinary_url,
-            'cloudinary_public_id': self.cloudinary_public_id,
+            'cloudinary_url': self.cloudinary_url if unlocked else None,
+            'cloudinary_public_id': self.cloudinary_public_id if unlocked else None,
             'is_youtube': self.is_youtube or False,
-            'youtube_url': self.youtube_url,
-            'youtube_id': self.youtube_id,
+            'youtube_url': self.youtube_url if unlocked else None,
+            'youtube_id': self.youtube_id if unlocked else None,
             'youtube_thumbnail': self.youtube_thumbnail,
-            'youtube_embed_url': self.youtube_embed_url
+            'youtube_embed_url': self.youtube_embed_url if unlocked else None,
+            'is_premium': self.is_premium,
+            'price': self.price,
+            'price_display': f"₹{self.price / 100:.0f}" if self.price else None,
+            'locked': self.is_premium and not unlocked
+        }
+        return result
+
+
+class Purchase(db.Model):
+    """
+    One row per purchase attempt for a premium note.
+
+    Two payment methods, one table:
+      - 'upi_manual'  : student pays to the owner's personal UPI QR, submits
+                         a UTR/reference number (+ optional screenshot), and
+                         an admin manually approves/rejects. status starts
+                         and STAYS 'pending' until an admin acts — the
+                         student can never set their own status to
+                         'approved' through any endpoint.
+      - 'razorpay'    : student pays through Razorpay Checkout. The backend
+                         verifies the payment signature server-side (and
+                         again via webhook) before flipping status to
+                         'approved' — the frontend's word alone is never
+                         trusted.
+
+    A partial unique index (see migrations/002_add_premium_notes.sql) stops
+    a user from ever holding two 'approved' rows for the same note, even
+    though they're allowed multiple 'pending'/'rejected' attempts (e.g. if
+    a first UTR turns out invalid).
+    """
+    __tablename__ = 'purchases'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    note_id = db.Column(db.Integer, db.ForeignKey('notes.id'), nullable=False, index=True)
+
+    amount = db.Column(db.Integer, nullable=False)  # paise, snapshot of note.price at order time
+    method = db.Column(db.String(20), nullable=False)  # 'upi_manual' | 'razorpay'
+    status = db.Column(db.String(20), nullable=False, default='pending', index=True)  # pending|approved|rejected
+
+    # upi_manual fields
+    utr_reference = db.Column(db.String(100))
+    proof_url = db.Column(db.String(500))
+
+    # razorpay fields
+    razorpay_order_id = db.Column(db.String(100), index=True)
+    razorpay_payment_id = db.Column(db.String(100))
+    razorpay_signature = db.Column(db.String(200))
+
+    rejection_reason = db.Column(db.Text)
+    reviewed_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    reviewed_at = db.Column(db.DateTime)
+
+    note = db.relationship('Note', foreign_keys=[note_id])
+    user = db.relationship('User', foreign_keys=[user_id])
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'note_id': self.note_id,
+            'note_title': self.note.title if self.note else None,
+            'user_id': self.user_id,
+            'user_name': self.user.name if self.user else None,
+            'user_email': self.user.email if self.user else None,
+            'amount': self.amount,
+            'amount_display': f"₹{self.amount / 100:.0f}",
+            'method': self.method,
+            'status': self.status,
+            'utr_reference': self.utr_reference,
+            'proof_url': self.proof_url,
+            'rejection_reason': self.rejection_reason,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'reviewed_at': self.reviewed_at.isoformat() if self.reviewed_at else None,
         }

@@ -16,10 +16,10 @@ import os
 import traceback
 from datetime import datetime, timezone
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, g
 
 from ..extensions import db
-from ..models import User, Note, Course, Subject
+from ..models import User, Note, Course, Subject, Purchase
 from ..decorators import admin_required
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
@@ -137,6 +137,137 @@ def reject_note(note_id):
         db.session.commit()
 
         return jsonify({'success': True, 'message': 'Note rejected successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ==================== PREMIUM NOTES ====================
+
+@admin_bp.route('/notes/<int:note_id>/premium', methods=['POST', 'OPTIONS'])
+@admin_required
+def set_note_premium(note_id):
+    """Mark/unmark a note as premium and set its price (in rupees, converted to paise)."""
+    if request.method == 'OPTIONS':
+        return '', 200
+    try:
+        note = db.session.get(Note, note_id)
+        if not note:
+            return jsonify({'success': False, 'error': 'Note not found'}), 404
+
+        data = request.get_json() or {}
+        is_premium = bool(data.get('is_premium', False))
+        price_rupees = data.get('price_rupees', 0)
+
+        try:
+            price_rupees = float(price_rupees)
+        except (TypeError, ValueError):
+            return jsonify({'success': False, 'error': 'price_rupees must be a number'}), 400
+
+        if is_premium and price_rupees <= 0:
+            return jsonify({'success': False, 'error': 'Premium notes need a price greater than ₹0'}), 400
+
+        note.is_premium = is_premium
+        note.price = int(round(price_rupees * 100)) if is_premium else 0
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Note updated', 'note': note.to_dict(viewer=g.current_user)})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/payments/pending', methods=['GET'])
+@admin_required
+def get_pending_payments():
+    """
+    upi_manual orders waiting on manual review — the ones an admin actually
+    has to look at (razorpay orders self-approve via signature/webhook and
+    never need a human).
+    """
+    try:
+        purchases = db.session.execute(
+            db.select(Purchase)
+            .filter_by(method='upi_manual', status='pending')
+            .order_by(Purchase.created_at.asc())
+        ).scalars().all()
+        return jsonify({'success': True, 'purchases': [p.to_dict() for p in purchases]})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/payments/all', methods=['GET'])
+@admin_required
+def get_all_payments():
+    """Full payment history (all methods, all statuses) for bookkeeping."""
+    try:
+        status = request.args.get('status')
+        query = db.select(Purchase).order_by(Purchase.created_at.desc())
+        if status:
+            query = query.filter_by(status=status)
+        purchases = db.session.execute(query).scalars().all()
+        return jsonify({'success': True, 'purchases': [p.to_dict() for p in purchases]})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/payments/<int:purchase_id>/approve', methods=['POST', 'OPTIONS'])
+@admin_required
+def approve_payment(purchase_id):
+    """
+    The ONLY place a upi_manual purchase can become 'approved' — a human
+    admin, looking at the UTR/screenshot, explicitly clicking approve.
+    """
+    if request.method == 'OPTIONS':
+        return '', 200
+    try:
+        purchase = db.session.get(Purchase, purchase_id)
+        if not purchase:
+            return jsonify({'success': False, 'error': 'Order not found'}), 404
+        if purchase.status != 'pending':
+            return jsonify({'success': False, 'error': f'Order was already {purchase.status}'}), 400
+
+        purchase.status = 'approved'
+        purchase.reviewed_by = g.current_user.id
+        purchase.reviewed_at = datetime.now(timezone.utc)
+        db.session.commit()
+
+        try:
+            from ..email_service import send_purchase_approved_email
+            send_purchase_approved_email(purchase.user.email, purchase.user.name, purchase.note.title)
+        except Exception as e:
+            print(f" (non-fatal) approval email failed: {e}")
+
+        return jsonify({'success': True, 'message': 'Payment approved — note unlocked for the student', 'purchase': purchase.to_dict()})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@admin_bp.route('/payments/<int:purchase_id>/reject', methods=['POST', 'OPTIONS'])
+@admin_required
+def reject_payment(purchase_id):
+    if request.method == 'OPTIONS':
+        return '', 200
+    try:
+        data = request.get_json() or {}
+        reason = (data.get('reason') or '').strip()
+        if not reason:
+            return jsonify({'success': False, 'error': 'A rejection reason is required'}), 400
+
+        purchase = db.session.get(Purchase, purchase_id)
+        if not purchase:
+            return jsonify({'success': False, 'error': 'Order not found'}), 404
+        if purchase.status != 'pending':
+            return jsonify({'success': False, 'error': f'Order was already {purchase.status}'}), 400
+
+        purchase.status = 'rejected'
+        purchase.rejection_reason = reason
+        purchase.reviewed_by = g.current_user.id
+        purchase.reviewed_at = datetime.now(timezone.utc)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Payment rejected', 'purchase': purchase.to_dict()})
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
