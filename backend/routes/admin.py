@@ -99,6 +99,51 @@ def get_user_details(user_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@admin_bp.route('/run-migrations', methods=['POST'])
+@admin_required
+def run_migrations():
+    """
+    Applies every .sql file in backend/migrations/ against the live
+    database, in filename order.
+
+    Exists because Render's free tier has no Shell access to run
+    `psql -f migrations/xxx.sql` by hand — this does the same thing over
+    an authenticated HTTP call instead. Safe to call more than once: every
+    migration file in this repo uses IF NOT EXISTS / equivalent guards, so
+    re-running an already-applied file is a no-op, not an error.
+
+    admin_required means only a logged-in admin's JWT can trigger this —
+    it is not open to the public internet.
+    """
+    from sqlalchemy import text
+
+    migrations_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'migrations')
+    if not os.path.isdir(migrations_dir):
+        return jsonify({'success': False, 'error': f'No migrations folder found at {migrations_dir}'}), 404
+
+    sql_files = sorted(f for f in os.listdir(migrations_dir) if f.endswith('.sql'))
+    if not sql_files:
+        return jsonify({'success': False, 'error': 'No .sql files found in migrations/'}), 404
+
+    results = []
+    for filename in sql_files:
+        path = os.path.join(migrations_dir, filename)
+        try:
+            with open(path) as f:
+                sql = f.read()
+            db.session.execute(text(sql))
+            db.session.commit()
+            results.append({'file': filename, 'status': 'applied'})
+        except Exception as e:
+            db.session.rollback()
+            results.append({'file': filename, 'status': 'error', 'error': str(e)})
+            print(f" Migration {filename} failed: {e}")
+            traceback.print_exc()
+
+    all_ok = all(r['status'] == 'applied' for r in results)
+    return jsonify({'success': all_ok, 'results': results}), (200 if all_ok else 500)
+
+
 @admin_bp.route('/notes/<int:note_id>/approve', methods=['POST', 'OPTIONS'])
 @admin_required
 def approve_note(note_id):
