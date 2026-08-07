@@ -67,8 +67,8 @@ app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 
 # UPI: pay-to-personal-QR, manually reviewed by an admin. Required for the
 # manual flow — if unset, /api/payments/orders with method='upi_manual'
 # returns 503 instead of crashing.
-app.config['UPI_ID'] = os.environ.get('UPI_ID')  # e.g. "yourname@okhdfcbank"
-app.config['UPI_PAYEE_NAME'] = os.environ.get('UPI_PAYEE_NAME', 'Study Portal')
+app.config['UPI_ID'] = (os.environ.get('UPI_ID') or '').strip().strip('"').strip("'") or None  # e.g. "yourname@okhdfcbank"
+app.config['UPI_PAYEE_NAME'] = os.environ.get('UPI_PAYEE_NAME', 'Study Portal').strip()
 # Optional: if you'd rather show your own saved QR image instead of a
 # freshly generated one, host it somewhere and set this to its URL.
 app.config['STATIC_QR_IMAGE_URL'] = os.environ.get('STATIC_QR_IMAGE_URL')
