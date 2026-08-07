@@ -225,15 +225,26 @@ def unauthorized_response(callback):
 
 
 # ==================== ADMIN PANEL STATIC FILES ====================
+# IMPORTANT: use the path relative to THIS FILE (app.py), never the
+# process's current working directory. Render's working directory at
+# start-up depends on the service's "Root Directory" setting — if that's
+# ever misconfigured (or a new Render service is created without it),
+# a relative path like 'admin.html' silently resolves to the wrong folder
+# and this route 404s even though the file is right there in git.
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 @app.route('/admin')
 def serve_admin():
     try:
-        if os.path.exists('static/admin.html'):
-            return send_from_directory('static', 'admin.html')
-        elif os.path.exists('admin.html'):
-            return send_file('admin.html')
+        static_path = os.path.join(BACKEND_DIR, 'static', 'admin.html')
+        root_path = os.path.join(BACKEND_DIR, 'admin.html')
+        if os.path.exists(static_path):
+            return send_from_directory(os.path.join(BACKEND_DIR, 'static'), 'admin.html')
+        elif os.path.exists(root_path):
+            return send_file(root_path)
         else:
-            return jsonify({'error': 'Admin panel not found'}), 404
+            return jsonify({'error': 'Admin panel not found', 'looked_in': [static_path, root_path]}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -241,10 +252,12 @@ def serve_admin():
 @app.route('/admin/<path:filename>')
 def serve_admin_static(filename):
     try:
-        if os.path.exists(f'static/{filename}'):
-            return send_from_directory('static', filename)
-        elif os.path.exists(filename):
-            return send_file(filename)
+        static_file = os.path.join(BACKEND_DIR, 'static', filename)
+        root_file = os.path.join(BACKEND_DIR, filename)
+        if os.path.exists(static_file):
+            return send_from_directory(os.path.join(BACKEND_DIR, 'static'), filename)
+        elif os.path.exists(root_file):
+            return send_file(root_file)
         else:
             return jsonify({'error': 'File not found'}), 404
     except Exception as e:
