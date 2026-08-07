@@ -10,6 +10,7 @@ import {
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { useNoteStats } from "../hooks/useNoteStats";
+import PurchaseModal from "../components/PurchaseModal";
 
 const API_URL = "https://study-portal-pi2w.onrender.com/api";
 
@@ -75,12 +76,22 @@ const formatDate = (d) => {
 /* ── MaterialCard ─────────────────────────────── */
 const MaterialCard = ({ material }) => {
   const [downloading, setDownloading] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
   const navigate = useNavigate();
   const ts = getTypeStyle(material.type);
   const stats = useNoteStats(material.id, { views: material.views || 0, downloads: material.downloads || 0 });
 
   const handleDownload = async (e) => {
     e.stopPropagation();
+
+    // Premium note the viewer hasn't purchased yet: open the purchase flow
+    // instead of hitting the download endpoint (the backend blocks it with
+    // a 402 anyway — this just gives a proper UI for it instead of an alert).
+    if (material.locked) {
+      setShowPurchase(true);
+      return;
+    }
+
     setDownloading(true);
     try {
       stats.incrementDownload();
@@ -125,6 +136,11 @@ const MaterialCard = ({ material }) => {
         <span className="mat-date">{formatDate(material.uploaded_at)}</span>
       </div>
       <h4 className="mat-title">{material.title}</h4>
+      {material.is_premium && (
+        <span className="mat-premium-badge">
+          ⭐ {material.locked ? (material.price_display || "Premium") : "Unlocked"}
+        </span>
+      )}
       <div className="mat-meta">
         <span className="mat-meta-item">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -151,10 +167,23 @@ const MaterialCard = ({ material }) => {
       <button className="mat-dl-btn" onClick={handleDownload} disabled={downloading}>
         {downloading ? (
           <><span className="btn-spinner" /> Downloading...</>
+        ) : material.locked ? (
+          <><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Unlock {material.price_display || ""}</>
         ) : (
           <><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</>
         )}
       </button>
+
+      {showPurchase && (
+        <PurchaseModal
+          note={material}
+          onClose={() => setShowPurchase(false)}
+          onUnlocked={() => {
+            setShowPurchase(false);
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -256,6 +285,10 @@ const Home = () => {
           downloads: m.downloads || 0,
           file_name: m.file_name,
           cloudinary_url: m.cloudinary_url || null,
+          is_premium: m.is_premium || false,
+          locked: m.locked || false,
+          price: m.price || 0,
+          price_display: m.price_display || null,
         }));
         setLatestMaterials(items.slice(0, isMobile ? 3 : isTablet ? 4 : 6));
       } else {
