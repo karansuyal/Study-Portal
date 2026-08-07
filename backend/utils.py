@@ -24,14 +24,18 @@ def build_upi_uri(upi_id, payee_name, amount_rupees, transaction_ref, note_title
     the manual-review flow (UTR submission + admin approval) still exists.
     """
     params = {
-        'pa': upi_id,                       # payee address (your UPI ID)
-        'pn': payee_name,                   # payee name
+        # 'pa' (VPA) must keep its '@' literal — UPI apps resolve the payee's
+        # bank name by looking up the raw "handle@bank" string, and a %40
+        # encoded '@' makes several apps (BHIM, some bank apps) fail that
+        # lookup even though the link still technically opens.
+        'pa': quote(str(upi_id), safe='@.-_'),
+        'pn': quote(str(payee_name)),       # payee name (spaces etc. OK to encode)
         'am': f"{amount_rupees:.2f}",
         'cu': 'INR',
-        'tr': transaction_ref,              # your own order reference
-        'tn': f"StudyPortal-{note_title}"[:50],
+        'tr': quote(str(transaction_ref)),  # your own order reference
+        'tn': quote(f"StudyPortal-{note_title}"[:50]),
     }
-    query = '&'.join(f"{k}={quote(str(v))}" for k, v in params.items())
+    query = '&'.join(f"{k}={v}" for k, v in params.items())
     return f"upi://pay?{query}"
 
 
