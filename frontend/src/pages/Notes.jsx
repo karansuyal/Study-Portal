@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import PurchaseModal from '../components/PurchaseModal';
 const API_URL = 'https://study-portal-pi2w.onrender.com/api';
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [purchaseNote, setPurchaseNote] = useState(null); // note currently shown in the purchase modal
 
   useEffect(() => {
     fetchNotes();
@@ -13,7 +15,10 @@ const Notes = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch(`${API_URL}/notes`);
+      const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
+      const response = await fetch(`${API_URL}/notes`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       const data = await response.json();
       setNotes(data.notes || []);
     } catch (error) {
@@ -28,16 +33,28 @@ const Notes = () => {
     ? notes 
     : notes.filter(note => note.note_type === filter);
 
-  const handleDownload = async (noteId, filename) => {
+  const handleDownload = async (note) => {
+    // Premium + not yet purchased -> open the purchase flow instead of
+    // hitting the download endpoint (which the backend blocks with 402
+    // anyway, but this gives a proper UI instead of a silent failure).
+    if (note.locked) {
+      setPurchaseNote(note);
+      return;
+    }
+
     try {
-      //  FIXED: Use Render URL for download
-      window.open(`${API_URL}/notes/${noteId}/download`, '_blank');
-      
-      // Update download count in UI
-      setNotes(prev => prev.map(note => 
-        note.id === noteId 
-          ? { ...note, downloads: (note.downloads || 0) + 1 }
-          : note
+      const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
+      window.open(`${API_URL}/notes/${note.id}/download`, '_blank');
+
+      if (token) {
+        fetch(`${API_URL}/notes/${note.id}/download`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => {});
+      }
+
+      setNotes(prev => prev.map(n =>
+        n.id === note.id ? { ...n, downloads: (n.downloads || 0) + 1 } : n
       ));
     } catch (error) {
       console.error('Download error:', error);
@@ -159,18 +176,32 @@ const Notes = () => {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <h3 style={{ margin: 0, color: '#1f2937', fontSize: '1.25rem' }}>{note.title}</h3>
-                <span style={{
-                  background: note.note_type === 'pyq' ? '#fef3c7' : 
-                             note.note_type === 'syllabus' ? '#dbeafe' : '#dcfce7',
-                  color: note.note_type === 'pyq' ? '#92400e' : 
-                        note.note_type === 'syllabus' ? '#1e40af' : '#166534',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '20px',
-                  fontSize: '0.75rem',
-                  fontWeight: '600'
-                }}>
-                  {note.note_type?.toUpperCase()}
-                </span>
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {note.is_premium && (
+                    <span style={{
+                      background: '#fef3c7',
+                      color: '#92400e',
+                      padding: '0.25rem 0.6rem',
+                      borderRadius: '20px',
+                      fontSize: '0.7rem',
+                      fontWeight: '700'
+                    }}>
+                      ⭐ {note.price_display || 'PREMIUM'}
+                    </span>
+                  )}
+                  <span style={{
+                    background: note.note_type === 'pyq' ? '#fef3c7' : 
+                               note.note_type === 'syllabus' ? '#dbeafe' : '#dcfce7',
+                    color: note.note_type === 'pyq' ? '#92400e' : 
+                          note.note_type === 'syllabus' ? '#1e40af' : '#166534',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: '20px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600'
+                  }}>
+                    {note.note_type?.toUpperCase()}
+                  </span>
+                </div>
               </div>
               
               <p style={{ 
@@ -202,10 +233,12 @@ const Notes = () => {
               </div>
               
               <button
-                onClick={() => handleDownload(note.id, note.file_name)}
+                onClick={() => handleDownload(note)}
                 style={{
                   width: '100%',
-                  background: 'linear-gradient(90deg, #4f46e5, #7c3aed)',
+                  background: note.locked
+                    ? 'linear-gradient(90deg, #f59e0b, #d97706)'
+                    : 'linear-gradient(90deg, #4f46e5, #7c3aed)',
                   color: 'white',
                   border: 'none',
                   padding: '0.75rem',
@@ -217,17 +250,24 @@ const Notes = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
-                  transition: 'all 0.3s',
-                  ':hover': {
-                    transform: 'scale(1.02)'
-                  }
+                  transition: 'all 0.3s'
                 }}
               >
-                ⬇️ Download Now
+                {note.locked ? `🔒 Unlock — ${note.price_display}` : '⬇️ Download Now'}
               </button>
             </div>
           ))}
         </div>
+      )}
+
+      {purchaseNote && (
+        <PurchaseModal
+          note={purchaseNote}
+          onClose={() => setPurchaseNote(null)}
+          onUnlocked={() => {
+            fetchNotes();
+          }}
+        />
       )}
       
       <div style={{ textAlign: 'center', marginTop: '3rem' }}>
