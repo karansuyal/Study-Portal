@@ -234,11 +234,18 @@ def get_pending_payments():
     upi_manual orders waiting on manual review — the ones an admin actually
     has to look at (razorpay orders self-approve via signature/webhook and
     never need a human).
+
+    Only orders where the student has actually submitted a UTR (via
+    /api/payments/<id>/proof) show up here. An order created the moment the
+    QR is generated (status='pending', utr_reference=None) means the student
+    merely opened the payment screen — not that they paid — so it's
+    deliberately excluded until they submit proof.
     """
     try:
         purchases = db.session.execute(
             db.select(Purchase)
             .filter_by(method='upi_manual', status='pending')
+            .filter(Purchase.utr_reference.isnot(None))
             .order_by(Purchase.created_at.asc())
         ).scalars().all()
         return jsonify({'success': True, 'purchases': [p.to_dict() for p in purchases]})
