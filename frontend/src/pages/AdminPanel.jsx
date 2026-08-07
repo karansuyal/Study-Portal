@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../services/api';
+import './AdminPanel.css';
 
 const AdminPanel = () => {
   const { user, isAdmin, getToken } = useAuth();
@@ -234,36 +235,20 @@ const AdminPanel = () => {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+      <div className="ap-tabs">
         <button
           onClick={() => setActiveTab('notes')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            background: activeTab === 'notes' ? '#667eea' : 'white',
-            color: activeTab === 'notes' ? 'white' : '#333',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}
+          className={`ap-tab ${activeTab === 'notes' ? 'is-active' : ''}`}
         >
-          ⏳ Pending Notes ({pendingNotes.length})
+          ⏳ Pending Notes
+          <span className={`ap-tab-count ${pendingNotes.length > 0 ? 'has-items' : ''}`}>{pendingNotes.length}</span>
         </button>
         <button
           onClick={() => setActiveTab('payments')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            background: activeTab === 'payments' ? '#667eea' : 'white',
-            color: activeTab === 'payments' ? 'white' : '#333',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}
+          className={`ap-tab ${activeTab === 'payments' ? 'is-active' : ''}`}
         >
-          💳 Payments to Review ({pendingPayments.length})
+          💳 Payments to Review
+          <span className={`ap-tab-count ${pendingPayments.length > 0 ? 'has-items' : ''}`}>{pendingPayments.length}</span>
         </button>
       </div>
 
@@ -432,142 +417,85 @@ const AdminPanel = () => {
 
       {/* Payments to Review Section */}
       {activeTab === 'payments' && (
-      <div style={{ background: 'white', padding: '2rem', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ marginBottom: '0.5rem', color: '#333' }}>
-          💳 UPI Payments Awaiting Review ({pendingPayments.length})
-        </h2>
-        <p style={{ marginBottom: '1.5rem', color: '#666', fontSize: '0.9rem' }}>
+      <div className="ap-panel">
+        <h2 className="ap-panel-title">UPI payments awaiting review</h2>
+        <p className="ap-panel-subtitle">
           Razorpay payments unlock automatically and never show up here. Only manual UPI orders need your review —
-          check the UTR against your bank/UPI app before approving.
+          check the UTR against your bank or UPI app before approving.
         </p>
 
         {paymentsLoading ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div className="spinner"></div>
-            <p>Loading pending payments...</p>
+          <div className="ap-loading-state">
+            <span className="ap-spinner"></span>
+            <p>Loading pending payments…</p>
           </div>
         ) : pendingPayments.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-            <p style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🎉 All caught up!</p>
-            <p>No payments waiting on review.</p>
+          <div className="ap-empty-state">
+            <div className="ap-empty-icon">✓</div>
+            <h3>All caught up</h3>
+            <p>No payments waiting on review right now.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '1.5rem' }}>
+          <div className="ap-payment-list">
             {pendingPayments.map(purchase => (
-              <div key={purchase.id} style={{
-                background: '#fff9db',
-                padding: '1.5rem',
-                borderRadius: '8px',
-                border: '2px solid #fbbf24',
-                position: 'relative'
-              }}>
+              <div key={purchase.id} className="ap-payment-card">
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+                <div className="ap-payment-head">
                   <div>
-                    <h3 style={{ margin: '0 0 0.5rem 0', color: '#333' }}>{purchase.note_title}</h3>
-                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem', color: '#666' }}>
-                      <span><strong>💰 Amount:</strong> {purchase.amount_display}</span>
-                      <span><strong>📅 Requested:</strong> {new Date(purchase.created_at).toLocaleString()}</span>
+                    <h3 className="ap-payment-title">{purchase.note_title}</h3>
+                    <div className="ap-payment-meta">
+                      <span><strong>{purchase.amount_display}</strong></span>
+                      <span>{new Date(purchase.created_at).toLocaleString()}</span>
                     </div>
                   </div>
-                  <span style={{
-                    background: '#fbbf24',
-                    color: '#78350f',
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '20px',
-                    fontSize: '0.8rem',
-                    fontWeight: 'bold'
-                  }}>
-                    PENDING
-                  </span>
+                  <span className="ap-status-pill">Pending</span>
                 </div>
 
-                {/* Student Details */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                  <div>
-                    <p style={{ margin: '0 0 0.5rem 0' }}>
-                      <strong>👤 Student:</strong> {purchase.user_name}
-                    </p>
-                    <p style={{ margin: '0', color: '#666' }}>
-                      {purchase.user_email}
-                    </p>
+                {/* Student + UTR */}
+                <div className="ap-payment-body">
+                  <div className="ap-student">
+                    <div className="ap-avatar">
+                      {(purchase.user_name || '?').trim().charAt(0).toUpperCase()}
+                    </div>
+                    <div className="ap-student-info">
+                      <div className="ap-student-name">{purchase.user_name}</div>
+                      <div className="ap-student-email">{purchase.user_email}</div>
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ margin: '0 0 0.5rem 0' }}>
-                      <strong>🔢 UTR / Reference:</strong> {purchase.utr_reference || '—'}
-                    </p>
+                  <div className="ap-utr-block">
+                    <span className="ap-utr-label">UTR / Reference</span>
+                    <span className="ap-utr-value">{purchase.utr_reference || '—'}</span>
                   </div>
                 </div>
 
                 {/* Proof screenshot */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '1rem',
-                  background: '#f1f5f9',
-                  borderRadius: '6px',
-                  marginBottom: '1rem'
-                }}>
-                  <p style={{ margin: 0 }}>
-                    <strong>📎 Screenshot:</strong> {purchase.proof_url ? 'Uploaded by student' : 'Not provided'}
-                  </p>
+                <div className="ap-proof-row">
+                  <span>{purchase.proof_url ? '📎 Screenshot uploaded by student' : 'No screenshot uploaded'}</span>
                   {purchase.proof_url && (
                     <a
                       href={purchase.proof_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        background: '#3b82f6',
-                        color: 'white',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '6px',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem'
-                      }}
+                      className="ap-proof-link"
                     >
-                      👁️ View Screenshot
+                      👁️ View
                     </a>
                   )}
                 </div>
 
                 {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <div className="ap-actions">
                   <button
                     onClick={() => handleRejectPayment(purchase.id)}
-                    style={{
-                      background: '#ef4444',
-                      color: 'white',
-                      padding: '0.75rem 1.5rem',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}
+                    className="ap-btn ap-btn-reject"
                   >
-                    ❌ Reject
+                    Reject
                   </button>
                   <button
                     onClick={() => handleApprovePayment(purchase.id)}
-                    style={{
-                      background: '#10b981',
-                      color: 'white',
-                      padding: '0.75rem 1.5rem',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}
+                    className="ap-btn ap-btn-approve"
                   >
-                    ✅ Approve
+                    Approve — unlock note
                   </button>
                 </div>
               </div>

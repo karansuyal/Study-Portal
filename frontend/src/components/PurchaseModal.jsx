@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTimes, FaQrcode, FaCreditCard, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaTimes, FaQrcode, FaCreditCard, FaCheckCircle, FaExclamationTriangle, FaCopy, FaCheck, FaArrowLeft } from 'react-icons/fa';
 import { createPaymentOrder, submitPaymentProof, payWithRazorpay } from '../services/paymentService';
 import './PurchaseModal.css';
 
@@ -22,6 +22,13 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
   const [proofFile, setProofFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const priceLabel = note.price_display || `₹${(note.price / 100).toFixed(0)}`;
+
+  // Steps shown in the header. Razorpay skips the "confirm" step since it
+  // unlocks automatically — this only really matters for the UPI path.
+  const stepIndex = { choose: 0, razorpay_processing: 1, upi_pending: 1, upi_submitted: 2, success: 2 }[stage];
 
   const startUpi = async () => {
     setLoading(true);
@@ -82,6 +89,16 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
     }
   };
 
+  const copyUpiId = async () => {
+    try {
+      await navigator.clipboard.writeText(order.payment.upi_id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // Clipboard API unavailable — silently ignore, the ID is visible to copy by hand.
+    }
+  };
+
   return (
     <div className="pm-overlay" onClick={onClose}>
       <div className="pm-modal" onClick={(e) => e.stopPropagation()}>
@@ -89,9 +106,35 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
           <FaTimes />
         </button>
 
-        <h3 className="pm-title">Unlock premium note</h3>
-        <p className="pm-note-title">{note.title}</p>
-        <p className="pm-price">{note.price_display || `₹${(note.price / 100).toFixed(0)}`}</p>
+        {/* ---- Header: note + price ---- */}
+        <div className="pm-header">
+          <span className="pm-eyebrow">Unlock premium note</span>
+          <h3 className="pm-title">{note.title}</h3>
+          <div className="pm-price-row">
+            <span className="pm-price">{priceLabel}</span>
+            <span className="pm-price-tag">one-time</span>
+          </div>
+        </div>
+
+        {/* ---- Step indicator ---- */}
+        {stage !== 'razorpay_processing' && (
+          <div className="pm-steps" aria-hidden="true">
+            <div className={`pm-step ${stepIndex >= 0 ? 'is-active' : ''} ${stepIndex > 0 ? 'is-done' : ''}`}>
+              <span className="pm-step-dot">{stepIndex > 0 ? <FaCheck size={9} /> : '1'}</span>
+              <span className="pm-step-label">Choose</span>
+            </div>
+            <div className={`pm-step-line ${stepIndex > 0 ? 'is-done' : ''}`} />
+            <div className={`pm-step ${stepIndex >= 1 ? 'is-active' : ''} ${stepIndex > 1 ? 'is-done' : ''}`}>
+              <span className="pm-step-dot">{stepIndex > 1 ? <FaCheck size={9} /> : '2'}</span>
+              <span className="pm-step-label">Pay</span>
+            </div>
+            <div className={`pm-step-line ${stepIndex > 1 ? 'is-done' : ''}`} />
+            <div className={`pm-step ${stepIndex >= 2 ? 'is-active' : ''}`}>
+              <span className="pm-step-dot">{stepIndex >= 2 ? <FaCheck size={9} /> : '3'}</span>
+              <span className="pm-step-label">Confirm</span>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="pm-error">
@@ -99,84 +142,121 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
           </div>
         )}
 
-        {stage === 'choose' && (
-          <div className="pm-options">
-            <button className="pm-option-btn" onClick={startUpi} disabled={loading}>
-              <FaQrcode size={20} />
-              <div>
-                <strong>Pay via UPI QR</strong>
-                <span>Scan &amp; pay, then submit your reference number. Unlocks after quick admin review.</span>
-              </div>
-            </button>
-            <button className="pm-option-btn" onClick={startRazorpay} disabled={loading}>
-              <FaCreditCard size={20} />
-              <div>
-                <strong>Pay by Card / UPI (instant)</strong>
-                <span>Unlocks immediately after payment via Razorpay.</span>
-              </div>
-            </button>
-          </div>
-        )}
-
-        {stage === 'razorpay_processing' && (
-          <div className="pm-info">Waiting for payment confirmation…</div>
-        )}
-
-        {stage === 'upi_pending' && order && (
-          <div className="pm-upi-flow">
-            <img src={order.payment.qr_image} alt="UPI QR code" className="pm-qr" />
-            <a
-              className="pm-upi-app-btn"
-              href={order.payment.upi_uri}
-              onClick={(e) => {
-                // upi:// links only resolve on a phone with a UPI app installed.
-                if (!/Android|iPhone/i.test(navigator.userAgent)) e.preventDefault();
-              }}
-            >
-              Pay via UPI app
-            </a>
-            <p className="pm-upi-id">UPI ID: <strong>{order.payment.upi_id}</strong></p>
-            <p className="pm-hint">{order.payment.instructions}</p>
-
-            <form onSubmit={handleSubmitProof} className="pm-form">
-              <label htmlFor="pm-utr">UTR / Transaction reference *</label>
-              <input
-                id="pm-utr"
-                type="text"
-                value={utr}
-                onChange={(e) => setUtr(e.target.value)}
-                placeholder="e.g. 402812345678"
-                required
-              />
-              <label htmlFor="pm-proof">Payment screenshot (optional)</label>
-              <input
-                id="pm-proof"
-                type="file"
-                accept="image/png,image/jpeg"
-                onChange={(e) => setProofFile(e.target.files?.[0] || null)}
-              />
-              <button type="submit" className="pm-submit-btn" disabled={loading}>
-                {loading ? 'Submitting…' : 'Submit for review'}
+        <div className="pm-body">
+          {stage === 'choose' && (
+            <div className="pm-options">
+              <button className="pm-option-btn" onClick={startUpi} disabled={loading}>
+                <span className="pm-option-icon"><FaQrcode size={18} /></span>
+                <div className="pm-option-copy">
+                  <strong>Pay via UPI QR</strong>
+                  <span>Scan &amp; pay, then submit your reference number. Unlocks after a quick review.</span>
+                </div>
+                <span className="pm-option-badge">Manual</span>
               </button>
-            </form>
-          </div>
-        )}
+              <button className="pm-option-btn" onClick={startRazorpay} disabled={loading}>
+                <span className="pm-option-icon pm-option-icon--accent"><FaCreditCard size={18} /></span>
+                <div className="pm-option-copy">
+                  <strong>Pay by Card / UPI</strong>
+                  <span>Unlocks immediately &mdash; secured by Razorpay.</span>
+                </div>
+                <span className="pm-option-badge pm-option-badge--accent">Instant</span>
+              </button>
+            </div>
+          )}
 
-        {stage === 'upi_submitted' && (
-          <div className="pm-success">
-            <FaCheckCircle size={28} />
-            <p>Submitted! An admin will review your payment shortly and the note will unlock automatically once approved.</p>
-            <button className="pm-submit-btn" onClick={onClose}>Done</button>
-          </div>
-        )}
+          {stage === 'razorpay_processing' && (
+            <div className="pm-loading-state">
+              <span className="pm-spinner" />
+              <p>Waiting for payment confirmation&hellip;</p>
+              <span className="pm-loading-hint">Don&apos;t close this window</span>
+            </div>
+          )}
 
-        {stage === 'success' && (
-          <div className="pm-success">
-            <FaCheckCircle size={28} />
-            <p>Payment verified — this note is unlocked!</p>
-            <button className="pm-submit-btn" onClick={onClose}>Continue</button>
-          </div>
-        )}
+          {stage === 'upi_pending' && order && (
+            <div className="pm-upi-flow">
+              <div className="pm-qr-frame">
+                <img src={order.payment.qr_image} alt="UPI QR code" className="pm-qr" />
+              </div>
+
+              <a
+                className="pm-upi-app-btn"
+                href={order.payment.upi_uri}
+                onClick={(e) => {
+                  // upi:// links only resolve on a phone with a UPI app installed.
+                  if (!/Android|iPhone/i.test(navigator.userAgent)) e.preventDefault();
+                }}
+              >
+                Open UPI app to pay
+              </a>
+
+              <button type="button" className="pm-upi-id-chip" onClick={copyUpiId}>
+                <span>{order.payment.upi_id}</span>
+                {copied ? <FaCheck size={12} className="pm-copied-icon" /> : <FaCopy size={12} />}
+              </button>
+
+              <p className="pm-hint">{order.payment.instructions}</p>
+
+              <form onSubmit={handleSubmitProof} className="pm-form">
+                <div className="pm-form-field">
+                  <label htmlFor="pm-utr">UTR / Transaction reference <span className="pm-required">*</span></label>
+                  <input
+                    id="pm-utr"
+                    type="text"
+                    value={utr}
+                    onChange={(e) => setUtr(e.target.value)}
+                    placeholder="e.g. 402812345678"
+                    autoComplete="off"
+                    required
+                  />
+                  <span className="pm-field-hint">Found in your UPI app&apos;s payment history, right after you pay.</span>
+                </div>
+
+                <div className="pm-form-field">
+                  <label htmlFor="pm-proof">Payment screenshot <span className="pm-optional">(optional)</span></label>
+                  <label htmlFor="pm-proof" className="pm-file-btn">
+                    {proofFile ? proofFile.name : 'Choose a file'}
+                  </label>
+                  <input
+                    id="pm-proof"
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+                    className="pm-file-input"
+                  />
+                </div>
+
+                <button type="submit" className="pm-submit-btn" disabled={loading}>
+                  {loading ? 'Submitting…' : 'Submit for review'}
+                </button>
+                <button
+                  type="button"
+                  className="pm-back-btn"
+                  onClick={() => { setStage('choose'); setError(''); }}
+                >
+                  <FaArrowLeft size={11} /> Choose a different way to pay
+                </button>
+              </form>
+            </div>
+          )}
+
+          {stage === 'upi_submitted' && (
+            <div className="pm-success">
+              <span className="pm-success-icon"><FaCheckCircle size={26} /></span>
+              <h4>Submitted for review</h4>
+              <p>An admin will verify your payment shortly — usually within a few hours. The note unlocks automatically the moment it&apos;s approved.</p>
+              <button className="pm-submit-btn" onClick={onClose}>Done</button>
+            </div>
+          )}
+
+          {stage === 'success' && (
+            <div className="pm-success">
+              <span className="pm-success-icon"><FaCheckCircle size={26} /></span>
+              <h4>Payment verified</h4>
+              <p>This note is unlocked and ready to download.</p>
+              <button className="pm-submit-btn" onClick={onClose}>Continue</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
