@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../services/api';
 
 const AdminPanel = () => {
   const { user, isAdmin, getToken } = useAuth();
+  const [activeTab, setActiveTab] = useState('notes');
   const [pendingNotes, setPendingNotes] = useState([]);
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     total_users: 0,
@@ -18,8 +22,83 @@ const AdminPanel = () => {
     if (isAdmin()) {
       fetchPendingNotes();
       fetchStats();
+      fetchPendingPayments();
     }
   }, []);
+
+  const fetchPendingPayments = async () => {
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_URL}/admin/payments/pending`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setPendingPayments(data.purchases || []);
+    } catch (error) {
+      console.error('Error fetching pending payments:', error);
+    } finally {
+      setPaymentsLoading(false);
+    }
+  };
+
+  const handleApprovePayment = async (purchaseId) => {
+    if (!window.confirm('Confirm you have verified this UTR in your bank/UPI app before approving?')) return;
+
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_URL}/admin/payments/${purchaseId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Payment approved — note unlocked for the student');
+        fetchPendingPayments();
+      } else {
+        alert(`Failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to approve payment');
+    }
+  };
+
+  const handleRejectPayment = async (purchaseId) => {
+    const reason = prompt('Enter rejection reason (required, shown to the student):');
+    if (!reason || reason.trim() === '') {
+      alert('Reason is required');
+      return;
+    }
+
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_URL}/admin/payments/${purchaseId}/reject`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reason: reason.trim() })
+      });
+
+      if (response.ok) {
+        alert('Payment rejected');
+        fetchPendingPayments();
+      } else {
+        const data = await response.json();
+        alert(`Failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to reject payment');
+    }
+  };
 
   const fetchPendingNotes = async () => {
     try {
@@ -154,7 +233,42 @@ const AdminPanel = () => {
         <StatCard title="Downloads" value={stats.total_downloads} icon="⬇️" />
       </div>
 
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+        <button
+          onClick={() => setActiveTab('notes')}
+          style={{
+            padding: '0.75rem 1.5rem',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            background: activeTab === 'notes' ? '#667eea' : 'white',
+            color: activeTab === 'notes' ? 'white' : '#333',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          ⏳ Pending Notes ({pendingNotes.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('payments')}
+          style={{
+            padding: '0.75rem 1.5rem',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            background: activeTab === 'payments' ? '#667eea' : 'white',
+            color: activeTab === 'payments' ? 'white' : '#333',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          💳 Payments to Review ({pendingPayments.length})
+        </button>
+      </div>
+
       {/* Pending Notes Section */}
+      {activeTab === 'notes' && (
       <div style={{ background: 'white', padding: '2rem', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
         <h2 style={{ marginBottom: '1.5rem', color: '#333' }}>
           ⏳ Pending Approvals ({pendingNotes.length})
@@ -314,6 +428,154 @@ const AdminPanel = () => {
           </div>
         )}
       </div>
+      )}
+
+      {/* Payments to Review Section */}
+      {activeTab === 'payments' && (
+      <div style={{ background: 'white', padding: '2rem', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ marginBottom: '0.5rem', color: '#333' }}>
+          💳 UPI Payments Awaiting Review ({pendingPayments.length})
+        </h2>
+        <p style={{ marginBottom: '1.5rem', color: '#666', fontSize: '0.9rem' }}>
+          Razorpay payments unlock automatically and never show up here. Only manual UPI orders need your review —
+          check the UTR against your bank/UPI app before approving.
+        </p>
+
+        {paymentsLoading ? (
+          <div style={{ textAlign: 'center', padding: '3rem' }}>
+            <div className="spinner"></div>
+            <p>Loading pending payments...</p>
+          </div>
+        ) : pendingPayments.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            <p style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🎉 All caught up!</p>
+            <p>No payments waiting on review.</p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gap: '1.5rem' }}>
+            {pendingPayments.map(purchase => (
+              <div key={purchase.id} style={{
+                background: '#fff9db',
+                padding: '1.5rem',
+                borderRadius: '8px',
+                border: '2px solid #fbbf24',
+                position: 'relative'
+              }}>
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 0.5rem 0', color: '#333' }}>{purchase.note_title}</h3>
+                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem', color: '#666' }}>
+                      <span><strong>💰 Amount:</strong> {purchase.amount_display}</span>
+                      <span><strong>📅 Requested:</strong> {new Date(purchase.created_at).toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <span style={{
+                    background: '#fbbf24',
+                    color: '#78350f',
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 'bold'
+                  }}>
+                    PENDING
+                  </span>
+                </div>
+
+                {/* Student Details */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div>
+                    <p style={{ margin: '0 0 0.5rem 0' }}>
+                      <strong>👤 Student:</strong> {purchase.user_name}
+                    </p>
+                    <p style={{ margin: '0', color: '#666' }}>
+                      {purchase.user_email}
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{ margin: '0 0 0.5rem 0' }}>
+                      <strong>🔢 UTR / Reference:</strong> {purchase.utr_reference || '—'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Proof screenshot */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '1rem',
+                  background: '#f1f5f9',
+                  borderRadius: '6px',
+                  marginBottom: '1rem'
+                }}>
+                  <p style={{ margin: 0 }}>
+                    <strong>📎 Screenshot:</strong> {purchase.proof_url ? 'Uploaded by student' : 'Not provided'}
+                  </p>
+                  {purchase.proof_url && (
+                    <a
+                      href={purchase.proof_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        background: '#3b82f6',
+                        color: 'white',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}
+                    >
+                      👁️ View Screenshot
+                    </a>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={() => handleRejectPayment(purchase.id)}
+                    style={{
+                      background: '#ef4444',
+                      color: 'white',
+                      padding: '0.75rem 1.5rem',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    ❌ Reject
+                  </button>
+                  <button
+                    onClick={() => handleApprovePayment(purchase.id)}
+                    style={{
+                      background: '#10b981',
+                      color: 'white',
+                      padding: '0.75rem 1.5rem',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    ✅ Approve
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      )}
     </div>
   );
 };
