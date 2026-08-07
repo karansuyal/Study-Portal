@@ -49,7 +49,12 @@ def admin_stats():
 def get_pending_notes():
     try:
         notes = Note.query.filter_by(status='pending').order_by(Note.uploaded_at.desc()).all()
-        return jsonify({'success': True, 'notes': [note.to_dict() for note in notes]})
+        # viewer=g.current_user so admins always see the real file URL/name,
+        # even for premium notes — Note.has_access() already grants admins
+        # full access, but to_dict() only applies that if we actually pass
+        # who's viewing. Without this, admins couldn't even preview/edit
+        # their own premium notes in this panel.
+        return jsonify({'success': True, 'notes': [note.to_dict(viewer=g.current_user) for note in notes]})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -59,7 +64,7 @@ def get_pending_notes():
 def get_approved_notes():
     try:
         notes = Note.query.filter_by(status='approved').order_by(Note.uploaded_at.desc()).all()
-        return jsonify({'success': True, 'notes': [note.to_dict() for note in notes]})
+        return jsonify({'success': True, 'notes': [note.to_dict(viewer=g.current_user) for note in notes]})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -438,7 +443,7 @@ def edit_note(note_id):
 
         db.session.commit()
 
-        return jsonify({'success': True, 'message': 'Note updated successfully', 'note': note.to_dict()})
+        return jsonify({'success': True, 'message': 'Note updated successfully', 'note': note.to_dict(viewer=g.current_user)})
 
     except Exception as e:
         db.session.rollback()

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AllMaterials.css';
 import { useNoteStats } from '../hooks/useNoteStats';
+import { API_URL } from '../services/api';
+import PurchaseModal from '../components/PurchaseModal';
 
 const AllMaterials = () => {
   const [materials, setMaterials] = useState([]);
@@ -16,7 +18,13 @@ const AllMaterials = () => {
   const fetchAllMaterials = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://study-portal-pi2w.onrender.com/api/materials');
+      // Send the auth token so the backend knows WHO's asking — needed so
+      // it can tell us whether this viewer already purchased any premium
+      // notes (locked/is_premium/price come back per-note either way).
+      const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
+      const response = await fetch(`${API_URL}/materials`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -57,6 +65,7 @@ const AllMaterials = () => {
   // Material Card Component
   const MaterialCard = ({ material }) => {
     const [downloading, setDownloading] = useState(false);
+    const [showPurchase, setShowPurchase] = useState(false);
     const typeInfo = getMaterialTypeInfo(material.type);
     
     // useNoteStats hook - UNIVERSAL COUNTERS
@@ -66,6 +75,10 @@ const AllMaterials = () => {
     });
 
     const handleView = () => {
+      if (material.locked) {
+        setShowPurchase(true);
+        return;
+      }
       stats.incrementView();
       
       if (material.cloudinary_url) {
@@ -90,7 +103,7 @@ const AllMaterials = () => {
       }
 
       const token = localStorage.getItem('study_portal_token');
-      const testUrl = `https://study-portal-pi2w.onrender.com/api/files/${material.file_name}`;
+      const testUrl = `${API_URL}/files/${material.file_name}`;
       
       fetch(testUrl, {
         method: 'HEAD',
@@ -107,6 +120,11 @@ const AllMaterials = () => {
     };
 
     const handleDownload = async () => {
+      if (material.locked) {
+        setShowPurchase(true);
+        return;
+      }
+
       setDownloading(true);
       
       try {
@@ -140,7 +158,7 @@ const AllMaterials = () => {
           
         } else {
           const token = localStorage.getItem('study_portal_token');
-          const response = await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${material.id}/download`, {
+          const response = await fetch(`${API_URL}/notes/${material.id}/download`, {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
           });
 
@@ -165,7 +183,23 @@ const AllMaterials = () => {
 
     return (
       <div className="material-card">
-        <h3 className="material-title">{material.title}</h3>
+        <h3 className="material-title">
+          {material.title}
+          {material.is_premium && (
+            <span style={{
+              marginLeft: '8px',
+              background: '#fef3c7',
+              color: '#92400e',
+              padding: '2px 8px',
+              borderRadius: '20px',
+              fontSize: '11px',
+              fontWeight: '700',
+              verticalAlign: 'middle'
+            }}>
+              ⭐ {material.price_display || 'PREMIUM'}
+            </span>
+          )}
+        </h3>
         
         <div className="material-details">
           <div className="detail-item">
@@ -212,16 +246,17 @@ const AllMaterials = () => {
           <button 
             className="view-btn"
             onClick={handleView}
-            disabled={!material.file_name && !material.cloudinary_url}
+            disabled={!material.file_name && !material.cloudinary_url && !material.locked}
           >
             👁️ View
           </button>
           <button 
             className="download-btn"
             onClick={handleDownload}
-            disabled={downloading || (!material.file_name && !material.cloudinary_url)}
+            disabled={downloading || (!material.file_name && !material.cloudinary_url && !material.locked)}
+            style={material.locked ? { background: 'linear-gradient(90deg, #f59e0b, #d97706)' } : {}}
           >
-            {downloading ? '⏳' : '⬇️ Download'}
+            {downloading ? '⏳' : material.locked ? `🔒 Unlock — ${material.price_display}` : '⬇️ Download'}
           </button>
         </div>
 
@@ -234,6 +269,17 @@ const AllMaterials = () => {
           }}>
             ☁️ Cloudinary
           </div>
+        )}
+
+        {showPurchase && (
+          <PurchaseModal
+            note={material}
+            onClose={() => setShowPurchase(false)}
+            onUnlocked={() => {
+              setShowPurchase(false);
+              fetchAllMaterials();
+            }}
+          />
         )}
       </div>
     );
@@ -288,4 +334,3 @@ const AllMaterials = () => {
 };
 
 export default AllMaterials;
-

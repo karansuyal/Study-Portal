@@ -1168,6 +1168,16 @@
                 `;
         }
 
+        // Premium toggle — only meaningful once a note is approved and
+        // visible to students. Clicking it while OFF prompts for a price
+        // and marks it premium; clicking while ON turns premium back off
+        // (price resets to 0 on the backend either way).
+        actions += `
+                <button class="btn ${note.is_premium ? "btn-warning" : "btn-info"} btn-sm" onclick="togglePremium(${note.id}, ${!!note.is_premium})">
+                    <i class="fas fa-star"></i> ${note.is_premium ? "Remove Premium" : "Make Premium"}
+                </button>
+            `;
+
         actions += `
                 <button class="btn btn-danger btn-sm" onclick="deleteNote(${note.id})">
                     <i class="fas fa-trash"></i> Delete
@@ -1185,6 +1195,7 @@
                     <div><i class="fas fa-user"></i> ${escapeHtml(note.user_name || "Unknown")}</div>
                     <div><i class="fas fa-calendar"></i> ${date}</div>
                     ${note.is_youtube ? '<div><i class="fab fa-youtube"></i> YouTube Video</div>' : ""}
+                    ${note.is_premium ? `<div style="color:#92400e;font-weight:700;"><i class="fas fa-star"></i> Premium — ${note.price_display || ""}</div>` : ""}
                 </div>
                 <div class="note-description clean-description">
                     ${escapeHtml(cleanDesc)}
@@ -1193,6 +1204,46 @@
             `;
 
         return card;
+      }
+
+      // ==================== PREMIUM TOGGLE ====================
+      async function togglePremium(noteId, isCurrentlyPremium) {
+        try {
+          let body = {is_premium: !isCurrentlyPremium};
+
+          if (!isCurrentlyPremium) {
+            const priceStr = prompt("Set price in ₹ for this note (e.g. 49):", "49");
+            if (priceStr === null) return; // cancelled
+            const price = parseFloat(priceStr);
+            if (isNaN(price) || price <= 0) {
+              alert("Enter a valid price greater than 0");
+              return;
+            }
+            body.price_rupees = price;
+          } else {
+            if (!confirm("Remove premium — this note becomes free for everyone?")) return;
+            body.price_rupees = 0;
+          }
+
+          const response = await fetch(`${API_URL}/admin/notes/${noteId}/premium`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            loadPendingNotes();
+            loadApprovedNotes();
+          } else {
+            alert(data.error || "Could not update note");
+          }
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
       }
 
       // ==================== EDIT NOTE FUNCTION ====================

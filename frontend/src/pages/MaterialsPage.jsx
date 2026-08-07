@@ -29,6 +29,7 @@ import {coursesData, getSubjects} from "../data/coursesData";
 import api, {API_URL} from "../services/api";
 import "./MaterialsPage.css";
 import {useNoteStats} from "../hooks/useNoteStats";
+import PurchaseModal from "../components/PurchaseModal";
 
 const MaterialsPage = () => {
   const {courseId, yearId, semId, subjectId} = useParams();
@@ -363,6 +364,7 @@ const getCleanDescription = (desc) => {
   //  REGULAR MATERIAL CARD COMPONENT - WITH VIEW BUTTON (NOT PREVIEW)
   const MaterialCard = ({material, typeInfo}) => {
     const [downloading, setDownloading] = useState(false);
+    const [showPurchase, setShowPurchase] = useState(false);
 
     const stats = useNoteStats(material.id, {
       views: material.views || 0,
@@ -371,6 +373,14 @@ const getCleanDescription = (desc) => {
     });
 
     const handleDownload = async () => {
+      // Premium note the viewer hasn't purchased yet: open the purchase
+      // flow instead of hitting the download endpoint (the backend blocks
+      // it with a 402 anyway — this just gives a proper UI for it).
+      if (material.locked) {
+        setShowPurchase(true);
+        return;
+      }
+
       setDownloading(true);
 
       try {
@@ -425,6 +435,10 @@ const getCleanDescription = (desc) => {
 
     // VIEW BUTTON HANDLER - Opens in Google Docs Viewer
     const handleView = () => {
+      if (material.locked) {
+        setShowPurchase(true);
+        return;
+      }
       if (material.cloudinary_url) {
         const pdfUrl = material.cloudinary_url;
         const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
@@ -451,6 +465,21 @@ const getCleanDescription = (desc) => {
               </span>
             </div>
             <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+              {material.is_premium && (
+                <span style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  background: "#fef3c7",
+                  color: "#92400e",
+                  padding: "3px 9px",
+                  borderRadius: "20px",
+                  fontSize: "11px",
+                  fontWeight: "700",
+                }}>
+                  ⭐ {material.price_display || "PREMIUM"}
+                </span>
+              )}
               <div
                 style={{
                   display: "flex",
@@ -503,7 +532,12 @@ const getCleanDescription = (desc) => {
               <FaEye size={14} /> View
             </button>
             <button
-              style={styles.laptopDownloadButton(downloading)}
+              style={{
+                ...styles.laptopDownloadButton(downloading),
+                ...(material.locked
+                  ? {background: "linear-gradient(90deg, #f59e0b, #d97706)"}
+                  : {}),
+              }}
               onClick={handleDownload}
               disabled={downloading}
             >
@@ -515,6 +549,8 @@ const getCleanDescription = (desc) => {
                   />{" "}
                   Downloading...
                 </>
+              ) : material.locked ? (
+                <>🔒 Unlock — {material.price_display}</>
               ) : (
                 <>
                   <FaDownload size={14} /> Download
@@ -522,6 +558,16 @@ const getCleanDescription = (desc) => {
               )}
             </button>
           </div>
+          {showPurchase && (
+            <PurchaseModal
+              note={material}
+              onClose={() => setShowPurchase(false)}
+              onUnlocked={() => {
+                setShowPurchase(false);
+                fetchMaterialsFromBackend(true);
+              }}
+            />
+          )}
         </div>
       );
     }
@@ -537,6 +583,21 @@ const getCleanDescription = (desc) => {
               {typeInfo?.name}
             </span>
           </div>
+          {material.is_premium && (
+            <span style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "#fef3c7",
+              color: "#92400e",
+              padding: "2px 8px",
+              borderRadius: "20px",
+              fontSize: "10px",
+              fontWeight: "700",
+            }}>
+              ⭐ {material.price_display || "PREMIUM"}
+            </span>
+          )}
         </div>
         <div style={styles.mobileMaterialContent}>
           <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
@@ -567,7 +628,12 @@ const getCleanDescription = (desc) => {
             <FaEye /> View
           </button>
           <button
-            style={styles.mobileDownloadButton(downloading)}
+            style={{
+              ...styles.mobileDownloadButton(downloading),
+              ...(material.locked
+                ? {background: "linear-gradient(90deg, #f59e0b, #d97706)"}
+                : {}),
+            }}
             onClick={handleDownload}
             disabled={downloading}
           >
@@ -576,6 +642,8 @@ const getCleanDescription = (desc) => {
                 <FaSpinner style={{animation: "spin 1s linear infinite"}} />{" "}
                 Downloading
               </>
+            ) : material.locked ? (
+              <>🔒 Unlock — {material.price_display}</>
             ) : (
               <>
                 <FaDownload /> Download
@@ -583,6 +651,16 @@ const getCleanDescription = (desc) => {
             )}
           </button>
         </div>
+        {showPurchase && (
+          <PurchaseModal
+            note={material}
+            onClose={() => setShowPurchase(false)}
+            onUnlocked={() => {
+              setShowPurchase(false);
+              fetchMaterialsFromBackend(true);
+            }}
+          />
+        )}
       </div>
     );
   };
@@ -648,6 +726,10 @@ const getCleanDescription = (desc) => {
           youtube_id: note.youtube_id,
           youtube_thumbnail: note.youtube_thumbnail,
           youtube_embed_url: note.youtube_embed_url,
+          is_premium: note.is_premium || false,
+          price: note.price || 0,
+          price_display: note.price_display,
+          locked: note.locked || false,
         }));
       }
 
