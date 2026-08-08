@@ -201,7 +201,7 @@ def submit_proof(purchase_id):
 
         utr = (request.form.get('utr_reference') or (request.get_json(silent=True) or {}).get('utr_reference') or '').strip()
         if not utr or len(utr) < 4:
-            return jsonify({'success': False, 'error': 'A valid UTR / transaction reference is required'}), 400
+            return jsonify({'success': False, 'error': 'A valid UPI Transaction ID is required'}), 400
 
         purchase.utr_reference = utr
 

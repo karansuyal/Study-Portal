@@ -226,7 +226,7 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
 
               <form onSubmit={handleSubmitProof} className="pm-form">
                 <div className="pm-form-field">
-                  <label htmlFor="pm-utr">UTR / Transaction reference <span className="pm-required">*</span></label>
+                  <label htmlFor="pm-utr">UPI Transaction ID <span className="pm-required">*</span></label>
                   <input
                     id="pm-utr"
                     type="text"
