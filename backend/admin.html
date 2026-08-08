@@ -1212,13 +1212,20 @@
           let body = {is_premium: !isCurrentlyPremium};
 
           if (!isCurrentlyPremium) {
-            const priceStr = prompt("Set price in ₹ for this note (e.g. 49):", "49");
-            if (priceStr === null) return; // cancelled
+            // No default value here on purpose — a pre-filled example price
+            // (like "49") sitting in the box is exactly how a real note
+            // ends up with the wrong price: if it isn't fully cleared
+            // before typing, the leftover default gets submitted alongside
+            // or instead of what was actually typed. Starting empty forces
+            // a deliberate entry every time.
+            const priceStr = prompt("Set price in ₹ for this note (e.g. 49):");
+            if (priceStr === null || priceStr.trim() === "") return; // cancelled or left blank
             const price = parseFloat(priceStr);
             if (isNaN(price) || price <= 0) {
               alert("Enter a valid price greater than 0");
               return;
             }
+            if (!confirm(`Set price to ₹${price} for this note?`)) return;
             body.price_rupees = price;
           } else {
             if (!confirm("Remove premium — this note becomes free for everyone?")) return;
