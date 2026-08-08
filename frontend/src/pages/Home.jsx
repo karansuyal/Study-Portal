@@ -376,15 +376,15 @@ const Home = () => {
     <div className="home">
 
       {/* ── Announcement Banner ── */}
-      {showBanner && (
+      {/* {showBanner && (
         <div className="announcement-bar">
           <span className="ann-emoji">📚</span>
-          {/* <span className="ann-text">
+          <span className="ann-text">
             <strong>Welcome!</strong> Help your peers — upload your notes, PYQs, and study materials.
-          </span> */}
+          </span>
           <button className="ann-close" onClick={() => { setShowBanner(false); localStorage.setItem("bannerClosedAt", Date.now()); }}>✕</button>
         </div>
-      )}
+      )} */}
 
       {/* ── Hero ── */}
       <section className="hero">
