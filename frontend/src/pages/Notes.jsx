@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PurchaseModal from '../components/PurchaseModal';
+import { usePendingUnlock } from '../hooks/usePendingUnlock';
 const API_URL = 'https://study-portal-pi2w.onrender.com/api';
 
 const Notes = () => {
@@ -12,6 +13,12 @@ const Notes = () => {
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  // Once an admin approves a pending UPI payment, flip that note from
+  // locked -> unlocked live, without the student needing to refresh.
+  usePendingUnlock(notes, (unlockedId) => {
+    setNotes(prev => prev.map(n => (n.id === unlockedId ? { ...n, locked: false } : n)));
+  });
 
   const fetchNotes = async () => {
     try {

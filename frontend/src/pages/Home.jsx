@@ -10,6 +10,7 @@ import {
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { useNoteStats } from "../hooks/useNoteStats";
+import { usePendingUnlock } from "../hooks/usePendingUnlock";
 import PurchaseModal from "../components/PurchaseModal";
 
 const API_URL = "https://study-portal-pi2w.onrender.com/api";
@@ -250,6 +251,12 @@ const Home = () => {
   const [latestMaterials, setLatestMaterials] = useState([]);
   const [materialsLoading, setMaterialsLoading] = useState(true);
   const [materialsError, setMaterialsError] = useState("");
+
+  // Once an admin approves a pending UPI payment, flip that note from
+  // locked -> unlocked live, without the student needing to refresh.
+  usePendingUnlock(latestMaterials, (unlockedId) => {
+    setLatestMaterials(prev => prev.map(m => (m.id === unlockedId ? { ...m, locked: false } : m)));
+  });
 
   const navigate = useNavigate();
   const staticCourses = getAllCourses();

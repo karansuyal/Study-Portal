@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { FaTimes, FaQrcode, FaCreditCard, FaCheckCircle, FaExclamationTriangle, FaCopy, FaCheck, FaArrowLeft } from 'react-icons/fa';
 import { createPaymentOrder, submitPaymentProof, payWithRazorpay } from '../services/paymentService';
+import { usePendingUnlock } from '../hooks/usePendingUnlock';
 import './PurchaseModal.css';
 
 /**
@@ -99,6 +100,18 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
       // Clipboard API unavailable — silently ignore, the ID is visible to copy by hand.
     }
   };
+
+  // While waiting on admin review, keep polling in the background — if the
+  // student leaves this screen open, it flips to "approved" the moment it
+  // actually gets approved, with no refresh needed.
+  const watchItems = useMemo(
+    () => (stage === 'upi_submitted' ? [{ id: note.id, is_premium: true, locked: true }] : []),
+    [stage, note.id]
+  );
+  usePendingUnlock(watchItems, () => {
+    setStage('success');
+    onUnlocked && onUnlocked();
+  });
 
   // Lock background scroll while the sheet/modal is open — otherwise the
   // page behind can scroll under a fixed-position mobile bottom sheet.

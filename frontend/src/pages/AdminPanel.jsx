@@ -36,9 +36,12 @@ const AdminPanel = () => {
         }
       });
       const data = await response.json();
-      setPendingPayments(data.purchases || []);
+      const purchases = data.purchases || [];
+      setPendingPayments(purchases);
+      return purchases;
     } catch (error) {
       console.error('Error fetching pending payments:', error);
+      return [];
     } finally {
       setPaymentsLoading(false);
     }
@@ -56,17 +59,42 @@ const AdminPanel = () => {
           'Content-Type': 'application/json'
         }
       });
+
+      // A 502/504 here usually means Render's free-tier server was cold-
+      // starting or the connection dropped mid-response — the request may
+      // well have reached Flask and committed anyway. Rather than alert a
+      // scary "Failed" and risk the admin retrying into a false alarm,
+      // fetch a fresh copy of the list and check whether it's actually gone.
+      if (response.status >= 500) {
+        const freshList = await fetchPendingPayments();
+        const stillPending = (freshList || []).some(p => p.id === purchaseId);
+        alert(stillPending
+          ? 'Server took too long to respond — please check the list and try again if it\'s still showing as pending.'
+          : 'Payment approved — note unlocked for the student');
+        return;
+      }
+
       const data = await response.json();
 
       if (response.ok) {
         alert('Payment approved — note unlocked for the student');
+        fetchPendingPayments();
+      } else if (response.status === 400 && /already/i.test(data.error || '')) {
+        // Someone (possibly this same click, retried by the browser) already
+        // approved/rejected it — not a real failure, just stale UI.
         fetchPendingPayments();
       } else {
         alert(`Failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to approve payment');
+      // Network-level failure (e.g. request never completed) — refresh to
+      // find out the real state rather than assuming it failed.
+      const freshList = await fetchPendingPayments();
+      const stillPending = (freshList || []).some(p => p.id === purchaseId);
+      alert(stillPending
+        ? 'Connection issue — the approval may not have gone through. Please try again.'
+        : 'Payment approved — note unlocked for the student');
     }
   };
 

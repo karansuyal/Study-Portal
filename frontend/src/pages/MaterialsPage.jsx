@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {useParams, useNavigate} from "react-router-dom";
+import { usePendingUnlock } from "../hooks/usePendingUnlock";
 import {
   FaDownload,
   FaEye,
@@ -52,6 +53,12 @@ const MaterialsPage = () => {
 
   //  FLAG for one-time view increment
   const [viewsIncremented, setViewsIncremented] = useState(false);
+
+  // Once an admin approves a pending UPI payment, flip that note from
+  // locked -> unlocked live, without the student needing to refresh.
+  usePendingUnlock(materials, (unlockedId) => {
+    setMaterials(prev => prev.map(m => (m.id === unlockedId ? { ...m, locked: false } : m)));
+  });
 
   // Check mobile on resize
   useEffect(() => {
