@@ -638,10 +638,10 @@ Upload Date: ${new Date().toLocaleDateString()}
         </div>
       </div>
 
-      <div className="info-box">
+      {/* <div className="info-box">
         <p><strong>📋 Instructions:</strong> Fill all academic details accurately.</p>
         <p><small> For YouTube videos: Just paste the video URL</small></p>
-      </div>
+      </div> */}
 
       {/* File/URL Upload Section */}
       <div className="upload-box">
