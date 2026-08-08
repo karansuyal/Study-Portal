@@ -491,9 +491,11 @@ const Login = () => {
 
   return (
     <div className="sp-page">
-      <div className={`sp-toast${showToast ? ' sp-toast-show' : ''}`}>
-        ✓ Login successful! Redirecting...
-      </div>
+      {showToast && (
+        <div className="sp-toast sp-toast-show">
+          ✓ Login successful! Redirecting...
+        </div>
+      )}
 
       <div className="sp-card">
         <div className="sp-header">
