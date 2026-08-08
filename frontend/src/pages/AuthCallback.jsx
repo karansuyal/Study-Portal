@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const AuthCallback = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { login } = useAuth();
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -13,8 +15,12 @@ const AuthCallback = () => {
         if (token && userParam) {
             try {
                 const user = JSON.parse(decodeURIComponent(userParam));
-                localStorage.setItem('study_portal_token', token);
-                localStorage.setItem('study_portal_user', JSON.stringify(user));
+                // Go through the shared AuthContext.login() instead of writing
+                // to localStorage directly — it also fires the
+                // "loginStateChanged" event so the navbar (and anything else
+                // watching auth state) updates immediately, with no refresh
+                // needed.
+                login(user, token);
                 navigate('/');
             } catch (error) {
                 console.error('Error parsing user data:', error);
@@ -23,7 +29,7 @@ const AuthCallback = () => {
         } else {
             navigate('/login');
         }
-    }, [navigate, location]);
+    }, [navigate, location, login]);
 
     return (
         <div style={{ textAlign: 'center', padding: '50px' }}>

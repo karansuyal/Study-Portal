@@ -72,6 +72,12 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem(config.AUTH.TOKEN_KEY, token);
       localStorage.setItem(config.AUTH.USER_KEY, JSON.stringify(userData));
       setUser(userData);
+      // Navbar (and anything else outside this context tree) keeps its own
+      // copy of the logged-in state, read from localStorage on mount. The
+      // native "storage" event only fires in *other* tabs, never the one
+      // that made the change — so without this, the navbar stays stuck
+      // showing "logged out" until a manual refresh remounts it.
+      window.dispatchEvent(new Event('loginStateChanged'));
       
       return { user: userData, token };
       
@@ -100,6 +106,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem(config.AUTH.TOKEN_KEY, data.access_token);
         localStorage.setItem(config.AUTH.USER_KEY, JSON.stringify(data.user));
         setUser(data.user);
+        window.dispatchEvent(new Event('loginStateChanged'));
         return data;
       } else {
         throw new Error(data.error || 'Login failed');
@@ -142,6 +149,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem(config.AUTH.USER_KEY);
     setUser(null);
     setAuthError(null);
+    window.dispatchEvent(new Event('loginStateChanged'));
     window.location.href = '/';
   };
 
@@ -150,6 +158,7 @@ export const AuthProvider = ({ children }) => {
       const updatedUser = { ...user, ...updatedData };
       localStorage.setItem(config.AUTH.USER_KEY, JSON.stringify(updatedUser));
       setUser(updatedUser);
+      window.dispatchEvent(new Event('loginStateChanged'));
     } catch (error) {
       console.error('Error updating profile:', error);
     }
