@@ -14,6 +14,24 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  // If this page is ever restored from the browser's back-forward cache
+  // (bfcache) — e.g. the user taps "back" after a successful login — the
+  // browser resumes the exact frozen JS state, including a lingering
+  // showToast/loading from the moment they left. Reset transient UI state
+  // whenever that happens so a stale "Login successful" toast can't
+  // reappear without an actual login just occurring.
+  useEffect(() => {
+    const handlePageShow = (event) => {
+      if (event.persisted) {
+        setShowToast(false);
+        setLoading(false);
+        setError('');
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
+
   // Check dark mode
   useEffect(() => {
     const checkDarkMode = () => {
