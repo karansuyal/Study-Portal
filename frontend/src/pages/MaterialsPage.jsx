@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import { usePendingUnlock } from "../hooks/usePendingUnlock";
+import StarRating from "../components/StarRating";
 import {
   FaDownload,
   FaEye,
@@ -84,51 +85,6 @@ const MaterialsPage = () => {
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => obs.disconnect();
   }, []);
-
-  // RATING COMPONENT - with useNoteStats
-  const Rating = ({materialId, currentRating}) => {
-    const stats = useNoteStats(materialId, {rating: currentRating});
-    const [hover, setHover] = useState(0);
-    const [isRated, setIsRated] = useState(false);
-
-    const handleRating = async (value) => {
-      if (isRated) return;
-      setIsRated(true);
-      await stats.updateRating(value);
-      setTimeout(() => setIsRated(false), 2000);
-    };
-
-    return (
-      <div
-        style={isMobile ? styles.mobileRatingContainer : styles.ratingContainer}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onClick={() => handleRating(star)}
-            onMouseEnter={() => !isMobile && setHover(star)}
-            onMouseLeave={() => !isMobile && setHover(0)}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: isMobile ? "16px" : "20px",
-              color: (hover || stats.rating) >= star ? "#ffc107" : "#e4e5e9",
-              padding: isMobile ? "2px" : "0",
-            }}
-          >
-            ★
-          </button>
-        ))}
-        {!isMobile && (
-          <span style={{fontSize: "14px", color: darkMode ? "#a0a0b8" : "#6c757d", marginLeft: "5px"}}>
-            ({stats.rating?.toFixed(1) || "0"}) • {stats.ratingCount} ratings
-          </span>
-        )}
-      </div>
-    );
-  };
 
   const materialTypes = [
     {id: "all", name: "All Materials", icon: <FaFilter />, color: "#6b7280"},
@@ -352,7 +308,7 @@ const getCleanDescription = (desc) => {
               </div>
             </div>
             <div style={styles.mobileRatingContainer}>
-              <Rating materialId={material.id} currentRating={stats.rating} />
+              <StarRating noteId={material.id} size="sm" showCount={false} />
             </div>
           </div>
           <div style={{...styles.mobileMaterialActions, background: darkMode ? "#1e1e28" : "#f9fafb", borderTopColor: darkMode ? "rgba(255,255,255,0.06)" : "#e5e7eb"}}>
@@ -523,7 +479,7 @@ const getCleanDescription = (desc) => {
                 <span>{stats.rating.toFixed(1)}/5</span>
               </div>
               <div style={styles.laptopRatingContainer}>
-                <Rating materialId={material.id} currentRating={stats.rating} />
+                <StarRating noteId={material.id} size="md" />
               </div>
             </div>
             <div style={{...styles.laptopFileInfo, color: darkMode ? "#6a6a88" : "#9ca3af", borderTopColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
@@ -623,7 +579,7 @@ const getCleanDescription = (desc) => {
             </div>
           </div>
           <div style={styles.mobileRatingContainer}>
-            <Rating materialId={material.id} currentRating={stats.rating} />
+            <StarRating noteId={material.id} size="sm" showCount={false} />
           </div>
           <div style={{...styles.mobileFileInfo, color: darkMode ? "#6a6a88" : "#9ca3af", borderTopColor: darkMode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}}>
             {getFileIcon(material.fileType)} <span>{material.fileSize}</span>

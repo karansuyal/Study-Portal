@@ -11,7 +11,8 @@ export const useCounter = () => {
 };
 
 export const CounterProvider = ({ children }) => {
-  const [counters, setCounters] = useState({}); // { [noteId]: { views, downloads, rating } }
+  const [counters, setCounters] = useState({}); // { [noteId]: { views, downloads, rating, rating_count } }
+  const [myRatings, setMyRatings] = useState({}); // { [noteId]: 1-5 } — the logged-in user's own rating per note
 
   // Fetch latest stats from backend
   const refreshStats = async (noteId) => {
@@ -26,6 +27,23 @@ export const CounterProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Error refreshing stats:', error);
+    }
+  };
+
+  // Fetch the current user's own rating for a note (separate from the
+  // community average) — only meaningful when logged in. Cached in
+  // myRatings so we don't refetch every time the widget remounts.
+  const fetchMyRating = async (noteId) => {
+    const token = localStorage.getItem('study_portal_token');
+    if (!token) return;
+    try {
+      const response = await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${noteId}/user-rating`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setMyRatings(prev => ({ ...prev, [noteId]: data.rating || 0 }));
+    } catch (error) {
+      console.error('Error fetching your rating:', error);
     }
   };
 
@@ -80,10 +98,15 @@ export const CounterProvider = ({ children }) => {
     }
   };
 
-  // Update rating
+  // Update rating — returns a result object so the calling widget can show
+  // proper feedback (success toast, "please log in", or an error) instead
+  // of silently doing nothing.
   const updateRating = async (noteId, ratingValue) => {
+    const token = localStorage.getItem('study_portal_token');
+    if (!token) {
+      return { success: false, reason: 'unauthenticated' };
+    }
     try {
-      const token = localStorage.getItem('study_portal_token');
       const response = await fetch(`https://study-portal-pi2w.onrender.com/api/notes/${noteId}/rate`, {
         method: 'POST',
         headers: {
@@ -92,22 +115,31 @@ export const CounterProvider = ({ children }) => {
         },
         body: JSON.stringify({ rating: ratingValue })
       });
-      
+
       if (response.ok) {
-        await refreshStats(noteId);
+        // Optimistically record it as "my rating" immediately, then
+        // refresh the community average in the background.
+        setMyRatings(prev => ({ ...prev, [noteId]: ratingValue }));
+        refreshStats(noteId);
+        return { success: true };
       }
+      const data = await response.json().catch(() => ({}));
+      return { success: false, reason: 'error', message: data.error };
     } catch (error) {
       console.error('Error updating rating:', error);
+      return { success: false, reason: 'error', message: error.message };
     }
   };
 
   return (
     <CounterContext.Provider value={{
       counters,
+      myRatings,
       incrementView,
       incrementDownload,
       updateRating,
-      refreshStats
+      refreshStats,
+      fetchMyRating
     }}>
       {children}
     </CounterContext.Provider>
