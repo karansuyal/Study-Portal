@@ -221,7 +221,7 @@ def not_found(error):
 
 @jwt.unauthorized_loader
 def unauthorized_response(callback):
-    return jsonify({'success': False, 'error': 'Authentication required'}), 401
+    return jsonify({'success': False, 'error': 'Login / Authentication required'}), 401
 
 
 # ==================== ADMIN PANEL STATIC FILES ====================
