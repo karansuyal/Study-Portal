@@ -278,3 +278,122 @@
 
 .ap-btn-reject { background: #fff; color: #ef4444; border: 1.5px solid #fecaca; }
 .ap-btn-reject:hover { background: #fef2f2; }
+
+/* ---------- Approved payments summary + table ---------- */
+.ap-summary-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ap-summary-card {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ap-summary-card--accent {
+  background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+  border-color: #e0e7ff;
+}
+
+.ap-summary-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.ap-summary-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.ap-summary-card--accent .ap-summary-value { color: #4f46e5; }
+
+.ap-approved-table {
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ap-approved-head-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 0.7fr 1fr 1.1fr;
+  gap: 0.75rem;
+  padding: 0.75rem 1.1rem;
+  background: #f8fafc;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ap-approved-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 0.7fr 1fr 1.1fr;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.85rem;
+}
+
+.ap-approved-cell { min-width: 0; }
+
+.ap-approved-student {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ap-avatar-sm {
+  width: 28px;
+  height: 28px;
+  font-size: 0.72rem;
+}
+
+.ap-approved-note {
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ap-approved-amount {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ap-approved-date {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.ap-method-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+}
+
+.ap-method-razorpay { background: #ecfdf5; color: #059669; }
+.ap-method-upi { background: #eef2ff; color: #4f46e5; }
+
+@media (max-width: 720px) {
+  .ap-approved-head-row { display: none; }
+  .ap-approved-row {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .ap-approved-amount::before { content: 'Amount: '; color: #94a3b8; font-weight: 600; }
+  .ap-approved-date::before { content: 'Approved: '; color: #94a3b8; font-weight: 600; }
+}

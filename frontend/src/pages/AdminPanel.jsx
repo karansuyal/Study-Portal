@@ -9,6 +9,8 @@ const AdminPanel = () => {
   const [pendingNotes, setPendingNotes] = useState([]);
   const [pendingPayments, setPendingPayments] = useState([]);
   const [paymentsLoading, setPaymentsLoading] = useState(true);
+  const [approvedPayments, setApprovedPayments] = useState([]);
+  const [approvedLoading, setApprovedLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     total_users: 0,
@@ -24,8 +26,29 @@ const AdminPanel = () => {
       fetchPendingNotes();
       fetchStats();
       fetchPendingPayments();
+      fetchApprovedPayments();
     }
   }, []);
+
+  const fetchApprovedPayments = async () => {
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_URL}/admin/payments/all?status=approved`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      const purchases = data.purchases || [];
+      setApprovedPayments(purchases);
+      return purchases;
+    } catch (error) {
+      console.error('Error fetching approved payments:', error);
+      return [];
+    } finally {
+      setApprovedLoading(false);
+    }
+  };
 
   const fetchPendingPayments = async () => {
     try {
@@ -71,6 +94,7 @@ const AdminPanel = () => {
         alert(stillPending
           ? 'Server took too long to respond — please check the list and try again if it\'s still showing as pending.'
           : 'Payment approved — note unlocked for the student');
+        if (!stillPending) fetchApprovedPayments();
         return;
       }
 
@@ -79,10 +103,12 @@ const AdminPanel = () => {
       if (response.ok) {
         alert('Payment approved — note unlocked for the student');
         fetchPendingPayments();
+        fetchApprovedPayments();
       } else if (response.status === 400 && /already/i.test(data.error || '')) {
         // Someone (possibly this same click, retried by the browser) already
         // approved/rejected it — not a real failure, just stale UI.
         fetchPendingPayments();
+        fetchApprovedPayments();
       } else {
         alert(`Failed: ${data.error || 'Unknown error'}`);
       }
@@ -95,6 +121,7 @@ const AdminPanel = () => {
       alert(stillPending
         ? 'Connection issue — the approval may not have gone through. Please try again.'
         : 'Payment approved — note unlocked for the student');
+      if (!stillPending) fetchApprovedPayments();
     }
   };
 
@@ -277,6 +304,13 @@ const AdminPanel = () => {
         >
           💳 Payments to Review
           <span className={`ap-tab-count ${pendingPayments.length > 0 ? 'has-items' : ''}`}>{pendingPayments.length}</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('approved')}
+          className={`ap-tab ${activeTab === 'approved' ? 'is-active' : ''}`}
+        >
+          ✅ Approved
+          <span className="ap-tab-count">{approvedPayments.length}</span>
         </button>
       </div>
 
@@ -529,6 +563,77 @@ const AdminPanel = () => {
               </div>
             ))}
           </div>
+        )}
+      </div>
+      )}
+
+      {/* Approved Payments Section */}
+      {activeTab === 'approved' && (
+      <div className="ap-panel">
+        <h2 className="ap-panel-title">Approved payments</h2>
+        <p className="ap-panel-subtitle">
+          Every purchase that's unlocked a note so far — both auto-verified Razorpay payments and manually reviewed UPI ones.
+        </p>
+
+        {approvedLoading ? (
+          <div className="ap-loading-state">
+            <span className="ap-spinner"></span>
+            <p>Loading approved payments…</p>
+          </div>
+        ) : approvedPayments.length === 0 ? (
+          <div className="ap-empty-state">
+            <div className="ap-empty-icon">₹</div>
+            <h3>No approved payments yet</h3>
+            <p>Once payments are approved, they'll show up here.</p>
+          </div>
+        ) : (
+          <>
+            <div className="ap-summary-row">
+              <div className="ap-summary-card">
+                <span className="ap-summary-label">Total approved</span>
+                <span className="ap-summary-value">{approvedPayments.length}</span>
+              </div>
+              <div className="ap-summary-card ap-summary-card--accent">
+                <span className="ap-summary-label">Total revenue</span>
+                <span className="ap-summary-value">
+                  ₹{(approvedPayments.reduce((sum, p) => sum + (p.amount || 0), 0) / 100).toFixed(0)}
+                </span>
+              </div>
+            </div>
+
+            <div className="ap-approved-table">
+              <div className="ap-approved-head-row">
+                <span>Student</span>
+                <span>Note</span>
+                <span>Amount</span>
+                <span>Method</span>
+                <span>Approved on</span>
+              </div>
+              {approvedPayments.map(purchase => (
+                <div key={purchase.id} className="ap-approved-row">
+                  <div className="ap-approved-cell ap-approved-student">
+                    <div className="ap-avatar ap-avatar-sm">
+                      {(purchase.user_name || '?').trim().charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="ap-student-name">{purchase.user_name}</div>
+                      <div className="ap-student-email">{purchase.user_email}</div>
+                    </div>
+                  </div>
+                  <div className="ap-approved-cell ap-approved-note">{purchase.note_title}</div>
+                  <div className="ap-approved-cell ap-approved-amount">{purchase.amount_display}</div>
+                  <div className="ap-approved-cell">
+                    <span className={`ap-method-pill ${purchase.method === 'razorpay' ? 'ap-method-razorpay' : 'ap-method-upi'}`}>
+                      {purchase.method === 'razorpay' ? 'Razorpay' : 'UPI (manual)'}
+                    </span>
+                  </div>
+                  <div className="ap-approved-cell ap-approved-date">
+                    {purchase.reviewed_at ? new Date(purchase.reviewed_at).toLocaleString() : '—'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
       )}
