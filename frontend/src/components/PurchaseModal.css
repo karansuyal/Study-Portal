@@ -1,27 +1,29 @@
 .pm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
   padding: 16px;
   animation: pm-fade-in 0.18s ease;
 }
 
 .pm-modal {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 22px;
   width: 100%;
   max-width: 420px;
-  padding: 26px 24px 24px;
+  padding: 22px 22px 20px;
   position: relative;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
-  max-height: 90vh;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);
+  max-height: 88vh;
   overflow-y: auto;
   animation: pm-rise-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.pm-drag-handle { display: none; }
 
 @keyframes pm-fade-in {
   from { opacity: 0; }
@@ -31,6 +33,43 @@
 @keyframes pm-rise-in {
   from { opacity: 0; transform: translateY(10px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===================================================================
+   MOBILE: full-width bottom sheet, like a native checkout screen
+   =================================================================== */
+@media (max-width: 560px) {
+  .pm-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .pm-modal {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    max-height: 92vh;
+    animation: pm-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .pm-drag-handle {
+    display: block;
+    width: 38px;
+    height: 4px;
+    border-radius: 4px;
+    background: #e2e8f0;
+    margin: 0 auto 14px;
+  }
+
+  .pm-close {
+    top: 14px;
+  }
+}
+
+@keyframes pm-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .pm-close {
@@ -53,7 +92,7 @@
 .pm-close:hover { background: #e2e8f0; color: #334155; }
 
 /* ---------- Header ---------- */
-.pm-header { margin-bottom: 18px; padding-right: 26px; }
+.pm-header { margin-bottom: 16px; padding-right: 26px; }
 .pm-eyebrow {
   display: block;
   font-size: 11.5px;
@@ -85,7 +124,7 @@
 .pm-steps {
   display: flex;
   align-items: center;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 .pm-step {
   display: flex;
@@ -109,7 +148,7 @@
   flex-shrink: 0;
 }
 .pm-step-label {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   color: #94a3b8;
   transition: color 0.2s ease;
@@ -212,53 +251,114 @@
 }
 @keyframes pm-spin { to { transform: rotate(360deg); } }
 
-/* ---------- UPI flow ---------- */
+/* ===================================================================
+   UPI flow — QR card styled like a real checkout receipt
+   =================================================================== */
 .pm-upi-flow { display: flex; flex-direction: column; align-items: center; text-align: center; }
 
+.pm-pay-to {
+  font-size: 12.5px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.pm-pay-to strong { color: #334155; }
+
 .pm-qr-frame {
-  padding: 12px;
-  border-radius: 16px;
-  background: #fff;
-  border: 1.5px solid #eef0f4;
-  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.08);
+  position: relative;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 60%);
+  border: 1px solid #eef0f6;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.1);
   margin-bottom: 14px;
 }
-.pm-qr { width: 176px; height: 176px; display: block; border-radius: 8px; }
+
+/* corner scan brackets — small professional touch */
+.pm-qr-frame::before,
+.pm-qr-frame::after,
+.pm-qr-corner-tl,
+.pm-qr-corner-br {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid #4f46e5;
+}
+.pm-qr-frame::before { top: 6px; left: 6px; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
+.pm-qr-frame::after { bottom: 6px; right: 6px; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
+
+.pm-qr { width: 196px; height: 196px; display: block; border-radius: 8px; }
 
 .pm-upi-app-btn {
-  display: inline-block;
-  background: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: #fff;
   text-decoration: none;
-  padding: 11px 22px;
-  border-radius: 10px;
+  padding: 14px 22px;
+  border-radius: 12px;
   font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 10px;
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.28);
+  font-size: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
   transition: transform 0.12s, box-shadow 0.12s;
 }
-.pm-upi-app-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.34); }
+.pm-upi-app-btn:active { transform: scale(0.98); }
+
+.pm-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.pm-or-divider::before, .pm-or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #eef0f4;
+}
 
 .pm-upi-id-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: #f1f5f9;
+  gap: 9px;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   color: #334155;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  padding: 9px 16px;
+  border-radius: 24px;
   cursor: pointer;
-  margin-bottom: 12px;
-  transition: background 0.15s;
+  margin-bottom: 14px;
+  transition: background 0.15s, border-color 0.15s;
 }
-.pm-upi-id-chip:hover { background: #e2e8f0; }
+.pm-upi-id-chip:hover { background: #eef2ff; border-color: #c7d2fe; }
+.pm-upi-id-chip:active { transform: scale(0.98); }
 .pm-copied-icon { color: #10b981; }
 
-.pm-hint { font-size: 12.5px; color: #64748b; margin: 0 0 18px; line-height: 1.55; max-width: 320px; }
+.pm-hint {
+  font-size: 12.5px;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px 13px;
+  margin: 0 0 18px;
+  line-height: 1.55;
+  width: 100%;
+  text-align: left;
+}
 
 .pm-form { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 14px; }
 .pm-form-field { display: flex; flex-direction: column; gap: 5px; }
@@ -268,11 +368,12 @@
 .pm-field-hint { font-size: 11.5px; color: #94a3b8; }
 
 .pm-form input[type="text"] {
-  padding: 11px 13px;
+  padding: 13px 14px;
   border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 11px;
+  font-size: 15px;
   transition: border-color 0.15s;
+  /* 15px avoids iOS Safari auto-zoom on focus */
 }
 .pm-form input[type="text"]:focus {
   outline: none;
@@ -288,10 +389,10 @@
 }
 .pm-file-btn {
   display: block;
-  padding: 11px 13px;
+  padding: 12px 14px;
   border: 1.5px dashed #cbd5e1;
-  border-radius: 10px;
-  font-size: 13px;
+  border-radius: 11px;
+  font-size: 13.5px;
   color: #64748b;
   text-align: center;
   cursor: pointer;
@@ -305,10 +406,10 @@
   background: #4f46e5;
   color: #fff;
   border: none;
-  padding: 13px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: 12px;
   font-weight: 700;
-  font-size: 14.5px;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
@@ -326,7 +427,7 @@
   color: #94a3b8;
   font-size: 12.5px;
   font-weight: 600;
-  padding: 4px;
+  padding: 6px;
   cursor: pointer;
   transition: color 0.15s;
 }

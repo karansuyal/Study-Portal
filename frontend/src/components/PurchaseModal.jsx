@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { FaTimes, FaQrcode, FaCreditCard, FaCheckCircle, FaExclamationTriangle, FaCopy, FaCheck, FaArrowLeft } from 'react-icons/fa';
 import { createPaymentOrder, submitPaymentProof, payWithRazorpay } from '../services/paymentService';
 import './PurchaseModal.css';
@@ -99,12 +100,22 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
     }
   };
 
-  return (
+  // Lock background scroll while the sheet/modal is open — otherwise the
+  // page behind can scroll under a fixed-position mobile bottom sheet.
+  React.useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prevOverflow; };
+  }, []);
+
+  const modalContent = (
     <div className="pm-overlay" onClick={onClose}>
       <div className="pm-modal" onClick={(e) => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose} aria-label="Close">
           <FaTimes />
         </button>
+
+        <div className="pm-drag-handle" />
 
         {/* ---- Header: note + price ---- */}
         <div className="pm-header">
@@ -174,6 +185,8 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
 
           {stage === 'upi_pending' && order && (
             <div className="pm-upi-flow">
+              <span className="pm-pay-to">Pay to <strong>{order.payment.payee_name || 'Study Portal'}</strong></span>
+
               <div className="pm-qr-frame">
                 <img src={order.payment.qr_image} alt="UPI QR code" className="pm-qr" />
               </div>
@@ -186,8 +199,10 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
                   if (!/Android|iPhone/i.test(navigator.userAgent)) e.preventDefault();
                 }}
               >
-                Open UPI app to pay
+                <FaQrcode size={15} /> Open UPI app to pay
               </a>
+
+              <div className="pm-or-divider">or pay manually</div>
 
               <button type="button" className="pm-upi-id-chip" onClick={copyUpiId}>
                 <span>{order.payment.upi_id}</span>
@@ -260,4 +275,6 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
