@@ -251,9 +251,10 @@ const getCleanDescription = (desc) => {
                   <span>{stats.rating.toFixed(1)}/5</span>
                 </div>
                 <div style={styles.laptopRatingContainer}>
-                  <Rating
-                    materialId={material.id}
-                    currentRating={stats.rating}
+                  <StarRating
+                    noteId={material.id}
+                    size="md"
+                    showCount={false}
                   />
                 </div>
               </div>
