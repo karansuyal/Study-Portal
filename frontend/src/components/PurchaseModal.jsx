@@ -208,8 +208,19 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
                 className="pm-upi-app-btn"
                 href={order.payment.upi_uri}
                 onClick={(e) => {
-                  // upi:// links only resolve on a phone with a UPI app installed.
-                  if (!/Android|iPhone/i.test(navigator.userAgent)) e.preventDefault();
+                  // Custom upi:// schemes only resolve on a phone with a UPI
+                  // app installed. On some Android/Chrome builds, letting the
+                  // browser resolve a plain <a href="upi://..."> click can
+                  // mangle or drop the query string before handing off to the
+                  // app (this is why the same exact string works fine when
+                  // scanned as a QR — a camera app decodes it byte-for-byte
+                  // with no browser involved). Forcing a hard navigation via
+                  // window.location is the reliable way to trigger the
+                  // intent with the URI intact.
+                  e.preventDefault();
+                  if (/Android|iPhone/i.test(navigator.userAgent)) {
+                    window.location.href = order.payment.upi_uri;
+                  }
                 }}
               >
                 <FaQrcode size={15} /> Open UPI app to pay
@@ -226,7 +237,7 @@ export default function PurchaseModal({ note, onClose, onUnlocked }) {
 
               <form onSubmit={handleSubmitProof} className="pm-form">
                 <div className="pm-form-field">
-                  <label htmlFor="pm-utr">UPI Transaction ID <span className="pm-required">*</span></label>
+                  <label htmlFor="pm-utr">UTR / Transaction reference <span className="pm-required">*</span></label>
                   <input
                     id="pm-utr"
                     type="text"
