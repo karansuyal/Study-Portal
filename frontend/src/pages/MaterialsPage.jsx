@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import {useParams, useNavigate, Link} from "react-router-dom";
 import { usePendingUnlock } from "../hooks/usePendingUnlock";
 import StarRating from "../components/StarRating";
+import ShareButtons from "../components/ShareButtons";
 import {
   FaDownload,
   FaEye,
@@ -32,6 +33,11 @@ import api, {API_URL} from "../services/api";
 import "./MaterialsPage.css";
 import {useNoteStats} from "../hooks/useNoteStats";
 import PurchaseModal from "../components/PurchaseModal";
+
+// Frontend's own domain, used to build absolute /notes/:slug links for
+// sharing (WhatsApp/Telegram need a full URL, not a relative path).
+const SITE_URL = "https://study-portal-app.vercel.app";
+const noteUrl = (material) => `${SITE_URL}/notes/${material.slug || material.id}`;
 
 const MaterialsPage = () => {
   const {courseId, yearId, semId, subjectId} = useParams();
@@ -236,7 +242,13 @@ const getCleanDescription = (desc) => {
               </div>
             </div>
             <div style={styles.laptopYoutubeTextContent}>
-              <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+              {material.slug ? (
+                <Link to={`/notes/${material.slug}`} style={{textDecoration: "none"}}>
+                  <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+                </Link>
+              ) : (
+                <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+              )}
               <div style={{...styles.laptopMaterialStats, background: darkMode ? "#1e1e28" : "#f9fafb"}}>
                 <div style={{...styles.laptopStatItem, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
                   <FaClock color="#9ca3af" size={12} />
@@ -266,6 +278,9 @@ const getCleanDescription = (desc) => {
               >
                 <FaYoutube size={14} /> Watch on YouTube
               </button>
+              {material.slug && (
+                <ShareButtons url={noteUrl(material)} title={material.title} size="md" darkMode={darkMode} />
+              )}
             </div>
           </div>
         </div>
@@ -299,7 +314,13 @@ const getCleanDescription = (desc) => {
             </div>
           </div>
           <div style={styles.mobileMaterialContent}>
-            <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            {material.slug ? (
+              <Link to={`/notes/${material.slug}`} style={{textDecoration: "none"}}>
+                <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+              </Link>
+            ) : (
+              <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            )}
             <div style={{...styles.mobileMaterialMeta, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
               <div style={styles.mobileMetaItem}>
                 <FaClock /> {material.uploadDate}
@@ -319,6 +340,9 @@ const getCleanDescription = (desc) => {
             >
               <FaYoutube /> Watch on YouTube
             </button>
+            {material.slug && (
+              <ShareButtons url={noteUrl(material)} title={material.title} size="sm" darkMode={darkMode} />
+            )}
           </div>
         </div>
       </div>
@@ -458,7 +482,13 @@ const getCleanDescription = (desc) => {
             </div>
           </div>
           <div style={styles.laptopMaterialContent}>
-            <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            {material.slug ? (
+              <Link to={`/notes/${material.slug}`} style={{textDecoration: "none"}}>
+                <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+              </Link>
+            ) : (
+              <h4 style={{...styles.laptopMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            )}
             <p style={{...styles.laptopMaterialDescription, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
               {getCleanDescription(material.description)}
             </p>
@@ -521,6 +551,9 @@ const getCleanDescription = (desc) => {
                 </>
               )}
             </button>
+            {material.slug && (
+              <ShareButtons url={noteUrl(material)} title={material.title} size="md" darkMode={darkMode} />
+            )}
           </div>
           {showPurchase && (
             <PurchaseModal
@@ -564,7 +597,13 @@ const getCleanDescription = (desc) => {
           )}
         </div>
         <div style={styles.mobileMaterialContent}>
-          <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+          {material.slug ? (
+            <Link to={`/notes/${material.slug}`} style={{textDecoration: "none"}}>
+              <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+            </Link>
+          ) : (
+            <h4 style={{...styles.mobileMaterialTitle, color: darkMode ? "#f0f0fa" : "#1f2937"}}>{material.title}</h4>
+          )}
           <p style={{...styles.mobileMaterialDescription, color: darkMode ? "#a0a0b8" : "#6b7280"}}>
             {getCleanDescription(material.description)}
           </p>
@@ -614,6 +653,9 @@ const getCleanDescription = (desc) => {
               </>
             )}
           </button>
+          {material.slug && (
+            <ShareButtons url={noteUrl(material)} title={material.title} size="sm" darkMode={darkMode} />
+          )}
         </div>
         {showPurchase && (
           <PurchaseModal
@@ -659,6 +701,7 @@ const getCleanDescription = (desc) => {
       if (response && response.notes && response.notes.length > 0) {
         transformedMaterials = response.notes.map((note) => ({
           id: note.id,
+          slug: note.slug,
           title: note.title || "Untitled",
           type: note.is_youtube
             ? "youtube"
@@ -1478,6 +1521,7 @@ const getCleanDescription = (desc) => {
     mobileMaterialActions: {
       display: "flex",
       gap: "8px",
+      flexWrap: "wrap",
       padding: "15px",
       background: darkMode ? "#1e1e28" : "#f9fafb",
       borderTop: darkMode ? "1px solid rgba(255,255,255,0.06)" : "1px solid #e5e7eb",

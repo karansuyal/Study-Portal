@@ -22,7 +22,7 @@ from sqlalchemy import text
 from ..extensions import db
 from ..models import Note, User, Course, Subject, UserRating
 from ..decorators import get_current_user_optional
-from ..utils import allowed_file, format_bytes
+from ..utils import allowed_file, format_bytes, build_note_slug
 
 notes_bp = Blueprint('notes', __name__)
 
@@ -152,6 +152,38 @@ def get_note_detail(note_id):
     except Exception as e:
         db.session.rollback()
         print(f" Error in views increment: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@notes_bp.route('/api/notes/slug/<string:slug>', methods=['GET'])
+def get_note_by_slug(slug):
+    """
+    Same as get_note_detail but looked up by the SEO slug instead of the
+    numeric id — this is what the frontend's /notes/<slug> page and the
+    sitemap both hit. A pending/rejected note is only visible here to its
+    owner or an admin, same access rule as everywhere else, so a random
+    slug guess can't leak an unapproved upload.
+    """
+    try:
+        note = db.session.execute(db.select(Note).filter_by(slug=slug)).scalar_one_or_none()
+        if not note:
+            return jsonify({'success': False, 'error': 'Note not found'}), 404
+
+        viewer = get_current_user_optional()
+
+        if note.status != 'approved':
+            is_owner_or_admin = viewer and (viewer.id == note.user_id or viewer.role == 'admin')
+            if not is_owner_or_admin:
+                return jsonify({'success': False, 'error': 'Note not found'}), 404
+
+        note.views += 1
+        db.session.commit()
+
+        return jsonify({'success': True, 'note': note.to_dict(viewer=viewer)})
+
+    except Exception as e:
+        db.session.rollback()
+        print(f" Error fetching note by slug: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -356,6 +388,10 @@ def upload_note():
 
             is_admin = user.role == 'admin'
 
+            subject_for_slug = None
+            if subject_id and subject_id != 'null':
+                subject_for_slug = db.session.get(Subject, int(subject_id))
+
             note = Note(
                 title=title,
                 description=actual_description,
@@ -378,9 +414,19 @@ def upload_note():
             )
 
             db.session.add(note)
+            db.session.flush()  # assigns note.id without committing, so the slug can include it
+
+            note.slug = build_note_slug(
+                title, note.id,
+                course_name=course.name,
+                subject_name=subject_for_slug.name if subject_for_slug else None,
+                semester=subject_for_slug.semester if subject_for_slug else semester,
+                note_type=note_type,
+            )
+
             db.session.commit()
 
-            print(f" YouTube video saved with ID: {note.id}")
+            print(f" YouTube video saved with ID: {note.id}, slug: {note.slug}")
 
             return jsonify({
                 'success': True,
@@ -502,9 +548,19 @@ def upload_note():
             )
 
             db.session.add(note)
+            db.session.flush()  # assigns note.id without committing, so the slug can include it
+
+            note.slug = build_note_slug(
+                title, note.id,
+                course_name=course.name,
+                subject_name=subject_name if subject_name != 'General' else None,
+                semester=semester,
+                note_type=note_type,
+            )
+
             db.session.commit()
 
-            print(f" Note saved with ID: {note.id}")
+            print(f" Note saved with ID: {note.id}, slug: {note.slug}")
 
             return jsonify({
                 'success': True,
@@ -683,3 +739,50 @@ def increment_download_count(note_id):
 @notes_bp.route('/api/materials/<int:note_id>/download', methods=['POST', 'OPTIONS'])
 def increment_download_count_alt(note_id):
     return increment_download_count(note_id)
+
+
+@notes_bp.route('/sitemap.xml', methods=['GET'])
+def sitemap():
+    """
+    Dynamic XML sitemap: every static page plus one <url> per approved,
+    slugged note, so search engines can discover /notes/<slug> pages
+    without having to crawl the whole hierarchical course/year/sem/subject
+    click-path first.
+
+    SITE_URL should be the FRONTEND's domain (not this backend's), since
+    that's what actually needs to be indexed. frontend/vercel.json rewrites
+    https://<frontend-domain>/sitemap.xml to this same route, so the file
+    submitted to Search Console is same-origin with the frontend as the
+    sitemap protocol expects.
+    """
+    from flask import Response
+
+    site_url = os.environ.get('SITE_URL', 'https://study-portal-app.vercel.app').rstrip('/')
+
+    static_paths = ['/', '/courses', '/about', '/all-materials']
+
+    notes = db.session.execute(
+        db.select(Note.slug, Note.uploaded_at, Note.approved_at)
+        .filter(Note.status == 'approved', Note.slug.isnot(None))
+        .order_by(Note.uploaded_at.desc())
+    ).all()
+
+    entries = [(f"{site_url}{path}", None) for path in static_paths]
+    for slug, uploaded_at, approved_at in notes:
+        lastmod = approved_at or uploaded_at
+        entries.append((
+            f"{site_url}/notes/{slug}",
+            lastmod.date().isoformat() if lastmod else None
+        ))
+
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, lastmod in entries:
+        xml.append('<url>')
+        xml.append(f'<loc>{loc}</loc>')
+        if lastmod:
+            xml.append(f'<lastmod>{lastmod}</lastmod>')
+        xml.append('</url>')
+    xml.append('</urlset>')
+
+    return Response('\n'.join(xml), mimetype='application/xml')

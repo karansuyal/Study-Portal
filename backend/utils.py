@@ -2,9 +2,54 @@
 
 import base64
 import io
+import re
 from urllib.parse import quote
 
 from flask import current_app
+
+
+def slugify_text(text):
+    """
+    Turns arbitrary text into a URL-safe slug fragment: lowercase,
+    non-alphanumeric runs collapsed to a single '-', no leading/trailing
+    '-'. Pure string function, no DB access, so it's easy to unit test
+    and reuse from both the upload route and any backfill script.
+
+    'DBMS Unit-1 (Notes) 2024!!' -> 'dbms-unit-1-notes-2024'
+    """
+    text = (text or '').lower()
+    text = re.sub(r'[^a-z0-9]+', '-', text)
+    return text.strip('-')
+
+
+def build_note_slug(title, note_id, course_name=None, subject_name=None,
+                     semester=None, note_type=None, max_base_len=180):
+    """
+    Builds a human-readable, SEO-friendly slug for a Note, e.g.
+    'btech-sem-3-dbms-unit-1-notes-42'.
+
+    The trailing '-<note_id>' is what actually guarantees uniqueness (a DB
+    row id is never reused), so a slug collision is impossible even if two
+    notes have the exact same title/course/subject — the base part is only
+    there to make the URL readable and keyword-rich for search engines.
+    Callers must pass `note_id` (flush the session first if it's a brand
+    new, not-yet-committed row) so it can be appended.
+    """
+    parts = []
+    if course_name:
+        parts.append(course_name)
+    if semester:
+        parts.append(f"sem {semester}")
+    if subject_name:
+        parts.append(subject_name)
+    if note_type:
+        parts.append(note_type)
+    parts.append(title or 'note')
+
+    base = slugify_text(' '.join(parts))[:max_base_len].strip('-')
+    if not base:
+        base = 'note'
+    return f"{base}-{note_id}"
 
 
 def allowed_file(filename):

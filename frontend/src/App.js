@@ -1,6 +1,7 @@
 // // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
 import BreadcrumbNav from './components/BreadcrumbNav';
@@ -34,9 +35,11 @@ import SubjectSelection from './pages/SubjectSelection.jsx';
 import MaterialsPage from './pages/MaterialsPage.jsx';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import NoteDetail from './pages/NoteDetail.jsx';
 
 function App() {
   return (
+    <HelmetProvider>
     <ThemeProvider>
     <Router>
       <DarkModeInjector />
@@ -66,6 +69,8 @@ function App() {
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/materials" element={<MaterialsPage />} />
                 <Route path="/all-materials" element={<AllMaterials />} />
+                {/* SEO-friendly note page, e.g. /notes/btech-sem-3-dbms-unit-1-notes-42 */}
+                <Route path="/notes/:slug" element={<NoteDetail />} />
                 <Route path="/admin" element={<AdminPanel />} />
                 <Route path="/admin-panel" element={<AdminPanel />} />
                 <Route path="/admin-dashboard" element={<AdminPanel />} />
@@ -91,6 +96,7 @@ function App() {
       </AuthProvider>
     </Router>
     </ThemeProvider>
+    </HelmetProvider>
   );
 }
 

@@ -254,6 +254,14 @@ export const getMaterial = async (materialId) => {
   }
 };
 
+//  Looks a note up by its SEO slug (e.g. 'btech-sem-3-dbms-unit-1-notes-42'),
+//  used by the /notes/:slug detail page. No mock fallback here on purpose —
+//  a slug that doesn't resolve should surface as a real 404, not silently
+//  render fake data.
+export const getNoteBySlug = async (slug) => {
+  return fetchAPI(`/notes/slug/${encodeURIComponent(slug)}`);
+};
+
 //  FILE UPLOAD
 export const uploadMaterial = async (formData) => {
   const token = localStorage.getItem('noteshub_token') || localStorage.getItem('study_portal_token');
@@ -424,6 +432,7 @@ const api = {
   getMaterials,
   getMaterialsForSubject,
   getMaterial,
+  getNoteBySlug,
   searchMaterials,
   searchNotes,
   uploadMaterial,

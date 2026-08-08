@@ -143,6 +143,14 @@ class Note(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
+    # SEO-friendly URL slug, e.g. 'btech-sem-3-dbms-unit-1-notes-42'. Set
+    # once at creation (see utils.build_note_slug) and never changed
+    # afterwards — a stable URL is worth more for SEO than a "prettier"
+    # one after a title edit, and changing it would break every link
+    # already shared/indexed. Nullable + unique so old rows can be
+    # backfilled (see migrations/003_add_note_slug.sql) without breaking
+    # the unique constraint.
+    slug = db.Column(db.String(250), unique=True, index=True)
     description = db.Column(db.Text)
     file_name = db.Column(db.String(200))
     original_filename = db.Column(db.String(200))
@@ -218,6 +226,7 @@ class Note(db.Model):
         result = {
             'id': self.id,
             'title': self.title,
+            'slug': self.slug,
             'description': self.description,
             'file_name': self.file_name if unlocked else None,
             'original_filename': self.original_filename if unlocked else None,
