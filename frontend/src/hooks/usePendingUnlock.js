@@ -40,12 +40,18 @@ export function usePendingUnlock(items, onUnlocked) {
     const poll = async () => {
       if (document.hidden) return;
       const token = getToken();
+      // Not logged in (or session expired) — nothing to check yet. Skip the
+      // network calls entirely instead of firing a guaranteed 401 on every
+      // tick; the moment a token shows up (user logs in) the next tick will
+      // pick it up automatically.
+      if (!token) return;
       await Promise.all(
         ids.map(async (id) => {
           try {
             const res = await fetch(`${API_URL}/payments/notes/${id}/access`, {
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
+              headers: { Authorization: `Bearer ${token}` },
             });
+            if (res.status === 401) return; // expired/invalid token — try again next tick
             const data = await res.json();
             if (!cancelled && data.success && data.has_access) {
               onUnlockedRef.current(id);
